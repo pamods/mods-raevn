@@ -1,0 +1,29 @@
+.mod_list_item {
+	margin-bottom: 5px;
+	color: #999;
+}
+
+.text_mod_name {
+    font-size: 1.2em;
+	color:#00ffff; 
+	text-decoration:none; 
+	font-family: 'DINPRO-LIGHT';
+}
+
+.text_mod_author {
+	font-style: italic;
+	color: #fff;
+}
+.div_mods 
+{
+    height: 280px;
+    width: 230px;
+    margin: 0px auto;
+    font-family: 'DINPRO-LIGHT';
+    font-size: .8em;
+    position: absolute;
+    background: rgba(0,0,0,.5);
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 4px;
+}

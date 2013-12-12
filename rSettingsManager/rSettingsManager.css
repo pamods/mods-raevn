@@ -1,0 +1,39 @@
+.div_settings_control_text{
+	width: 110px;
+	height: 20px;
+	padding: 0px !important;
+	padding-left: 4px !important;
+	padding-right: 4px !important;
+	margin-bottom: 20px;
+}
+
+.div_settings_control_number{
+	width: 110px;
+	height: 20px;
+	padding: 0px !important;
+	padding-left: 4px !important;
+	padding-right: 4px !important;
+	margin-bottom: 20px;
+}
+
+input[type="number"] 
+{
+    -webkit-user-select: text;
+}
+input[type="number"] {
+    border:1px solid rgba(255,255,255,1);
+    background:black;
+    color:#fff;
+    text-shadow:none;
+    box-shadow:none;
+    padding:4px;
+}
+
+
+input[type="number"]:disabled {
+    border:1px solid rgba(255,255,255,.1);
+    background:black;
+    color:#666;
+    text-shadow:none;
+    box-shadow:none;
+}

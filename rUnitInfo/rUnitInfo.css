@@ -1,0 +1,36 @@
+.div_build_item {
+    position: relative;
+}
+
+a.div_build_unit_info {
+    display: block;
+    height: 18px;
+    width: 18px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+
+a.div_build_unit_info:hover {
+    background: rgba(0,0,0,.8);
+    border-radius: 4px;
+    height: 18px;
+    width: 18px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+
+a.div_build_unit_info:active {
+    background: rgba(0,0,0,.8);
+    border-radius: 4px;
+    height: 18px;
+    width: 18px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+
+#browser_iframe {
+    background: white;
+}
