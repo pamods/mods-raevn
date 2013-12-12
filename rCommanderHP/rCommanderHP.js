@@ -1,3 +1,5 @@
+initialSettingValue('commander_hp_display_show', 'ALWAYS');
+
 var commanderImages = new Array('img/build_bar/units/imperial_delta.png', 'img/build_bar/units/imperial_alpha.png', 'img/build_bar/units/raptor_base.png', 'img/build_bar/units/quad_base.png');
 var settings = decode(localStorage.settings);
 
@@ -12,7 +14,7 @@ $('#commander_info_frame_content').append(
 					'<td class="div_status_bar_endcap_angle left_angle"></td>' +
 					'<td class="div_status_bar_midpsan">' +
 						'<div class="commander_info_img" >' +
-							'<img src="' + commanderImages[localStorage['preferredCommander']] +'"/>' +
+							'<img src="' + commanderImages[localStorage['preferredCommander'] || 0] +'"/>' +
 						'</div>' +
 					'</td>' +
 					'<td class="div_status_bar_midpsan">' +
