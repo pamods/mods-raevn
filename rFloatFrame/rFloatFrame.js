@@ -6,6 +6,7 @@ function forgetFramePosition(id) {
 function createFloatingFrame(id, width, height, options) {
 	var styleTop = '';
 	var styleLeft = '';
+	var styleResize = '';
 	
 	var rememberPosition = true;
 	var delayResize = options['delayResize'] || false ;
@@ -55,15 +56,22 @@ function createFloatingFrame(id, width, height, options) {
 		}
 		if (options['left']) {
 			styleLeft = "left: " + (options['left'] + offsetX) + "px; ";
+		} else {
+			styleLeft = "left: " + offsetX + "px; ";
 		}
 		if (options['top']) {
 			styleTop = "top: " + (options['top'] + offsetY) + "px; ";
+		} else {
+			styleTop = "top: " + offsetY + "px; ";
 		}
+	}
+	if (delayResize == true) {
+		styleResize = "display: none; ";
 	}
 		
     $('body').append(
 		'<div id="' + id + '" class="drag_main" style="width:' + width + 'px; height:' + height + 'px; ' + styleLeft + styleTop + '" data-bind="visible: decode(localStorage.settings)[\'' + id + '\'] != \'HIDE\'">' +
-			'<div id="' + id + '_content" class="div_drag_cont"></div>' +
+			'<div id="' + id + '_content" class="div_drag_cont" style="' + styleResize + '"></div>' +
 		'</div>');
 		
     $('#' + id).draggable({
@@ -78,6 +86,10 @@ function createFloatingFrame(id, width, height, options) {
 					'y': $(this).position().top,
 					'xPercent': $(this).position().left / ($(options['containment'] ? options['containment'] : "body").width() - $(this).width()), 
 					'yPercent': $(this).position().top / ($(options['containment'] ? options['containment'] : "body").height() - $(this).height())};
+					
+				position.xPercent = Math.min(Math.max(position.xPercent, 0), 1);
+				position.yPercent = Math.min(Math.max(position.yPercent, 0), 1);
+				
 				localStorage['frames_' + id] = encode(position);
         },
 		'containment': options['containment'] ? options['containment'] : "body",
@@ -90,6 +102,10 @@ function createFloatingFrame(id, width, height, options) {
 			'y': $('#' + id).position().top,
 			'xPercent': $('#' + id).position().left / ($(options['containment'] ? options['containment'] : "body").width() - $('#' + id).width()), 
 			'yPercent': $('#' + id).position().top / ($(options['containment'] ? options['containment'] : "body").height() - $('#' + id).height())};
+
+		position.xPercent = Math.min(Math.max(position.xPercent, 0), 1);
+		position.yPercent = Math.min(Math.max(position.yPercent, 0), 1);
+		
 		localStorage['frames_' + id] = encode(position);
 	}
 	
@@ -97,6 +113,7 @@ function createFloatingFrame(id, width, height, options) {
 		$(window).resize(function() { setTimeout( function(){
 			$('#' + id).css({left: $(options['containment'] ? options['containment'] : "body").position().left + ($(options['containment'] ? options['containment'] : "body").width() - $('#' + id).width()) * decode(localStorage['frames_' + id]).xPercent});
 			$('#' + id).css({top: $(options['containment'] ? options['containment'] : "body").position().top + ($(options['containment'] ? options['containment'] : "body").height() - $('#' + id).height()) * decode(localStorage['frames_' + id]).yPercent});
+			$('#' + id + "_content").css({display: 'block'});
 		}, 110); }).trigger('resize');
 	} else {
 		$(window).resize(function() {
@@ -104,5 +121,6 @@ function createFloatingFrame(id, width, height, options) {
 			$('#' + id).css({top: $(options['containment'] ? options['containment'] : "body").position().top + ($(options['containment'] ? options['containment'] : "body").height() - $('#' + id).height()) * decode(localStorage['frames_' + id]).yPercent});
 		}).trigger('resize');
 	}
+	
 }
 
