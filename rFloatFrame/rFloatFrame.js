@@ -11,12 +11,10 @@ function createFloatingFrame(id, width, height, options) {
 	var rememberPosition = true;
 	var delayResize = options['delayResize'] || false ;
 	
-	if (options['rememberPosition']) {
+	if (options['rememberPosition'] != null) {
 		rememberPosition = options['rememberPosition'];
-	} else {
-		rememberPosition = false;
 	}
-		
+	
 	if (decode(localStorage['frames_' + id]) && rememberPosition == true) {
 		styleLeft = "left: " + decode(localStorage['frames_' + id]).x + "px; ";
 		styleTop = "top: " + decode(localStorage['frames_' + id]).y + "px; ";
@@ -55,15 +53,14 @@ function createFloatingFrame(id, width, height, options) {
 			}
 		}
 		if (options['left']) {
-			styleLeft = "left: " + (options['left'] + offsetX) + "px; ";
-		} else {
-			styleLeft = "left: " + offsetX + "px; ";
+			offsetX += options['left'];
 		}
+		styleLeft = "left: " + offsetX + "px; ";
+		
 		if (options['top']) {
-			styleTop = "top: " + (options['top'] + offsetY) + "px; ";
-		} else {
-			styleTop = "top: " + offsetY + "px; ";
+			offsetY += options['top'];
 		}
+		styleTop = "top: " + offsetY + "px; ";
 	}
 	if (delayResize == true) {
 		styleResize = "display: none; ";
@@ -96,12 +93,12 @@ function createFloatingFrame(id, width, height, options) {
 		'snap': options['snap'] ? options['snap'] : true
 	});
 	
-	if (!decode(localStorage['frames_' + id])) {
+	if (rememberPosition == false || decode(localStorage['frames_' + id]) == null) {
 		var position = {
-			'x': $('#' + id).position().left, 
-			'y': $('#' + id).position().top,
-			'xPercent': $('#' + id).position().left / ($(options['containment'] ? options['containment'] : "body").width() - $('#' + id).width()), 
-			'yPercent': $('#' + id).position().top / ($(options['containment'] ? options['containment'] : "body").height() - $('#' + id).height())};
+			'x': offsetX, 
+			'y': offsetY,
+			'xPercent': offsetX / ($(options['containment'] ? options['containment'] : "body").width() - width), 
+			'yPercent': offsetY / ($(options['containment'] ? options['containment'] : "body").height() - height)};
 
 		position.xPercent = Math.min(Math.max(position.xPercent, 0), 1);
 		position.yPercent = Math.min(Math.max(position.yPercent, 0), 1);
