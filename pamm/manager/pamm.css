@@ -1,0 +1,331 @@
+html {
+	height: 100%;
+	padding-bottom: 220px;
+}
+
+body {
+	background-image: url("img/img_start_bground_sample.jpg");
+	color: #F9F9F9;
+	font-family: "Arial";
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 100%;
+	position:relative;
+	min-width: 470px;
+	min-height: 300px;
+}
+
+h1 {
+	color: #008888;
+	font-family: "Verdana";
+	margin: 5px;
+	padding: 0;
+	text-shadow: 0 2px 2px #000000;
+}
+
+div {
+	opacity: 1;
+	filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+#container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: auto;
+}
+#mod_list, #news, #mod_download  {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid #515151;
+	overflow: auto;
+	left: 0px;
+	margin-top: 160px;
+}
+
+#news {
+}
+
+#download, #installed, #news {
+	display: none;
+}
+
+#mod_download {
+	position: absolute;
+    bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    margin-top:160px;
+    margin-bottom:0px;
+    margin-right:0px;
+    margin-left:0px;
+	overflow: auto;
+}
+	
+#mod_download_inner {
+	position: absolute;
+    bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    margin-top:35px;
+    margin-bottom:0px;
+    margin-right:0px;
+    margin-left:0px;
+	overflow: auto;
+}
+
+.button {
+	margin: 7px;
+	display: inline;
+}
+
+#newsButton {
+	color: #F9F9F9;
+}
+
+#modDownloadButton {
+	color: #888888;
+}
+
+#modListButton {
+	color: #888888;
+}
+
+.filter_options, .sort_options {	
+	float: left;
+	padding-left: 7px;
+	width: 220px;
+}
+
+.mod_list_background, .mod_download_background, .news_background {
+	opacity: 0.5;
+	filter:alpha(opacity=50); /* For IE8 and earlier */
+	background-color: #000000;
+	
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid #515151;
+	overflow: auto;
+	left: 0px;
+	margin-top: 160px;
+}
+
+.mod, .download_mod {
+	position: relative;
+	float: left;
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-right: 10px;
+	width: 422px;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 6px;
+	padding-bottom: 7px;
+	cursor: default;
+}
+
+.download_mod {
+	border-bottom: 0px solid #515151;
+	padding-bottom: 14px;
+	margin-bottom: 14px;
+}
+
+.mod_download_options {
+	position: absolute;
+	width: 100%;
+	height: 18px;
+	border: 1px solid #515151;
+	overflow: auto;
+	left: 0px;
+	margin-top: 160px;
+	
+	padding-top: 8px;
+	padding-bottom: 8px;
+	margin-bottom: -1px;
+}
+
+.mod {
+	padding-bottom: 7px;
+	margin-bottom: 7px;
+}
+
+.mod:hover .mod_background , .download_mod:hover .mod_background  {
+	position: absolute;
+	left: 1px;
+	top: 5px;
+	width: 415px;
+	height: 100%;
+	opacity: 0.25;
+	filter:alpha(opacity=25); /* For IE8 and earlier */
+	background-color: #00ffff;
+	border: 1px solid #515151;
+	margin: -5px;
+	z-index: -1;
+}
+
+.download_mod:hover .mod_background {
+	width: 442px;
+	padding-left: 5px;
+	padding-top: 3px;
+}
+
+.mod:hover .mod_background {
+	margin-left: 25px;
+}
+
+.mod_container {
+	padding-left: 110px;
+}
+
+.mod_name {
+	display: inline;
+	color: #008888;
+	font-family: "Verdana";
+	font-size: 1.0em;
+}
+
+.mod:hover .mod_name, .download_mod:hover .mod_name {
+	color: #cc8800;
+}
+
+.mod_author {
+	margin-left: 5px;
+	display: inline;
+	font-style: italic;
+	font-size: 0.7em;
+}
+
+.mod_category  {
+	display: inline;
+	font-size: 0.7em;
+	font-style: italic;
+	color: #888888;
+}
+
+.mod_version {
+	display: inline;
+	font-size: 0.7em;
+	font-style: italic;
+	color: #888888;
+}
+
+.mod_count {
+	display: inline;
+	font-size: 0.7em;
+	font-style: italic;
+	color: #888888;
+}
+
+.mod_link {
+	margin-right: 10px;
+	display: inline;
+	font-size: 0.8em;
+	color: #888888;
+}
+
+.download_mod:hover .mod_link a {
+	color: #cc8800;
+}
+
+.mod_filtered {
+	display: none;
+}
+
+.mod_enable {
+	float: left;
+	margin-right: 5px;
+	margin-top: 3px;
+	width: 20px;
+	height: 30px;
+}
+
+.mod_description {
+	margin-top: 4px;
+	margin-bottom: 2px;
+	font-size: 0.8em;
+	color: #F9F9F9;
+}
+
+.mod_updated {
+	display: inline;
+	font-size: 0.8em;
+	color: #cc8800;
+}
+
+.mod_update_available {
+	display: inline;
+	font-size: 0.8em;
+	color: #cc8800;
+	margin-left: 10px;
+}
+
+.mod_icon {
+	float: left;
+	padding-right: 10px;
+}
+
+.credits {
+	float: left;
+	font-style: italic;
+	font-size: 0.8em;
+	padding-top: 10px;
+}
+
+.buttons {
+	position: absolute;
+	bottom: -190px;
+	left: 0px;
+}
+
+.buttons input {
+	float: left;
+	width: 90px;
+	margin-right: 6px;
+	margin-top: 3px;
+}
+
+#download p {
+	color: #888888;
+	font-size: 0.8em;
+	padding-top: 0px;
+	margin-top: 0px;
+	padding-left: 5px;
+}
+
+.mod_download_heading {
+	padding-top: 0px;
+	padding-bottom: 2px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-left: 5px;
+}
+
+a {
+	color: #008888;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #008888;
+}
+
+
+.mod_description a {
+	color: #F9F9F9;
+}
+
+.mod_description a:visited {
+	color: #F9F9F9;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.mod:hover a:hover {
+	color: #cc8800;
+}

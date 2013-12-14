@@ -1,0 +1,1330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>PA UI Mod Manager</title>
+		<HTA:APPLICATION ID="PAMM" APPLICATIONNAME="PA UI Mod Manager" SCROLL="no" SINGLEINSTANCE="no">
+		<link href="manager\pamm.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<!-- ini Related functions -->
+	<script language="VBScript" src='manager\ini.vbs'></script>
+
+	<script language="javascript">
+		<!--
+		self.resizeTo(520, 600);
+				
+		function jsRefreshNews() {
+			document.getElementById('news').src = "http://pa.raevn.com/news.html?r=" + Math.random();
+		}
+		
+		function jsToggleAvailableModsSort() {
+			NextAvailableModsSort();
+			document.getElementById('sort_text').innerHTML=GetAvailableModsSort();
+			PopulateDownloads(GetAvailableModsFilter(), GetAvailableModsSort());
+		}
+		
+		function jsToggleAvailableModsFilter() {
+			NextAvailableModsFilter();
+			document.getElementById('filter_text').innerHTML=GetAvailableModsFilter();
+			PopulateDownloads(GetAvailableModsFilter(), GetAvailableModsSort());
+		}
+		
+		function jsDisplayPanel(strPanelName) {
+			document.getElementById('news').style.display = strPanelName == 'news' ? 'block' : 'none';
+			document.getElementById('newsButton').style.color = strPanelName == 'news' ? '#F9F9F9' : '#888888';
+			document.getElementById('installed').style.display = strPanelName == 'installed' ? 'block' : 'none';
+			document.getElementById('modListButton').style.color = strPanelName == 'installed' ? '#F9F9F9' : '#888888';
+			document.getElementById('download').style.display = strPanelName == 'download' ? 'block' : 'none';
+			document.getElementById('modDownloadButton').style.color = strPanelName == 'download' ? '#F9F9F9' : '#888888';
+			SetCurrentPanel(strPanelName);
+		}
+				
+		function jsCallURL(strURL) {	
+			try {
+				var oXMLHTTP = new ActiveXObject("MSXML2.XMLHTTP");
+			} catch(e) {
+				DisplayError("Critical Error: Could not create MSXML2.XMLHTTP ActiveX object");
+				return 1;
+			}
+		 
+			oXMLHTTP.open("GET", strURL + "&r=" + Math.random(), false);
+			oXMLHTTP.setRequestHeader("pragma", "no-cache");
+			
+			try {
+				oXMLHTTP.send();
+			} catch(e) {
+				DisplayError("Network Error: attempting to send request to " + strURL + " - " + e.message);
+				return 2;
+			}
+			
+			oXMLHTTP = null;
+			return 0;
+		}
+		
+		function jsDownloadFile(strURL, strFileFullPath)
+		{
+			//Constants
+			var adTypeBinary = 1
+			var adSaveCreateOverWrite = 2
+			var httpOK = 200
+			var httpNOT_FOUND = 404
+			
+			//Variables
+			var strURLFileName = strURL.substring(strURL.lastIndexOf('/') + 1)
+			var strFilePath = strFileFullPath.substring(0, strFileFullPath.lastIndexOf('/'))
+						
+			try {
+				var oStream = new ActiveXObject("ADODB.Stream");
+			} catch(e) {
+				DisplayError("Critical Error: Could not create ADODB.Stream ActiveX object");
+				return 1;
+			}
+
+			try {
+				var oXMLHTTP = new ActiveXObject("MSXML2.XMLHTTP");
+			} catch(e) {
+				DisplayError("Critical Error: Could not create MSXML2.XMLHTTP ActiveX object");
+				return 2;
+			}
+		 
+			oXMLHTTP.open("GET", strURL + "?r=" + Math.random(), false);
+			oXMLHTTP.setRequestHeader("pragma", "no-cache");
+			
+			try {
+				oXMLHTTP.send();
+			} catch(e) {
+				DisplayError("Network Error: attempting to send request to " + strURL + " - " + e.message);
+				return 6;
+			}
+
+			if (oXMLHTTP.Status == httpOK)	{
+				oStream.Open();
+				oStream.Type = adTypeBinary;
+				oStream.Write(oXMLHTTP.ResponseBody);
+
+				try {
+					oStream.SaveToFile(strFileFullPath, adSaveCreateOverWrite);
+				} catch(e) {
+					DisplayError("Write Error: Could not save file '" + strURLFileName + "' to " + strFilePath + ": " + e.message);
+					return 3
+				}
+				
+				oStream.Close();
+				oStream = null;
+			} else if (oXMLHTTP.Status == httpNOT_FOUND) {
+				DisplayError("Network Error: File Not Found - " + strURL);
+				return 4;
+			} else {
+				DisplayError("Network Error: Response code " + oXMLHTTP.Status);
+				return 5;
+			}
+
+			oXMLHTTP = null;
+			return 0;
+		}
+		
+		//-->
+	</script>
+		
+	<!-- GUI related functions -->
+	<script language="VBScript">
+
+		Dim strModPriorityList()
+		Dim strModPriorityListIncluded()
+		
+		Dim boolIsPARootFolder
+		
+		Dim intModDownloadCount
+		Dim strModDownloadListArray
+		Dim strModDownloadNameArray()
+		Dim strModDownloadAuthorArray()
+		Dim strModDownloadLinkArray()
+		Dim strModDownloadCategoryArray()
+		Dim strModDownloadBuildArray()
+		Dim strModDownloadVersionArray()
+		Dim strModDownloadURLArray()
+		Dim strModDownloadDescriptionArray()
+		Dim strModDownloadIconArray()
+		Dim strModDownloadDateArray()
+		Dim strModDownloadCountArray()
+		
+			Dim strModSlots()
+			Dim strModSlotID()
+			
+		'=========
+		'Constants
+		'=========
+		Const strPAMMDate = "2013/12/12"
+		Const strPAMMVersion = "2.0.2"
+		
+		Const strModCacheRelativePath = "manager\mod_cache\"
+		Const strAvailableModsListFileName = "modlist.ini"
+		Const strModsDirectoryRelativePath = "media\ui\mods\"
+		Const strAvailableModsListURL = "http://pamods.github.io/modlist.ini"
+		Const strPAMMVersionINIURL = "http://pa.raevn.com/pammversion.ini"
+		Const strInstallCountListURL = "http://pa.raevn.com/modcount.php"
+		Const strManageURL = "http://pa.raevn.com/manage.php"
+		Const strInstallCountFileName = "modcount.ini"
+		Const strPAMMVersionINIFileName = "pammversion.ini"
+		
+		'=========
+		'Variables
+		'=========
+		
+		'Objects
+		Dim objApp
+		Dim objFSO
+		Dim objShell
+		
+		'General Data
+		Dim boolElevated
+		Dim strModManagerDirectory
+		Dim strPADirectoryRelativePath
+		Dim strAvailableModsListPath
+		Dim strAvailableModsFilter
+		Dim strAvailableModsSort
+		Dim strInstallCountListPath
+		Dim strCurrentPanel
+		Dim strPAMMVersionINIPath
+		
+		'Installed Mods Data
+		Dim intInstalledModCount
+		Dim strInstalledModsFullPathArray()
+		Dim strInstalledModsIDArray()
+		Dim strInstalledModsNameArray()
+		Dim strInstalledModsAuthorArray()
+		Dim strInstalledModsLinkArray()
+		Dim strInstalledModsCategoryArray()
+		Dim strInstalledModsFileArray()
+		Dim strInstalledModsFolderArray()
+		Dim strInstalledModsBuildArray()
+		Dim strInstalledModsVersionArray()
+		Dim strInstalledModsEnabledArray()
+		Dim strInstalledModsPriorityArray()
+		Dim strInstalledModsRequiresArray()
+		
+		'TODO: Temporary code
+		Call Initialise()
+		Call CheckElevationStatus()
+		
+		'////////////////////////////////////////
+		'// INITIALISATION & UTILITY FUNCTIONS //
+		'////////////////////////////////////////
+		
+		'===========================
+		'Initialisation of variables
+		'===========================
+		Sub Initialise()
+			
+			Set objApp = CreateObject("Shell.Application")
+			Set objFSO = CreateObject("Scripting.FileSystemObject")
+			Set objShell = CreateObject("WScript.Shell")
+			
+			objShell.currentDirectory = Left(window.location.pathname, InStrRev(window.location.pathname, "\") - 1)
+			
+			strModManagerDirectory = objShell.currentDirectory & "\"
+			
+			strAvailableModsListPath = strModManagerDirectory & strModCacheRelativePath & strAvailableModsListFileName
+			strInstallCountListPath = strModManagerDirectory & strModCacheRelativePath & strInstallCountFileName
+			strPAMMVersionINIPath = strModManagerDirectory & strModCacheRelativePath & strPAMMVersionINIFileName
+			
+			'Default Filter & Sort settings
+			strAvailableModsFilter = "ALL"
+			strAvailableModsSort = "LAST UPDATED"
+		
+			'Path relative from strModManagerDirectory
+			If objFSO.FolderExists("PA") Then
+				strPADirectoryRelativePath = "PA\"
+			Else
+				strPADirectoryRelativePath = ""
+			End If
+		
+			strCurrentPanel = "news"
+			
+			boolElevated = false
+		
+			'TODO: Temporary code
+			boolIsPARootFolder = Not(objFSO.FolderExists("PA"))
+		End Sub
+		
+		'==============================================
+		'Standard method of displaying an Error Message
+		'==============================================
+		Sub DisplayError(strErrorMessage)
+		
+			'Temporary
+			msgbox strErrorMessage
+		End Sub
+		
+		'==========================================================================
+		'Determines if a new version of PAMM is available, and offers to install it
+		'==========================================================================
+		Sub CheckForUpdates()
+			Const vbOKCancel = 1
+			Const vbOK = 1
+			Dim strNewVersion
+			Dim strNewDate
+			Dim strNewPath
+			Dim intResult
+			
+			Call DownloadPAMMVersionINI()
+			
+			'Check Mod Count ini file exists
+			If objFSO.FileExists(strPAMMVersionINIPath) = True Then
+				strNewVersion = GetINIKeyValue(strPAMMVersionINIPath, "PAMM", "Version")
+				strNewDate = GetINIKeyValue(strPAMMVersionINIPath, "PAMM", "Date")
+				strNewPath = GetINIKeyValue(strPAMMVersionINIPath, "PAMM", "Path")
+				strNewName = GetINIKeyValue(strPAMMVersionINIPath, "PAMM", "Name")
+				
+				If strNewDate > strPAMMDate Then
+					intResult = msgbox("A new version of PA Mod Mangager is available. Click OK to download and install.", vbOKCancel)
+					
+					if intResult = vbOK Then
+						intResult = DownloadPAMMInstaller(strNewPath, strNewName)
+						
+						If intResult = 0 Then
+							objApp.ShellExecute strModManagerDirectory & strModCacheRelativePath & strNewName, "", "", "runas", 1
+							Call ClosePAMM()
+						End If
+					End If
+				End If
+			Else
+				Call DisplayError("File Error: modcount.ini file not found")
+			End If
+		End Sub
+		
+		'///////////////////////////////////////////
+		'// DOWNLOAD & CACHE MANAGEMENT FUNCTIONS //
+		'///////////////////////////////////////////
+		
+		'=====================================================
+		'Removes a specified file from the cache, if it exists
+		'=====================================================
+		Sub RemoveFileFromCache(strFileName)
+		
+			'Check for and remove existing file if present
+			If objFSO.FileExists(strModManagerDirectory & strModCacheRelativePath & strFileName) = True Then
+				On Error Resume Next
+				Err.Clear
+				
+				'Can throw errors
+				objFSO.deleteFile strModManagerDirectory & strModCacheRelativePath & strFileName, true
+				
+				'An error occurred
+				If Err.Number <> 0 Then
+					Call DisplayError("Cache Error: Unable to remove existing file '" & strFileName & "'." & vbnewline & Err.Description)
+					Err.Clear
+				End If
+				
+				On Error Goto 0
+			End If
+		End Sub
+		
+		'===================================
+		'Downloads the latest PAMM installer
+		'===================================
+		Function DownloadPAMMInstaller(strURL, strName)
+			Dim intResult
+		
+			'Check for and remove existing pammversion.ini file if present
+			Call RemoveFileFromCache(strName)
+			
+			'Download File
+			intResult = jsDownloadFile(strURL, strModManagerDirectory & strModCacheRelativePath & strName)
+			
+			'intResult codes
+			'0: No Error
+			'1: Critical Error: Could not create ADODB.Stream ActiveX object
+			'2: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'3: Write Error: Could not save file
+			'4: Network Error: File Not Found
+			'5: Network Error: Response Code
+			'6: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to download latest version of PAMM")
+			End If
+			
+			DownloadPAMMInstaller = intResult
+		End Function
+		
+		'=====================================
+		'Downloads the "PAMM version" ini file
+		'=====================================
+		Function DownloadPAMMVersionINI()
+			Dim intResult
+		
+			'Check for and remove existing pammversion.ini file if present
+			Call RemoveFileFromCache(strPAMMVersionINIFileName)
+			
+			'Download File
+			intResult = jsDownloadFile(strPAMMVersionINIURL, strPAMMVersionINIPath)
+			
+			'intResult codes
+			'0: No Error
+			'1: Critical Error: Could not create ADODB.Stream ActiveX object
+			'2: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'3: Write Error: Could not save file
+			'4: Network Error: File Not Found
+			'5: Network Error: Response Code
+			'6: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to load latest PAMM Version information")
+			End If
+			
+			DownloadPAMMVersionINI = intResult
+		End Function
+		
+		'=========================================================
+		'Downloads the "Available Mods" list and mod install count
+		'=========================================================
+		Function DownloadAvailableModsList()
+			Dim intResult
+		
+			'Check for and remove existing modlist.ini file if present
+			Call RemoveFileFromCache(strAvailableModsListFileName)
+			
+			'Download File
+			intResult = jsDownloadFile(strAvailableModsListURL, strAvailableModsListPath)
+			
+			'intResult codes
+			'0: No Error
+			'1: Critical Error: Could not create ADODB.Stream ActiveX object
+			'2: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'3: Write Error: Could not save file
+			'4: Network Error: File Not Found
+			'5: Network Error: Response Code
+			'6: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to load Available Mods List")
+			End If
+			
+			
+			'Download File
+			intResult = jsDownloadFile(strInstallCountListURL, strInstallCountListPath)
+			
+			'intResult codes
+			'0: No Error
+			'1: Critical Error: Could not create ADODB.Stream ActiveX object
+			'2: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'3: Write Error: Could not save file
+			'4: Network Error: File Not Found
+			'5: Network Error: Response Code
+			'6: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to load Mod install count List")
+			End If
+			
+			
+			DownloadAvailableModsList = intResult
+		End Function
+		
+		'=========================
+		'Downloads a specified Mod
+		'=========================
+		Function DownloadMod(strModURL, strModFileName, strModName)
+			Dim intResult
+		
+			'Check for and remove existing mod file if present
+			Call RemoveFileFromCache(strModFileName)
+			
+			intResult = jsCallURL(strManageURL & "?download=" & strModName)
+			
+			'intResult codes
+			'0: No Error
+			'1: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'2: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to update install count")
+			End If
+			
+			'Download File
+			intResult = jsDownloadFile(strModURL, strModManagerDirectory & strModCacheRelativePath & strModFileName)
+			
+			'0: No Error
+			'intResult codes
+			'1: Critical Error: Could not create ADODB.Stream ActiveX object
+			'2: Critical Error: Could not create MSXML2.XMLHTTP ActiveX object
+			'3: Write Error: Could not save file
+			'4: Network Error: File Not Found
+			'5: Network Error: Response Code
+			'6: Network Error: Error on Send
+			
+			'An error occurred
+			If intResult > 0 Then
+				Call DisplayError("Unable to download mod")
+			End If
+			
+			DownloadMod = intResult
+		End Function
+		
+		'///////////////////////////////////
+		'// MOD FILE MANAGEMENT FUNCTIONS //
+		'///////////////////////////////////
+		
+		'============================================
+		'Populates the data arrays for installed mods
+		'============================================
+		Sub PopulateInstalledModsData()
+			Dim intCurrentMod
+			Dim strCurrentMod
+			
+			Erase strInstalledModsFullPathArray
+			
+			Call FindInstalledMods()
+			
+			ReDim Preserve strInstalledModsIDArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsNameArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsAuthorArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsLinkArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsCategoryArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsFileArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsFolderArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsVersionArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsBuildArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsEnabledArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsPriorityArray(intInstalledModCount - 1)
+			ReDim Preserve strInstalledModsRequiresArray(intInstalledModCount - 1)
+			ReDim Preserve strModPriorityList(intInstalledModCount - 1) 'TODO
+			ReDim Preserve strModPriorityListIncluded(intInstalledModCount - 1) 'TODO
+			
+			If IsArray(strInstalledModsFullPathArray) = True Then
+				intCurrentMod = 0
+				For Each strCurrentMod In strInstalledModsFullPathArray
+					strInstalledModsIDArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "ID")
+					
+					'Generate a Mod ID if none specified
+					If ModValueExists(strInstalledModsIDArray(intCurrentMod)) = False Then
+						strInstalledModsIDArray(intCurrentMod) = Right(strCurrentMod, Len(strCurrentMod) - InStrRev(strCurrentMod, "\"))
+						strInstalledModsIDArray(intCurrentMod) = Left(strInstalledModsIDArray(intCurrentMod), Len(strInstalledModsIDArray(intCurrentMod)) - 4)
+					End If
+					
+					strInstalledModsNameArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Name")
+					strInstalledModsAuthorArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Author")
+					strInstalledModsLinkArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Link")
+					strInstalledModsCategoryArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Category")
+					strInstalledModsFolderArray(intCurrentMod) = AlterPath(GetINIKeyValue(strCurrentMod, "PAMM", "Folder")) 'TODO
+					strInstalledModsFileArray(intCurrentMod) = AlterPath(GetINIKeyValue(strCurrentMod, "PAMM", "File")) 'TODO
+					strInstalledModsVersionArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Version")
+					strInstalledModsBuildArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Build")
+					strInstalledModsRequiresArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Requires")
+					strInstalledModsEnabledArray(intCurrentMod) = IsModEnabled(strInstalledModsNameArray(intCurrentMod)) 'TODO
+					strInstalledModsPriorityArray(intCurrentMod) = GetINIKeyValue(strCurrentMod, "PAMM", "Priority")
+					strModPriorityListIncluded(intCurrentMod) = False
+					
+					If ModValueExists(strInstalledModsPriorityArray(intCurrentMod)) = False Then
+						strInstalledModsPriorityArray(intCurrentMod) = 100
+					Else
+						strInstalledModsPriorityArray(intCurrentMod) = CInt(strInstalledModsPriorityArray(intCurrentMod))
+					End If
+
+					intCurrentMod = intCurrentMod + 1
+				Next
+			End If
+		End Sub
+		
+		'==============================================
+		'Searches the PA Installation for mod ini files
+		'==============================================
+		Sub FindInstalledMods()
+			Dim objFolder
+
+			intInstalledModCount = 0
+			Call FindInstalledModsInFolder(strModManagerDirectory & strPADirectoryRelativePath & strModsDirectoryRelativePath)
+			
+			Set objFolder = objFSO.GetFolder(strModManagerDirectory & strPADirectoryRelativePath & strModsDirectoryRelativePath)
+
+			'Search Sub Folders for mod ini files (1 level only)
+			For Each objSubFolder in objFolder.SubFolders
+				Call FindInstalledModsInFolder(objSubFolder.Path)
+			Next
+		End Sub
+		
+		'==============================================
+		'Searches a specific Folder for mod ini files
+		'==============================================
+		Sub FindInstalledModsInFolder(strFolderPath)
+			Dim objFolder
+			Dim objFile
+			Dim objFiles
+			
+			Set objFolder = objFSO.GetFolder(strFolderPath)
+			Set objFiles = objFolder.Files
+			
+			'Search Mods Folder for mod ini files
+			For Each objFile in objFiles
+				If Len(objFile.Name) > 3 Then
+					If Right(objFile.Name, 3) = "ini" Then
+						ReDim Preserve strInstalledModsFullPathArray(intInstalledModCount)
+						strInstalledModsFullPathArray(intInstalledModCount) = objFile.Path
+						intInstalledModCount = intInstalledModCount + 1
+					End If
+				End If
+			Next
+		End Sub
+				
+		'========================
+		'Installs a specified Mod
+		'========================
+		Sub InstallMod(strModURL, strModName)
+			Dim intResult
+			Dim strModFileName
+			
+			'Extract File Name from URL
+			strModFileName = Right(strModURL, Len(strModURL) - inStrRev(strModURL, "/"))
+			
+			'Download and extract Mod
+			intResult = DownloadMod(strModURL, strModFileName, strModName)
+			
+			If intResult = 0 Then
+				Call ExtractMod(strModFileName)
+			End If
+		End Sub
+		
+		'==========================================
+		'Extracts a Mod Zip file to the mods folder
+		'==========================================
+		Sub ExtractMod(strFileName)
+			Dim objFiles
+		
+			'Check for existence of mod zip file
+			If objFSO.FileExists(strModManagerDirectory & strModCacheRelativePath & strFileName) = True Then
+			
+				'Get all files in zip
+				set objFiles = objApp.NameSpace(strModManagerDirectory & strModCacheRelativePath & strFileName).items
+
+				'Extract to mods directory
+				objApp.NameSpace(strModManagerDirectory & strPADirectoryRelativePath & strModsDirectoryRelativePath).CopyHere(objFiles)
+			End If
+			
+			Call Refresh()
+			Call jsDisplayPanel("installed")
+		End Sub
+		
+		'///////////////////////
+		'// GENERAL FUNCTIONS //
+		'///////////////////////
+		
+		'===================================================
+		'Check PAMM elevation status and elevate if required
+		'===================================================
+		Sub CheckElevationStatus()
+			Dim strCommandsArray
+
+			'Get all command line parameters
+			strCommandsArray = Split(PAMM.commandLine, chr(34))
+
+			'Look for "elevated", indicated PAMM has been elevated
+			If ubound(strCommandsArray) >=3 Then
+				If strCommandsArray(3) = "elevated" Then
+					SetElevatedStatus(True)
+				End If
+			End If
+
+			'If not elevated, restart PAMM requesting Admin privileges
+			If GetElevatedStatus() = False Then
+				objApp.ShellExecute "Mshta.exe", PAMM.commandLine & " " & chr(34) & "elevated" & chr(34), "", "runas", 1	
+				Call ClosePAMM()
+			End If
+			
+			Call CheckForUpdates()
+		End Sub
+		
+		'=========================================
+		'Returns whether or not a mod value exists
+		'=========================================
+		Function ModValueExists(strValue)
+			ModValueExists = True
+			
+			If Trim(strValue) = "" Then
+				ModValueExists = False
+			End If
+		End Function
+		
+		'==============================================
+		'Launches a URL in the user's browser of choice
+		'==============================================
+		Sub LaunchURL(strURL)
+			objShell.Run(strURL)
+		End Sub
+				
+		'==================
+		'Refreshes all data
+		'==================
+		Sub Refresh()
+			If GetElevatedStatus() = True Then
+				Call LoadMods()
+				Call PopulateMods()
+				Call PopulateDownloads(GetAvailableModsFilter(),GetAvailableModsSort())
+				Call jsRefreshNews()
+				Call jsDisplayPanel(GetCurrentPanel())
+			End If
+		End Sub
+		
+		'===========
+		'Launches PA
+		'===========
+		Sub LaunchPA()
+			objApp.ShellExecute AlterPath("PA\PA.exe"), "", "", "", ""
+			Call ClosePAMM()
+		End Sub
+		
+		'=========================
+		'Closes the PA Mod Manager
+		'=========================
+		Sub ClosePAMM()
+			Self.Close
+		End Sub
+		
+		'===============================================
+		'Cycles to the next available mod filter setting
+		'===============================================
+		Sub NextAvailableModsFilter()
+			Select Case GetAvailableModsFilter()
+				Case "ALL"
+					SetAvailableModsFilter("INSTALLED")
+				Case "INSTALLED"
+					SetAvailableModsFilter("REQUIRES UPDATE")
+				Case "REQUIRES UPDATE"
+					SetAvailableModsFilter("NOT INSTALLED")
+				Case "NOT INSTALLED"
+					SetAvailableModsFilter("ALL")
+			End Select
+		End Sub
+		
+		'=============================================
+		'Cycles to the next available mod sort setting
+		'=============================================
+		Sub NextAvailableModsSort()
+			Select Case GetAvailableModsSort()
+				Case "LAST UPDATED"
+					SetAvailableModsSort("TITLE")
+				Case "TITLE"
+					SetAvailableModsSort("AUTHOR")
+				Case "AUTHOR"
+					SetAvailableModsSort("BUILD")
+				Case "BUILD"
+					SetAvailableModsSort("DOWNLOADS")
+				Case "DOWNLOADS"
+					SetAvailableModsSort("RANDOM")
+				Case "RANDOM"
+					SetAvailableModsSort("LAST UPDATED")
+			End Select
+		End Sub
+		
+		'=====================================================================================================
+		'Places the current available mod at the appropriate place in the list based on the current sort field
+		'=====================================================================================================
+		Function SortAvailableMods(strSortField, intCurrentModDownload)
+			Dim intSlot
+			Dim intCurrentSlot
+			
+			intSlot = 0
+			For intCurrentSlot = 0 to intCurrentModDownload
+				'Stop if position is empty
+				If strModSlotID(intCurrentSlot) <> "" Then
+				
+					'Sort by title
+					If strSortField = "TITLE" and ucase(strModDownloadNameArray(intCurrentModDownload)) >= ucase(strModSlotID(intCurrentSlot)) then
+						intSlot = intSlot + 1
+					End If
+					
+					'Sort by author
+					If strSortField = "AUTHOR" and ucase(strModDownloadAuthorArray(intCurrentModDownload)) >= ucase(strModSlotID(intCurrentSlot)) then
+						intSlot = intSlot + 1
+					End If
+					
+					'Sort by build (highest first)
+					If strSortField = "BUILD" and strModDownloadBuildArray(intCurrentModDownload) < strModSlotID(intCurrentSlot) then
+						intSlot = intSlot + 1
+					End If
+					
+					'Sort by last updated (most recent first)
+					If strSortField = "LAST UPDATED" and strModDownloadDateArray(intCurrentModDownload) <= strModSlotID(intCurrentSlot) then
+						intSlot = intSlot + 1
+					End If
+					
+					'Sort by downloads
+					If strSortField = "DOWNLOADS" then
+						If cint(strModDownloadCountArray(intCurrentModDownload)) <= cint(strModSlotID(intCurrentSlot)) then
+							intSlot = intSlot + 1
+						End If
+					End If
+				End If
+			Next
+			
+			'Shuffle items after chosen position to make room
+			If intSlot < intModDownloadCount - 1 Then	
+				for intCurrentSlot = intModDownloadCount - 1 to intSlot + 1 step -1
+					strModSlots(intCurrentSlot) = strModSlots(intCurrentSlot - 1)
+					strModSlotID(intCurrentSlot) = strModSlotID(intCurrentSlot - 1)
+				Next
+			End If
+			
+			'Set the ID field to the sorted field for comparison
+			Select Case strSortField 
+				Case "TITLE"
+					strModSlotID(intSlot) = strModDownloadNameArray(intCurrentModDownload)
+				Case "AUTHOR"
+					strModSlotID(intSlot) = strModDownloadAuthorArray(intCurrentModDownload)
+				Case "BUILD"
+					strModSlotID(intSlot) = strModDownloadBuildArray(intCurrentModDownload)
+				Case "LAST UPDATED"
+					strModSlotID(intSlot) = strModDownloadDateArray(intCurrentModDownload)
+				Case "DOWNLOADS"
+					strModSlotID(intSlot) = strModDownloadCountArray(intCurrentModDownload)
+			End Select
+			
+			'Return position
+			SortAvailableMods = intSlot
+		End Function
+		
+		'///////////////////////
+		'// GETTERS & SETTERS //
+		'///////////////////////
+		
+		'=========================================
+		'Get current Available Mods filter setting
+		'=========================================
+		Function GetAvailableModsFilter()
+			GetAvailableModsFilter = strAvailableModsFilter
+		End Function
+		
+		'=======================================
+		'Get current Available Mods sort setting
+		'=======================================
+		Function GetAvailableModsSort()
+			GetAvailableModsSort = strAvailableModsSort
+		End Function
+		
+		'========================================
+		'Get current Mod Manager Elevation Status
+		'========================================
+		Function GetElevatedStatus()
+			GetElevatedStatus = boolElevated
+		End Function
+		
+		'========================================
+		'Gets the ID of a specified installed mod
+		'========================================
+		Function GetInstalledModID(strModName)
+			Dim intCurrentMod
+			
+			GetInstalledModID = -1
+			
+			If IsArray(strInstalledModsFullPathArray) = True Then
+				intCurrentMod = 0
+				For Each strCurrentMod In strInstalledModsFullPathArray
+					If strInstalledModsNameArray(intCurrentMod) = strModName Then
+						GetInstalledModID = intCurrentMod
+					End If
+					intCurrentMod = intCurrentMod + 1
+				Next
+			End If
+		End Function
+		
+		'========================================
+		'Gets the ID of a specified available mod
+		'========================================
+		Function GetAvailableModID(strModName)
+			Dim intCurrentMod
+			
+			GetAvailableModID = -1
+						
+			If IsArray(strModDownloadListArray) = True Then
+				intCurrentMod = 0
+				For Each strCurrentMod In strModDownloadListArray
+					If strModDownloadNameArray(intCurrentMod) = strModName Then
+						GetAvailableModID = intCurrentMod
+					End If
+					intCurrentMod = intCurrentMod + 1
+				Next
+			End If
+		End Function
+		
+		'=============================
+		'Get the current Visible Panel
+		'=============================
+		Function GetCurrentPanel() 
+			GetCurrentPanel = strCurrentPanel
+		End Function
+		
+		'=============================
+		'Set the current Visible Panel
+		'=============================
+		Sub SetCurrentPanel(strPanel) 
+			strCurrentPanel = strPanel
+		End Sub
+				
+		'========================================
+		'Set current Mod Manager Elevation Status
+		'========================================
+		Sub SetElevatedStatus(boolIsElevated)
+			boolElevated = boolIsElevated
+		End Sub
+		
+		'=================================
+		'Set Available Mods filter setting
+		'=================================
+		Sub SetAvailableModsFilter(strValue)
+			strAvailableModsFilter = strValue
+		End Sub
+		
+		'===============================
+		'Set Available Mods sort setting
+		'===============================
+		Sub SetAvailableModsSort(strValue)
+			strAvailableModsSort = strValue
+		End Sub
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+				
+		Sub LoadMods()
+			Dim intCurrentMod
+			Dim intResult
+			
+			Call PopulateInstalledModsData()
+			
+			intResult = DownloadAvailableModsList()
+			If intResult = 0 Then
+				strModDownloadListArray = GetINIKeysList(strAvailableModsListPath, "PAMODS")
+				intModDownloadCount = ubound(strModDownloadListArray) + 1
+				
+				ReDim Preserve strModDownloadNameArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadAuthorArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadLinkArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadCategoryArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadBuildArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadVersionArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadURLArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadDescriptionArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadIconArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadDateArray(intModDownloadCount - 1)
+				ReDim Preserve strModDownloadCountArray(intModDownloadCount - 1)
+				
+				intCurrentMod = 0
+				For Each strCurrentModDownload In strModDownloadListArray
+					strModDownloadNameArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Name")
+					strModDownloadAuthorArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Author")
+					strModDownloadLinkArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Link")
+					strModDownloadCategoryArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Category")
+					strModDownloadBuildArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Build")
+					strModDownloadVersionArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Version")
+					strModDownloadURLArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Download")
+					strModDownloadDescriptionArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Description")
+					strModDownloadIconArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Icon")
+					strModDownloadDateArray(intCurrentMod) = GetINIKeyValue(strAvailableModsListPath, strCurrentModDownload, "Date")
+					strModDownloadCountArray(intCurrentMod) = GetINIKeyValue(strInstallCountListPath, "PAMM", strCurrentModDownload)
+					If Trim(strModDownloadCountArray(intCurrentMod)) = "" Then
+						strModDownloadCountArray(intCurrentMod) = 0
+					End If
+					intCurrentMod = intCurrentMod + 1
+				Next
+			End If
+			
+			Call SetupPriorityList
+		End Sub
+
+		Sub SetupPriorityList
+			Dim intCurrentMod
+			Dim intCurrentModLoop
+			Dim intLowestPriority
+			Dim intLowestPriorityID
+			
+
+			For intCurrentMod = 0 To intInstalledModCount - 1
+				intLowestPriorityID = 0
+				intLowestPriority = 2147483647
+				For intCurrentModLoop = 0 To intInstalledModCount - 1
+					If cint(strInstalledModsPriorityArray(intCurrentModLoop)) <= intLowestPriority AND strModPriorityListIncluded(intCurrentModLoop) = False Then
+						intLowestPriorityID = intCurrentModLoop
+						intLowestPriority = cint(strInstalledModsPriorityArray(intCurrentModLoop))
+					End If
+				Next
+				strModPriorityList(intCurrentMod) = intLowestPriorityID
+				strModPriorityListIncluded(intLowestPriorityID) = True
+			Next
+		End Sub
+
+
+		Function AlterPath(strPath)
+			AlterPath = strPath
+			If boolIsPARootFolder = True Then
+				If Left(strPath, 3) = "PA\" Then
+					AlterPath = Right(strPath, Len(strPath)-3)
+				End If
+			End If
+		End Function
+		
+		Function IsModEnabled(strModName)
+			Dim objFile
+			Dim strContent
+			Const ForReading = 1
+
+			IsModEnabled = False
+
+			If objFSO.FileExists(AlterPath("PA\media\ui\mods\ui_mod_list.js")) = True Then
+
+				Set objFile = objFSO.OpenTextFile(AlterPath("PA\media\ui\mods\ui_mod_list.js"), ForReading, False)
+				strContent = objFile.ReadAll()
+
+				If InStr(strContent, "/* " & strModName & " */") > 0 Then
+					IsModEnabled = True
+				End If
+				objFile.close()
+			End If
+		End Function
+		
+		Sub PopulateDownloads(strFilter, strSort)
+			Dim intCurrentModDownload
+			
+			ReDim strModSlots(intModDownloadCount - 1)
+			ReDim strModSlotID(intModDownloadCount - 1)
+			
+			mod_download_inner.innerHTML = ""
+		
+			If IsArray(strModDownloadListArray) = True Then
+				intCurrentModDownload = 0
+				boolNotCompatible=false
+				For Each strCurrentModDownload In strModDownloadListArray	
+					strForumLink = ""
+					StrInfoHTML = ""
+					strDownloadLink = ""
+					strDescription = ""
+					strInstalled = ""
+					strFiltered = ""
+					strInstallCount = ""
+					strIcon = "<div class='mod_icon'><img src='http://pa.raevn.com/icons/generic.png'></div>"
+					strCurrentModDownload = strModDownloadListArray(intCurrentModDownload)
+					
+					If ModValueExists(strModDownloadIconArray(intCurrentModDownload)) = True Then
+						strIcon = "<div class='mod_icon'><img src='" & strModDownloadIconArray(intCurrentModDownload) & "'></div>"
+					End If
+					
+					If ModValueExists(strModDownloadLinkArray(intCurrentModDownload)) = True Then
+						strForumLink = "<div class='mod_link'>[ <a href='#' onClick='LaunchURL(" & chr(34) & strModDownloadLinkArray(intCurrentModDownload) & chr(34) &  ")'>forum</a> ]</div>"
+					End If
+					
+					If ModValueExists(strModDownloadDescriptionArray(intCurrentModDownload)) = True Then
+						strDescription = "<div class='mod_description'>" & strModDownloadDescriptionArray(intCurrentModDownload) & "</div>"
+					End If
+
+					If ModValueExists(strModDownloadVersionArray(intCurrentModDownload)) = True Then
+						StrInfoHTML = "Version: " & strModDownloadVersionArray(intCurrentModDownload)
+						If ModValueExists(strModDownloadDateArray(intCurrentModDownload)) = True Then
+							StrInfoHTML = StrInfoHTML & " (" & strModDownloadDateArray(intCurrentModDownload) & ")"
+						End If
+						If ModValueExists(strModDownloadBuildArray(intCurrentModDownload)) = True Then
+							StrInfoHTML = StrInfoHTML & ", build " & strModDownloadBuildArray(intCurrentModDownload)
+						End If
+						StrInfoHTML = StrInfoHTML & ", "
+					End If
+					
+
+					If ModValueExists(strModDownloadURLArray(intCurrentModDownload)) = True Then
+						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='Call InstallMod(" & chr(34) & strModDownloadURLArray(intCurrentModDownload) & chr(34) & ", " & chr(34) & strCurrentModDownload & chr(34) & ")'>install</a> ]</div>"
+					Else
+						strDownloadLink = "<div class='mod_link'>[ no download available ]</div>"
+					End If
+					
+					intModInstalledID = GetInstalledModID(strModDownloadNameArray(intCurrentModDownload))
+					
+					If intModInstalledID > -1 then
+						if strInstalledModsVersionArray(intModInstalledID) <> strModDownloadVersionArray(intCurrentModDownload) Then
+							strInstalled = "<div class='mod_updated'>UPDATED (version " & strInstalledModsVersionArray(intModInstalledID) & " currently installed)</div><br/>"
+						Else
+							If strFilter = "REQUIRES UPDATE" Then
+								strFiltered = "mod_filtered"
+							End If
+							strDownloadLink = "<div class='mod_link'>[ installed ]</div>"
+						End If
+						
+						If strFilter = "NOT INSTALLED" Then
+							strFiltered = "mod_filtered"
+						End If
+					Else
+						If strFilter = "INSTALLED" or strFilter = "REQUIRES UPDATE" Then
+							strFiltered = "mod_filtered"
+						End If
+					End If		
+					
+					If ModValueExists(strModDownloadCountArray(intCurrentModDownload)) = True Then
+						strInstallCount = "<div class='mod_count'>Downloaded " & strModDownloadCountArray(intCurrentModDownload) & " time"
+						If strModDownloadCountArray(intCurrentModDownload) <> 1 Then
+							strInstallCount = strInstallCount & "s"
+						End If
+						strInstallCount = strInstallCount & "</div>"
+					End If
+					
+					strInnerHTML = "<div class='download_mod " & strFiltered & "'><div class='mod_background'></div>" & strIcon & "<div class='mod_container'><div class='mod_name'>" & strModDownloadNameArray(intCurrentModDownload) & "</div><div class='mod_author'>by " & strModDownloadAuthorArray(intCurrentModDownload) & "</div><br/><div class='mod_version'>" & StrInfoHTML & "</div><div class='mod_category'>Category: " & strModDownloadCategoryArray(intCurrentModDownload) & "</div><br/>" & strDescription & strInstalled & strForumLink & strDownloadLink & strInstallCount & "</div></div>"
+					
+					If strSort = "RANDOM" Then
+						intSlot = 0
+						boolAvailable = False
+						Randomize(Second(Now()))
+						
+						Do While boolAvailable = False
+							intSlot = CInt(Math.Floor((intModDownloadCount - 1 + 1) * Rnd())) + 0
+							If strModSlots(intSlot) = "" Then
+								boolAvailable = True
+							End If
+						Loop
+					Else
+						intSlot = SortAvailableMods(strSort, intCurrentModDownload)
+					End If
+										
+					strModSlots(intSlot) = strInnerHTML
+					intCurrentModDownload = intCurrentModDownload + 1
+				Next
+				
+				For intCurrentModDownload = 0 To intModDownloadCount - 1
+					mod_download_inner.innerHTML = mod_download_inner.innerHTML & strModSlots(intCurrentModDownload)
+				Next
+			End If
+		
+		End Sub
+		
+		
+		Sub PopulateMods()
+			Dim intCurrentMod
+			
+			mod_list.innerHTML = ""
+			
+			If IsArray(strInstalledModsFullPathArray) = True Then
+				intCurrentMod = 0
+				For Each strCurrentMod In strInstalledModsFullPathArray			
+					If objFSO.FolderExists(strInstalledModsFolderArray(intCurrentMod)) or objFSO.FileExists(strInstalledModsFileArray(intCurrentMod)) Then
+						strLinkStartHTML = ""
+						strLinkEndHTML = ""
+						StrInfoHTML = ""
+						strInstalled = ""
+
+						If ModValueExists(strInstalledModsLinkArray(intCurrentMod)) = True Then
+							strLinkStartHTML = "<a href='#' onClick='LaunchURL(" & chr(34) & strInstalledModsLinkArray(intCurrentMod) & chr(34) & ")'>"
+							strLinkEndHTML = "</a>"
+						End If
+
+						If ModValueExists(strInstalledModsVersionArray(intCurrentMod)) = True Then
+							StrInfoHTML = "Version " & strInstalledModsVersionArray(intCurrentMod)
+							If ModValueExists(strInstalledModsBuildArray(intCurrentMod)) = True Then
+								StrInfoHTML = StrInfoHTML & " (" & strInstalledModsBuildArray(intCurrentMod) & ")"
+							End If
+							StrInfoHTML = StrInfoHTML & ", "
+						End If
+						
+						intAvailableModID = GetAvailableModID(strInstalledModsNameArray(intCurrentMod))
+						
+						If intAvailableModID > -1 then
+							If strModDownloadVersionArray(intAvailableModID) <> strInstalledModsVersionArray(intCurrentMod) Then
+								strInstalled = "<div class='mod_update_available'>UPDATE AVAILABLE</div><br/>"
+							End If
+						End If
+
+						mod_list.innerHTML = mod_list.innerHTML & "<div class='mod'><div class='mod_background'></div><div class='mod_enable'><input type='checkbox' id='mod" & strInstalledModsIDArray(intCurrentMod) & "' onClick=" & chr(34) & "AddRequires('" & strInstalledModsIDArray(intCurrentMod) & "')" & chr(34) & "/></div>" & strLinkStartHTML & "<div class='mod_name'>" & strInstalledModsNameArray(intCurrentMod) & "</div>" & strLinkEndHTML & "<div class='mod_author'>by " & strInstalledModsAuthorArray(intCurrentMod) & "</div><br/><div class='mod_version'>" & StrInfoHTML & "</div><div class='mod_category'>Category: " & strInstalledModsCategoryArray(intCurrentMod) & "</div>" & strInstalled & "</div>"
+
+						If strInstalledModsEnabledArray(intCurrentMod) = True Then
+							document.getElementById("mod" & strInstalledModsIDArray(intCurrentMod)).checked = true
+						End If
+					End If
+					intCurrentMod = intCurrentMod + 1
+				Next
+			End If
+		
+			Call WriteUIModListJS
+		End Sub
+		
+		Sub AddRequires(strMod)
+			Dim strSplitRequires
+			Dim intModID
+			Dim divMod
+	
+			If document.getElementById("mod" & strMod).checked = True Then
+
+				intModID = -1
+		
+				For intCurrentModID = 0 to intInstalledModCount - 1
+					If strInstalledModsIDArray(intCurrentModID) = strMod Then
+						intModID = intCurrentModID
+					End If
+				Next
+			
+				strSplitRequires = split(strInstalledModsRequiresArray(intModID), ",")
+			
+				If UBound(strSplitRequires) >= 0 Then
+					For each strCurrentRequire in strSplitRequires
+						set divMod = document.getElementById("mod" & strCurrentRequire)
+						If divMod is Nothing Then
+							msgbox strMod & ": Required Mod '" & strCurrentRequire & "' not installed"
+						Else
+							If document.getElementById("mod" & strCurrentRequire).checked = False Then
+								document.getElementById("mod" & strCurrentRequire).checked = true
+								call AddRequires(strCurrentRequire)
+							End If
+						End If
+					Next
+				End If
+			Else
+				For intCurrentModID = 0 to intInstalledModCount - 1
+					If document.getElementById("mod" & strInstalledModsIDArray(intCurrentModID)).checked = True Then
+						If InStr(strInstalledModsRequiresArray(intCurrentModID), strMod) > 0 Then
+							document.getElementById("mod" & strInstalledModsIDArray(intCurrentModID)).checked = false
+							call AddRequires(strInstalledModsIDArray(intCurrentModID))
+						End If
+					End If
+				Next
+			End If
+			call WriteUIModListJS()
+		End Sub
+		
+		Function BuildModString(strModScene)
+			Dim intCurrentMod, intCurrentModID
+			Dim strKeyValue
+
+			BuildModString = ""
+			
+			For intCurrentMod = 0 to intInstalledModCount - 1
+				intCurrentModID = strModPriorityList(intCurrentMod)
+				If objFSO.FolderExists(strInstalledModsFolderArray(intCurrentModID)) or objFSO.FileExists(strInstalledModsFileArray(intCurrentModID)) Then
+					If document.getElementById("mod" & strInstalledModsIDArray(intCurrentModID)).checked = True Then
+						strKeyValue = GetINIKeyValue(strInstalledModsFullPathArray(intCurrentModID), "PAMM", strModScene)
+						If strKeyValue <> "" Then
+							BuildModString = BuildModString & strKeyValue & ","
+						End If
+					End If
+				End If
+			Next
+			If Len(BuildModString) > 0 Then
+				BuildModString = Replace(Left(BuildModString, Len(BuildModString) - 1), ",", "," & vbNewLine)
+			End If
+		End Function
+		
+		Sub WriteUIModListJS()
+			Dim intCurrentMod
+			Dim strGlobalModList, strConnectToGame, strGameOver, strIconAtlas, strLiveGame, strLoadPlanet, strLobby, strMatchmaking, strNewGame, strServerBrowser, strSettings, strSpecialIconAtlas, strStart, strSystemEditor, strTransit
+			Dim strOutput
+			Dim strModListString
+			Dim objFile
+			Dim strModVarString, strModString
+
+			strModListString = ""
+			strModVarString = ""
+			strModString = ""
+
+			intCurrentMod = 0
+			For Each strCurrentMod In strInstalledModsFullPathArray
+				If objFSO.FolderExists(strInstalledModsFolderArray(intCurrentMod)) or objFSO.FileExists(strInstalledModsFileArray(intCurrentMod)) Then
+					If document.getElementById("mod" & strInstalledModsIDArray(intCurrentMod)).checked = True Then
+						strModListString = strModListString & "/* " & strInstalledModsNameArray(intCurrentMod) & " */" & vbNewLine
+						If len(strModVarString) > 0 Then
+							strModVarString = strModVarString + ","
+						End If
+						strModString = "{'name': '" & strInstalledModsNameArray(intCurrentMod) & "', 'author': '" & strInstalledModsAuthorArray(intCurrentMod) & "', 'version': '" & strInstalledModsVersionArray(intCurrentMod) & "', 'build': '" & strInstalledModsBuildArray(intCurrentMod) & "', 'category': '" & strInstalledModsCategoryArray(intCurrentMod) & "'}"
+						
+						strModVarString = strModVarString + strModString
+					End If
+				End If
+				intCurrentMod = intCurrentMod + 1
+			Next
+			
+			strModVarString = "var rModsList = [" & strModVarString & "];"
+
+			strGlobalModList = BuildModString("global_mod_list")
+			strConnectToGame = BuildModString("connect_to_game")
+			strGameOver = BuildModString("game_over")
+			strIconAtlas = BuildModString("icon_atlas")
+			strLiveGame = BuildModString("live_game")
+			strLoadPlanet = BuildModString("load_planet")
+			strLobby = BuildModString("lobby")
+			strMatchmaking = BuildModString("matchmaking")
+			strNewGame = BuildModString("new_game")
+			strServerBrowser = BuildModString("server_browser")
+			strSettings = BuildModString("settings")
+			strSpecialIconAtlas = BuildModString("special_icon_atlas")
+			strStart = BuildModString("start")
+			strSystemEditor = BuildModString("system_editor")
+			strTransit = BuildModString("transit")
+
+			
+			strOutput = strModListString & vbNewLine & strModVarString & vbNewLine & vbNewLine & "/* start ui_mod_list */" & vbNewLine & "var global_mod_list = [" & vbNewLine & strGlobalModList & vbNewLine & "];" & vbNewLine & "var scene_mod_list = {" & "'connect_to_game': [" & vbNewLine & strConnectToGame & vbNewLine & "]," & "'game_over': [" & vbNewLine & strGameOver & vbNewLine & "]," & vbNewLine & "'icon_atlas': [" & vbNewLine & strIconAtlas & vbNewLine & "]," & vbNewLine &  "'live_game': [" & vbNewLine & strLiveGame & vbNewLine & "]," & vbNewLine & "'load_planet': [" & vbNewLine & strLoadPlanet & vbNewLine & "]," & vbNewLine & "'lobby': [" & vbNewLine & strLobby & vbNewLine & "]," & vbNewLine & "'matchmaking': [" & vbNewLine & strMatchmaking & vbNewLine & "]," & vbNewLine & "'new_game': [" & vbNewLine & strNewGame & vbNewLine & "]," & vbNewLine & "'server_browser': [" & vbNewLine & strServerBrowser & vbNewLine & "]," & vbNewLine & "'settings': [" & vbNewLine & strSettings & vbNewLine & "]," & vbNewLine & "'special_icon_atlas': [" & vbNewLine & strSpecialIconAtlas & vbNewLine & "]," & vbNewLine & "'start': [" & vbNewLine & strStart & vbNewLine & "]," & vbNewLine & "'system_editor': [" & vbNewLine & strSystemEditor & vbNewLine & "]," & vbNewLine & "'transit': [" & vbNewLine & strTransit & vbNewLine & "]" & vbNewLine & "}" & vbNewLine & "/* end ui_mod_list */"
+
+			Set objFile = objFSO.CreateTextFile(AlterPath("PA\media\ui\mods\ui_mod_list.js"), True)
+
+			objFile.WriteLine(strOutput)
+			objFile.Close()
+			
+		End Sub
+		
+	</script>
+
+	<body>
+
+		<div id="container">
+			<div id="installed">
+				<div class="mod_list_background"></div>
+				<div id="mod_list">
+				</div>
+			</div>
+			<div id="download">
+				<div class="mod_download_background"></div>
+				<div class="mod_download_options">
+					<div class="filter_options">SHOW: <a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()">ALL</a></div><div class="sort_options">SORT: <a href="#" id="sort_text" onmousedown="jsToggleAvailableModsSort()">LAST UPDATED</a></div>
+				</div>
+				<div id="mod_download">
+					<div id="mod_download_inner">
+					</div>
+				</div>
+			</div>
+			<iframe id="news" allowtransparency="true" frameborder=0></iframe>
+			<img src="manager\img\img_pa_logo_alpha.png">
+			<h1>MOD MANAGER</h1>
+			
+			<div class="button"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')">NEWS</a></div>
+			<div class="button"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')">INSTALLED MODS</a></div>
+			<div class="button"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')">AVAILABLE MODS</a></div>
+			<div class="buttons">
+				<input type="button" value="Launch PA" onClick="LaunchPA()"/>
+				<input type="button" value="Refresh" onClick="Refresh()"/>
+				<input type="button" value="Exit" onClick="ClosePAMM()"/>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 2.0.2</a>, by Raevn</div>
+			</div>
+		</div>
+	</body>
+	
+	<script language="VBScript">
+		Call Refresh()
+	</script>
+</html>
