@@ -1,0 +1,64 @@
+/*** START SCREEN ***/
+
+/* News */
+.div_news {
+	bottom: 0px !important;
+	right: 0px !important;
+}
+
+/*** SYSTEM EDITOR ***/
+
+/* System Editor Properties panel */
+.div_sys_editor_panel {
+	margin-top: 0px !important;
+}
+
+/*** IN-GAME ***/
+
+/* Player List */
+.div_player_list_panel {
+    position: absolute !important;
+}
+
+/* Status Bar */
+.div_status_bar_cont {
+    position: absolute !important;
+}
+
+/* Build number */
+#version_info {
+    position: absolute !important;
+	margin: 0px !important;
+}
+
+/* Chrono Cam */
+.div_time_bar {
+	margin: 0px !important;
+	bottom: 0px !important;
+	left: 0px !important;
+}
+
+/* Menu Bar */
+.div_sidebar_left {
+	margin: 0px !important;
+	top: 0px !important;
+}
+
+/* Chat */
+#chat {
+	bottom: 0px !important;
+	left: 0px !important;
+}
+
+.div_planet_list_panel {
+    position: absolute !important;
+	top: 0px !important;
+	right: 0px !important;
+	margin: 0px !important;
+}
+
+.div_planet_detail_panel {
+    position: absolute !important;
+	top: 0px !important;
+	right: 0px !important;
+}
