@@ -4,6 +4,7 @@ $('.chat_message_player_name').replaceWith('<span class="chat_message_player_nam
         var date = new Date();
         var chat_message = payload;
 
+		chat_message.player_color = "#fff";
         for (var i = 0; i < model.players().length-1; i++) {
 	    if (model.players()[i].name == chat_message.player_name) {
 	        chat_message.player_color = model.players()[i].color;
