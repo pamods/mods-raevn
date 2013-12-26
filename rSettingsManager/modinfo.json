@@ -1,0 +1,25 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.pamm.rsettingsmanager",
+    "display_name": "Settings Manager",
+    "description": "Framework for adding new settings",
+    "author": "Raevn",
+    "version": "1.1.1",
+    "signature": "not yet implemented",
+    "priority": 10,
+    "enabled": true,
+    "id": "rSettingsManager",
+    "forum": "https://forums.uberent.com/threads/rel-settings-manager-v1-0-58197.54588/",
+    "category": [
+        "Framework"
+    ],
+    "settings": [
+        "coui://ui/mods/rSettingsManager/rSettingsManager.js",
+        "coui://ui/mods/rSettingsManager/rSettingsManager.css"
+    ],
+    "global_mod_list": [
+        "coui://ui/mods/rSettingsManager/rSettingsManager_global.js"
+    ],
+    "date": "2013/12/21",
+    "build": "58197"
+}

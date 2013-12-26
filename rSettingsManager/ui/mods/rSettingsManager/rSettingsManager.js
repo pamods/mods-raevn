@@ -41,6 +41,9 @@ model.addSetting = function(tab, type, displayName, id) {
 		case 'SERVERS':
 			settingSelector = $(".div_settings_control_lbl:contains('REGION')").parent().parent().parent();
   			break;
+		default:
+			settingSelector = $(".div_settings_" + tab + "_cont");
+			break;
 	}
 	switch (type) {
 		case 'DropDown':
