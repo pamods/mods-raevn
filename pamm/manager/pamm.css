@@ -34,7 +34,8 @@ div {
 	height: 100%;
 	margin: auto;
 }
-#mod_list, #news, #mod_download  {
+
+#mod_list, #news_data, #mod_download  {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -44,15 +45,15 @@ div {
 	margin-top: 160px;
 }
 
-#news {
+#news_data {
 }
 
-#download, #installed, #news {
+#download, #installed {
 	display: none;
 }
 
 #mod_download {
-	position: absolute;
+    position: absolute;
     bottom:0;
     top:0;
     left:0;
@@ -61,11 +62,11 @@ div {
     margin-bottom:0px;
     margin-right:0px;
     margin-left:0px;
-	overflow: auto;
+    overflow: auto;
 }
 	
 #mod_download_inner {
-	position: absolute;
+    position: absolute;
     bottom:0;
     top:0;
     left:0;
@@ -100,7 +101,7 @@ div {
 	width: 220px;
 }
 
-.mod_list_background, .mod_download_background, .news_background {
+.mod_list_background, .mod_download_background, .news_background, .overlay_background {
 	opacity: 0.5;
 	filter:alpha(opacity=50); /* For IE8 and earlier */
 	background-color: #000000;
@@ -151,6 +152,7 @@ div {
 .mod {
 	padding-bottom: 7px;
 	margin-bottom: 7px;
+	z-index: 0;
 }
 
 .mod:hover .mod_background , .download_mod:hover .mod_background  {
@@ -177,8 +179,11 @@ div {
 	margin-left: 25px;
 }
 
-.mod_container {
+.mod_container_online {
 	padding-left: 110px;
+}
+.mod_container_install {
+	padding-left: 30px;
 }
 
 .mod_name {
@@ -200,10 +205,22 @@ div {
 }
 
 .mod_category  {
-	display: inline;
 	font-size: 0.7em;
-	font-style: italic;
 	color: #888888;
+	text-transform:uppercase;
+}
+
+.mod_requires {
+	font-size: 0.7em;
+	color: #888888;
+}
+
+.mod_requirement {
+	color: #008888;
+}
+
+.mod_requirement_missing {
+	color: #cc8800;
 }
 
 .mod_version {
@@ -211,6 +228,13 @@ div {
 	font-size: 0.7em;
 	font-style: italic;
 	color: #888888;
+	padding-right: 3px;
+}
+
+.mod_new {
+	font-size: 0.7em;
+	font-style: italic;
+	color: #cc8800;
 }
 
 .mod_count {
@@ -218,6 +242,7 @@ div {
 	font-size: 0.7em;
 	font-style: italic;
 	color: #888888;
+	padding-left: 16px;
 }
 
 .mod_link {
@@ -227,7 +252,7 @@ div {
 	color: #888888;
 }
 
-.download_mod:hover .mod_link a {
+.mod_link a:hover {
 	color: #cc8800;
 }
 
@@ -329,3 +354,64 @@ a:hover {
 .mod:hover a:hover {
 	color: #cc8800;
 }
+
+.mod_link_reinstall a, .mod_link_uninstall a {
+	color: #888888 !important;
+}
+
+.mod_link_reinstall a:visited, .mod_link_uninstall a:visited {
+	color: #888888 !important;
+}
+
+.mod_link_reinstall a:hover, .mod_link_uninstall a:hover {
+	color: #cc8800 !important;
+}
+
+.loading {
+	position: absolute;
+	padding-top: 12px;
+	padding-left: 12px;
+	color: #cc8800;
+	font-weight: bold;
+}
+
+#downloading {
+	position: absolute;
+	bottom: -202px;
+	right: -8px;
+}
+
+.news_container {
+	padding: 4px;
+}
+
+			.news_item {
+				border-bottom: 1px solid #515151;
+				padding-left: 3px;
+				padding-right: 3px;
+				padding-top: 3px;
+				padding-bottom: 14px;
+				margin-bottom: 14px;
+			}
+
+			.news_title {
+				color: #008888;
+				font-family: "Verdana";
+				font-size: 1.0em;
+			}
+			
+			.news_date {
+				font-size: 0.7em;
+				color: #888888;
+				font-style: italic;
+				padding-bottom: 3px;
+			}
+
+			.news_body {
+				font-size: 0.8em;
+				color: #F9F9F9;
+			}
+
+			.brackets {
+				color: #888888;
+			}

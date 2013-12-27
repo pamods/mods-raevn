@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "PA Mod Manager"
-!define PRODUCT_VERSION "2.0.2"
+!define PRODUCT_VERSION "3.0.1"
 !define PRODUCT_PUBLISHER "Raevn"
 !define PRODUCT_WEB_SITE "https://forums.uberent.com/threads/rel-pa-mod-manager-v2-0-2.50726/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PAMM.hta"
@@ -23,7 +23,7 @@
 !insertmacro MUI_PAGE_WELCOME
 
 ; Directory page
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} ${PRODUCT_VERSION} in the following folder. To install in a different folder, click Browse and select another folder. Click Install to start the installation.$\r$\n$\r$\nYou must install ${PRODUCT_NAME} ${PRODUCT_VERSION} within the base directory of an existing installation of Planetary Annihilation."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} ${PRODUCT_VERSION} in the following folder. To install in a different folder, click Browse and select another folder. Click Install to start the installation."
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; Instfiles page
@@ -47,30 +47,22 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
-Function .onInit
-
-FunctionEnd
-
-Function .onVerifyInstDir
-IfFileExists "$INSTDIR\PALauncher.exe" end_of_test file_not_found_1
-file_not_found_1:
-IfFileExists "$INSTDIR\PA.exe" end_of_test file_not_found_2
-file_not_found_2:
-Abort
-end_of_test:
-FunctionEnd
-
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "Backup\PAMM.hta"
   SetOutPath "$INSTDIR\manager"
-  File "Backup\manager\ini.vbs"
+  File "Backup\manager\modinfo.json"
+  File "Backup\manager\json3.min.js"
   File "Backup\manager\pamm.css"
   SetOutPath "$INSTDIR\manager\img"
+  File "Backup\manager\img\download.png"
   File "Backup\manager\img\img_pa_logo_alpha.png"
   File "Backup\manager\img\img_start_bground_sample.jpg"
-  CreateDirectory "$INSTDIR\manager\mod_cache"
+  File "Backup\manager\img\loading.gif"
+  File "Backup\manager\img\refresh.png"
+  
+  ;TODO: Create appdata folders?
   
   CreateDirectory "$SMPROGRAMS\Planetary Annihilation"
   CreateShortCut "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk" "$INSTDIR\PAMM.hta"
@@ -106,15 +98,21 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\Uninstall PAMM.exe"
   Delete "$INSTDIR\PAMM.hta"
-  Delete "$INSTDIR\manager\ini.vbs"
+  Delete "$INSTDIR\manager\modinfo.json"
+  Delete "$INSTDIR\manager\json3.min.js"
   Delete "$INSTDIR\manager\pamm.css"
+  Delete "$INSTDIR\manager\img\download.png"
   Delete "$INSTDIR\manager\img\img_pa_logo_alpha.png"
   Delete "$INSTDIR\manager\img\img_start_bground_sample.jpg"
+  Delete "$INSTDIR\manager\img\loading.gif"
+  Delete "$INSTDIR\manager\img\refresh.png"
 
   Delete "$SMPROGRAMS\Planetary Annihilation\Uninstall PA Mod Manager.lnk"
   Delete "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk"
   
-  ;TODO DELETE DIRECTORIES ********************************************************
+  RMDir "$INSTDIR\manager\img"
+  RMDir "$INSTDIR\manager"
+  RMDir "$INSTDIR"
   
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"

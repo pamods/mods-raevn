@@ -1,0 +1,13 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.rpamm",
+    "display_name": "PA Mod Manager UI Mods List",
+    "description": "Test",
+    "author": "Raevn",
+    "version": "1.0",
+    "build": "58772",
+    "signature": "not yet implemented",
+    "priority": 0,
+    "enabled": true,
+    "id": "rPAMM"
+}
