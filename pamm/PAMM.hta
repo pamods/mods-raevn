@@ -21,6 +21,7 @@
 		var strOnlineModsSort = "LAST UPDATED";
 		var boolAutoWrite = true;
 		var intDownloading = 0;
+		var strModInstalling = "";
 		
 		var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist.json";
 		var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
@@ -28,12 +29,13 @@
 		var MOD_IS_NEW_PERIOD_DAYS = 7;
 		var NEW_LINE = "\r\n";
 		var NEWS_URL = "http://pamods.github.io/news.html";
-		var PAMM_VERSION_DATA_URL = "http://pa.raevn.com/pammversion2.json";
+		var PAMM_VERSION_DATA_URL = "http://pa.raevn.com/pammversion.json";
 		var PAMM_MOD_ID = "rPAMM";
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
 		
-		var datePAMM = new Date("2013/12/26");
-		var strPAMMversion = "3.0.1";
+		var datePAMM = new Date("2013/12/27");
+		var strPAMMversion = "3.0.2";
+		
 		
 		/* Sorting Functions */
 		function sort_random(){
@@ -242,7 +244,9 @@
 						}
 					}
 				}
-				document.getElementById("mod" + strModID).checked = boolReadyToEnable;
+				if (document.getElementById("mod" + strModID)) {
+					document.getElementById("mod" + strModID).checked = boolReadyToEnable;
+				}
 			} else {
 				for(var i = 0; i < objInstalledMods.length; i++) {
 					if (objInstalledMods[i]["requires"] != null) {
@@ -253,7 +257,9 @@
 						}
 					}
 				}
-				document.getElementById("mod" + strModID).checked = false;
+				if (document.getElementById("mod" + strModID)) {
+					document.getElementById("mod" + strModID).checked = false;
+				}
 			}
 			WriteModinfoJSON(strModID);
 		}
@@ -471,7 +477,7 @@
 		function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
 			
 			var objThisMod = jsGetOnlineMod(strModID);
-			//TODO: TEST THIS
+			
 			if (objThisMod["requires"] != null) {
 				for (var i = 0; i < objThisMod["requires"].length; i++) {
 					if (jsGetInstalledMod(objThisMod["requires"][i]) == null && objModsPreInstalled[objThisMod["requires"][i]] == null) {
@@ -481,7 +487,7 @@
 							strName = jsGetOnlineMod(objThisMod["requires"][i]).display_name;
 							var boolConfirm = confirm("Install required dependency '" + strName + "'?");
 							if (boolConfirm == true) {
-								jsPreInstallMod(jsGetOnlineMod(objThisMod["requires"][i]).url, objThisMod["requires"][i], objModsPreInstalled);
+								objModsPreInstalled = jsPreInstallMod(jsGetOnlineMod(objThisMod["requires"][i]).url, objThisMod["requires"][i], objModsPreInstalled);
 							}
 						} else {
 							alert("Warning: Required dependency '" + strName + "' unavailable");
@@ -489,8 +495,22 @@
 					}
 				}
 			}
-			InstallMod(strURL + "?r=" + Math.random(), strModID);
+			
+			jsDelayedInstall(strURL, strModID);
+			return objModsPreInstalled;
 		}
+		
+		function jsDelayedInstall(strURL, strModID) {
+			if (strModInstalling != "") {
+				setTimeout(function() { 
+					jsDelayedInstall(strURL, strModID);
+				}, 500);
+			} else {
+				strModInstalling = strModID;
+				InstallMod(strURL + "?r=" + Math.random(), strModID);
+			}
+		}
+		
 		
 		function jsPreUninstallMod(strModID) {
 			var boolConfirm = confirm("Are you sure you want to uninstall '" + jsGetInstalledMod(strModID).display_name + "'?");
@@ -839,11 +859,11 @@
 			Call Randomize()
 			Call RemoveFileFromCache(strModFileName)
 			Call jsDownload(MANAGE_URL & "?download=" & strModID & "&r=" & rnd(), null, null, null)
-			Call jsDownload(strURL, "file", strPAMMCacheDirectoryPath & "\" & strModFileName, "UninstallMod('" & strModID & "'); ExtractMod('" & strModFileName & "')")
+			Call jsDownload(strURL, "file", strPAMMCacheDirectoryPath & "\" & strModFileName, "UninstallMod('" & strModID & "'); ExtractMod('" & strModFileName & "', '" & strModID & "')")
 		End Sub
 		
 		'Extracts a Mod Zip file to the mods folder
-		Sub ExtractMod(strFileName)
+		Sub ExtractMod(strFileName, strModID)
 			Dim objFiles
 			
 			'Check for existence of mod zip file
@@ -855,6 +875,11 @@
 				'Extract to mods directory
 				objApp.NameSpace(strModsDirectoryPath).CopyHere(objFiles)
 				Call jsRefresh(false)
+				Call jsSetModEnabledStatus(strModID, true)
+			End If
+			
+			If strModInstalling <> "" Then
+				strModInstalling = ""
 			End If
 		End Sub
 		
@@ -971,7 +996,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" onClick="jsRefresh(true)"/>
 				<input type="button" value="Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.1</a>, by Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.2</a>, by Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
