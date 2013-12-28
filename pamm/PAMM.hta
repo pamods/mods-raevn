@@ -33,8 +33,8 @@
 		var PAMM_MOD_ID = "rPAMM";
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
 		
-		var datePAMM = new Date("2013/12/27");
-		var strPAMMversion = "3.0.2";
+		var datePAMM = new Date("2013/12/28");
+		var strPAMMversion = "3.0.3";
 		
 		
 		/* Sorting Functions */
@@ -54,7 +54,7 @@
 		function jsSortOnlineMods() {
 			switch (strOnlineModsSort) {
 				case "LAST UPDATED":
-					objOnlineMods.sort(sort_by('date', true, null));
+					objOnlineMods.sort(sort_by('date', false, function(x) { return new Date(x); } ));
 					break;
 				case "TITLE":
 					objOnlineMods.sort(sort_by('display_name', true, null));
@@ -365,7 +365,7 @@
 									
 					if (jsGetOnlineMod(id) != null && mod.date < jsGetOnlineMod(id).date) {
 						strInstalled = "<div class='mod_update_available'>UPDATE AVAILABLE</div>";
-						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + mod.url + "\",\"" + id + "\", {})'>update</a> ]</div>";
+						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + jsGetOnlineMod(id).url + "\",\"" + id + "\", {})'>update</a> ]</div>";
 					}
 					
 					var strRequires = "";
@@ -996,7 +996,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" onClick="jsRefresh(true)"/>
 				<input type="button" value="Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.2</a>, by Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.3</a>, by Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
