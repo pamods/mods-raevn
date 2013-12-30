@@ -1,0 +1,21 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.rChatPlayerColour",
+    "display_name": "Chat Player Colours",
+    "description": "Changes the colour of player names in the in-game chat to match their team colour",
+    "author": "raevn",
+    "version": "1.2.1",
+    "build": "58772",
+    "date": "2013/12/29",
+    "signature": "not yet implemented",
+    "forum": "https://forums.uberent.com/threads/rel-chat-player-colours.50750/",
+    "category": [
+        "in-game"
+    ],
+    "id": "rChatPlayerColour",
+    "priority": 100,
+    "live_game": [
+        "coui://ui/mods/rChatPlayerColour/rChatPlayerColour.js"
+    ],
+    "enabled": true
+}
