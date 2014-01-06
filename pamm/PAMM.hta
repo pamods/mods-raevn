@@ -151,7 +151,7 @@
 			if (objOptions["pa_path"] == null) {
 				objOptions["pa_path"] = "c:\\Program Files (x86)\\Planetary Annihilation\\PA\\PA.exe"
 				if (CheckPAPresent(objOptions["pa_path"]) == false) {
-					objOptions["pa_path"] = "C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Planetary Annihilation\\PA\\PA.exe"
+					objOptions["pa_path"] = "C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Planetary Annihilation\\PA.exe"
 				}
 			}
 			
@@ -162,7 +162,6 @@
 				objOptions["pa_path"] = strPrompt;
 				if (strPrompt != null) {
 					strPrompt = CheckPAPresent(strPrompt);
-					alert(strPrompt)
 				}
 			}
 			
@@ -996,7 +995,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" onClick="jsRefresh(true)"/>
 				<input type="button" value="Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.3</a>, by Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.4</a>, by Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
