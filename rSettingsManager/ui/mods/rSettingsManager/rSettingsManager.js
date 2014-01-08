@@ -5,7 +5,7 @@ model.addSetting_Text = function(displayName, id, tab, type, defaultValue) {
 	var s = decode(localStorage.settings);
 	model[id] = ko.observable(s[id] ? s[id] : defaultValue);
 
-	model.addSetting(tab, type, displayName, id);
+	model.addSetting(tab, type, displayName, id, "");
 
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(defaultValue);
@@ -16,13 +16,24 @@ model.addSetting_DropDown = function(displayName, id, tab, optionsArray, default
 	model[id + '_options'] = ko.observableArray(optionsArray);
 	model[id] = ko.observable(s[id] ? s[id] : model[id + '_options']()[defaultIndex]);
 
-	model.addSetting(tab, 'DropDown', displayName, id);
+	model.addSetting(tab, 'DropDown', displayName, id, "");
 
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(model[id + '_options']()[defaultIndex]);
 }
 
-model.addSetting = function(tab, type, displayName, id) {
+model.addSetting_MultiSelect = function(displayName, id, tab, optionsArray, defaultOptionsArray, size) {
+	var s = decode(localStorage.settings);
+	model[id + '_options'] = ko.observableArray(optionsArray);
+	model[id] = ko.observable(s[id] ? s[id] : defaultOptionsArray);
+
+	model.addSetting(tab, 'MultiSelect', displayName, id, size);
+
+	model.additionalSettings.push(id);
+	model.additionalSettingDefaults.push(defaultOptionsArray);
+}
+
+model.addSetting = function(tab, type, displayName, id, property) {
 	var settingSelector;
 
 	switch (tab) {
@@ -55,6 +66,19 @@ model.addSetting = function(tab, type, displayName, id) {
 					'<td>' + 
 						'<div class="div_settings_control_input">' + 
 							'<select class="div_settings_control_select" data-bind="options: ' + id + '_options, value: ' + id + '" />' + 
+						'</div>' + 
+					'</td>' +                         
+				'</tr>');
+			break;
+		case 'MultiSelect':
+			settingSelector.append(
+				'<tr>' + 
+					'<td>' + 
+						'<div class="div_settings_control_lbl">' + displayName + '</div>' + 
+					'</td>' + 
+					'<td>' + 
+						'<div class="div_settings_control_input">' + 
+							'<select class="div_settings_control_select" data-bind="options: ' + id + '_options, selectedOptions: ' + id + '" size="' + property + '" multiple="true"/>' + 
 						'</div>' + 
 					'</td>' +                         
 				'</tr>');
