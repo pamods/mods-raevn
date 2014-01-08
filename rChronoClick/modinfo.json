@@ -1,0 +1,23 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.pamm.rchronoclick",
+    "display_name": "Chrono Click",
+    "description": "Set Chrono time by clicking any point on the chrono bar",
+    "author": "Raevn",
+    "version": "1.0.0",
+    "signature": "not yet implemented",
+    "priority": 100,
+    "enabled": true,
+    "id": "rChronoClick",
+    "forum": "https://forums.uberent.com/threads/rel-chrono-click-v1-0-0-58772.55477/",
+    "category": [
+        "chrono-cam",
+        "in-game",
+        "ui"
+    ],
+    "live_game": [
+        "coui://ui/mods/rChronoClick/rChronoClick.js"
+    ],
+    "date": "2014/01/08",
+    "build": "58772"
+}
