@@ -1,0 +1,4 @@
+var typeList = ["Advanced", "Air", "AirDefense", "Artillery", "Basic", "Bomber", "Bot", "Commander", "Construction", "Defense", "Economy", "EnergyProduction", "Fabber", "Factory", "Fighter", "Land", "MetalProduction", "Mobile", "Naval", "Nuke", "NukeDefense", "Offense", "Orbital", "Recon", "Scout", "Structure", "Sub", "SurfaceDefense", "Tank", "Transport", "Wall"];
+model.addSetting_MultiSelect("READY ALERTS", "rReadyAlerts", "UI", typeList, ["Factory"], 8);
+model.addSetting_MultiSelect("UNDER ATTACK ALERTS", "rUnderAttackAlerts", "UI", typeList, ["Commander"], 8);
+model.addSetting_MultiSelect("DESTROYED ALERTS", "rDestroyedAlerts", "UI", typeList, ["Structure"], 8);

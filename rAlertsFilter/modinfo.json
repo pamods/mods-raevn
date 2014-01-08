@@ -1,0 +1,28 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.pamm.ralertsfilter",
+    "display_name": "Alerts Filter",
+    "description": "Allows selection of which unit types display alerts when built, under attack or destroyed",
+    "author": "Raevn",
+    "version": "1.0.0",
+    "signature": "not yet implemented",
+    "priority": 100,
+    "enabled": true,
+    "id": "rAlertsFilter",
+    "forum": "https://forums.uberent.com/threads/rel-alerts-filter-v1-0-0-58772.55472/",
+    "category": [
+        "in-game",
+        "ui"
+    ],
+    "settings": [
+        "coui://ui/mods/rAlertsFilter/rAlertsFilter.js"
+    ],
+    "live_game": [
+        "coui://ui/mods/rAlertsFilter/rAlertsFilter_livegame.js"
+    ],
+    "requires": [
+        "rSettingsManager"
+    ],
+    "date": "2014/01/08",
+    "build": "58772"
+}
