@@ -1,6 +1,6 @@
 
 function forgetFramePosition(id) {
-	delete localStorage['frames_' + id];
+	localStorage.removeItem('frames_' + id);
 }
 
 function createFloatingFrame(id, width, height, options) {
@@ -97,8 +97,8 @@ function createFloatingFrame(id, width, height, options) {
 		var position = {
 			'x': offsetX, 
 			'y': offsetY,
-			'xPercent': offsetX / ($(options['containment'] ? options['containment'] : "body").width() - width), 
-			'yPercent': offsetY / ($(options['containment'] ? options['containment'] : "body").height() - height)};
+			'xPercent': offsetX / ($(options['containment'] ? options['containment'] : "body").width() - (width == 'auto' ? $(this).parent().width() : width)), 
+			'yPercent': offsetY / ($(options['containment'] ? options['containment'] : "body").height() - (height == 'auto' ? $(this).parent().height() : height))};
 
 		position.xPercent = Math.min(Math.max(position.xPercent, 0), 1);
 		position.yPercent = Math.min(Math.max(position.yPercent, 0), 1);
