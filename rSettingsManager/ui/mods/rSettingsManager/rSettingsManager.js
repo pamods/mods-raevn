@@ -1,6 +1,10 @@
 model.additionalSettings = ko.observableArray();
 model.additionalSettingDefaults = ko.observableArray();
 
+model.addSetting_Button = function(displayName, buttonText, tab, callback) {
+	model.addSetting(tab, 'Button', displayName, buttonText, callback);
+}
+
 model.addSetting_Text = function(displayName, id, tab, type, defaultValue) {
 	var s = decode(localStorage.settings);
 	model[id] = ko.observable(s[id] ? s[id] : defaultValue);
@@ -105,6 +109,19 @@ model.addSetting = function(tab, type, displayName, id, property) {
 					'<td>' + 
 						'<div class="div_settings_control_input">' + 
 							'<input type="Number" class="div_settings_control_number" data-bind="value: ' + id + '" />' + 
+						'</div>' + 
+					'</td>' +                         
+				'</tr>');
+			break;
+		case 'Button':
+			settingSelector.append(
+				'<tr>' + 
+					'<td>' + 
+						'<div class="div_settings_control_lbl">' + displayName + '</div>' + 
+					'</td>' + 
+					'<td>' + 
+						'<div class="div_settings_control_input">' + 
+							'<input type="Button" class="settings_button" data-bind="click: ' + property + '" value="' + id + '" />' + 
 						'</div>' + 
 					'</td>' +                         
 				'</tr>');
