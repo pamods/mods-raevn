@@ -1,4 +1,4 @@
-.div_settings_control_text{
+.div_settings_control_text {
 	width: 110px;
 	height: 20px;
 	padding: 0px !important;
@@ -7,7 +7,7 @@
 	margin-bottom: 20px;
 }
 
-.div_settings_control_number{
+.div_settings_control_number {
 	width: 110px;
 	height: 20px;
 	padding: 0px !important;
@@ -16,10 +16,10 @@
 	margin-bottom: 20px;
 }
 
-input[type="number"] 
-{
+input[type="number"] {
     -webkit-user-select: text;
 }
+
 input[type="number"] {
     border:1px solid rgba(255,255,255,1);
     background:black;
@@ -29,7 +29,6 @@ input[type="number"] {
     padding:4px;
 }
 
-
 input[type="number"]:disabled {
     border:1px solid rgba(255,255,255,.1);
     background:black;
@@ -38,11 +37,17 @@ input[type="number"]:disabled {
     box-shadow:none;
 }
 
-.settings_button
-{
+.settings_button {
   min-width: 120px;
   height: 20px;
   font-size:1em;
   padding-top: 1px;
   padding-bottom: 1px;
+  margin-bottom: 20px;
+}
+
+.settings_group_label {
+	color: rgb(184, 184, 184);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+	width: 100%;
 }
