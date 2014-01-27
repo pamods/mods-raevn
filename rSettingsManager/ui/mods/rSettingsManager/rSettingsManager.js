@@ -3,7 +3,7 @@
 //------------------------------------
 // rSettingsManager.js
 // Created by Raevn
-// Version 1.4.0 (2014/01/16)
+// Version 1.5.0 (2014/01/27)
 //------------------------------------
 
 //Add Empty Groups so they appear first
@@ -15,6 +15,7 @@ $("#tab_servers").children(":first").append('<table id="settings_group_SERVERS_"
 
 model.additionalSettings = ko.observableArray();
 model.additionalSettingDefaults = ko.observableArray();
+model.additionalSettingData = ko.observableArray();
 
 model.addSetting_Button = function(displayName, buttonText, tab, callback, group) {
 	model.addSetting(tab, 'Button', displayName, buttonText, callback, group);
@@ -28,6 +29,29 @@ model.addSetting_Text = function(displayName, id, tab, type, defaultValue, group
 
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(defaultValue);
+	model.additionalSettingData.push({'type': type});
+}
+
+model.addSetting_Slider = function(displayName, id, tab, min, max, defaultValue, group) {
+	var settings = decode(localStorage.settings);
+	model[id] = ko.observable(settings[id] ? settings[id] : defaultValue);
+
+	model.addSetting(tab, 'Slider', displayName, id, "", group);
+
+	//Setup slider
+	$("#" + id + "_slider").slider({
+		range: "max",
+		min: min,
+		max: max,
+		value: model[id](),
+		slide: function (event, ui) {
+			model[id](ui.value);
+		}
+	});
+	
+	model.additionalSettings.push(id);
+	model.additionalSettingDefaults.push(defaultValue);
+	model.additionalSettingData.push({'type': 'Slider', 'min': min, 'max': max});
 }
 
 model.addSetting_DropDown = function(displayName, id, tab, optionsArray, defaultIndex, group) {
@@ -39,6 +63,7 @@ model.addSetting_DropDown = function(displayName, id, tab, optionsArray, default
 
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(model[id + '_options']()[defaultIndex]);
+	model.additionalSettingData.push({'type': 'DropDown'});
 }
 
 model.addSetting_MultiSelect = function(displayName, id, tab, optionsArray, defaultOptionsArray, size, group) {
@@ -50,6 +75,7 @@ model.addSetting_MultiSelect = function(displayName, id, tab, optionsArray, defa
 
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(defaultOptionsArray);
+	model.additionalSettingData.push({'type': 'MultiSelect'});
 }
 
 model.addSettingGroup = function(tab, group) {
@@ -141,6 +167,18 @@ model.addSetting = function(tab, type, displayName, id, property, group) {
 				'</div>' +
 				endSettingHTML);
 			break;
+		case 'Slider':
+			groupSelector.append(
+				startSettingHTML +
+					'<div class="div_settings_control_input div_audio_sliders">' +
+						'<div id="' + id + '_slider">' +
+						'</div>' +
+					'</div>' +
+				'</td>' +
+				'<td>' +
+					'<input class="input_slider_value" type="text" disabled="disabled" data-bind="value: ' + id + '" />' +
+				endSettingHTML);
+			break;
 	}
 }
 
@@ -160,6 +198,19 @@ model.oldDefaults = model.defaults;
 model.defaults = function () {
 	for (var i = 0; i < model.additionalSettings().length; i++) {
 		model[model.additionalSettings()[i]](model.additionalSettingDefaults()[i]);
+		
+		//Reset slider
+		if (model.additionalSettingData()[i].type == "Slider") {
+			$("#" + model.additionalSettings()[i] + "_slider").slider({
+				range: "max",
+				min: model.additionalSettingData()[i].min,
+				max: model.additionalSettingData()[i].max,
+				value: model[model.additionalSettings()[i]](),
+				slide: function (event, ui) {
+					model[model.additionalSettings()[i]](ui.value);
+				}
+			});
+		}
 	}
 	model.oldDefaults();
 };
