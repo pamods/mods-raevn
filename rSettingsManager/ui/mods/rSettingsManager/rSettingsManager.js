@@ -3,7 +3,7 @@
 //------------------------------------
 // rSettingsManager.js
 // Created by Raevn
-// Version 1.5.0 (2014/01/27)
+// Version 1.5.1 (2014/01/28)
 //------------------------------------
 
 //Add Empty Groups so they appear first
@@ -23,7 +23,7 @@ model.addSetting_Button = function(displayName, buttonText, tab, callback, group
 
 model.addSetting_Text = function(displayName, id, tab, type, defaultValue, group) {
 	var settings = decode(localStorage.settings);
-	model[id] = ko.observable(settings[id] ? settings[id] : defaultValue);
+	model[id] = ko.observable(settings[id] != null ? settings[id] : defaultValue);
 
 	model.addSetting(tab, type, displayName, id, "", group);
 
@@ -34,9 +34,10 @@ model.addSetting_Text = function(displayName, id, tab, type, defaultValue, group
 
 model.addSetting_Slider = function(displayName, id, tab, min, max, defaultValue, group) {
 	var settings = decode(localStorage.settings);
-	model[id] = ko.observable(settings[id] ? settings[id] : defaultValue);
+	model[id] = ko.observable(settings[id] != null  ? settings[id] : defaultValue);
 
 	model.addSetting(tab, 'Slider', displayName, id, "", group);
+    model[id].subscribe(function (newValue) { model[id](newValue); });
 
 	//Setup slider
 	$("#" + id + "_slider").slider({
@@ -57,7 +58,7 @@ model.addSetting_Slider = function(displayName, id, tab, min, max, defaultValue,
 model.addSetting_DropDown = function(displayName, id, tab, optionsArray, defaultIndex, group) {
 	var settings = decode(localStorage.settings);
 	model[id + '_options'] = ko.observableArray(optionsArray);
-	model[id] = ko.observable(settings[id] ? settings[id] : model[id + '_options']()[defaultIndex]);
+	model[id] = ko.observable(settings[id] != null  ? settings[id] : model[id + '_options']()[defaultIndex]);
 
 	model.addSetting(tab, 'DropDown', displayName, id, "", group);
 
@@ -69,7 +70,7 @@ model.addSetting_DropDown = function(displayName, id, tab, optionsArray, default
 model.addSetting_MultiSelect = function(displayName, id, tab, optionsArray, defaultOptionsArray, size, group) {
 	var settings = decode(localStorage.settings);
 	model[id + '_options'] = ko.observableArray(optionsArray);
-	model[id] = ko.observable(settings[id] ? settings[id] : defaultOptionsArray);
+	model[id] = ko.observable(settings[id] != null  ? settings[id] : defaultOptionsArray);
 
 	model.addSetting(tab, 'MultiSelect', displayName, id, size, group);
 
