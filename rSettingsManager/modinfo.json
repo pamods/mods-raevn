@@ -4,7 +4,7 @@
     "display_name": "Settings Manager",
     "description": "Framework for adding new settings",
     "author": "Raevn",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "signature": "not yet implemented",
     "priority": 10,
     "enabled": true,

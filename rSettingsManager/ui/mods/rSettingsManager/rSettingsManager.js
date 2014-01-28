@@ -3,7 +3,7 @@
 //------------------------------------
 // rSettingsManager.js
 // Created by Raevn
-// Version 1.5.1 (2014/01/28)
+// Version 1.5.2 (2014/01/28)
 //------------------------------------
 
 //Add Empty Groups so they appear first
@@ -198,20 +198,24 @@ model.settings = ko.computed(function () {
 model.oldDefaults = model.defaults;
 model.defaults = function () {
 	for (var i = 0; i < model.additionalSettings().length; i++) {
-		model[model.additionalSettings()[i]](model.additionalSettingDefaults()[i]);
+		var id = model.additionalSettings()[i]; 
+		
+		model[id](model.additionalSettingDefaults()[i]);
 		
 		//Reset slider
 		if (model.additionalSettingData()[i].type == "Slider") {
-			$("#" + model.additionalSettings()[i] + "_slider").slider({
+			$("#" + id + "_slider").slider({
 				range: "max",
 				min: model.additionalSettingData()[i].min,
 				max: model.additionalSettingData()[i].max,
-				value: model[model.additionalSettings()[i]](),
+				value: model[id](),
 				slide: function (event, ui) {
-					model[model.additionalSettings()[i]](ui.value);
+					model[id](ui.value);
 				}
 			});
 		}
 	}
 	model.oldDefaults();
 };
+
+model.addSetting_Slider("Test Slider", "test_slider", "UI", 0, 100, 50, "Test");

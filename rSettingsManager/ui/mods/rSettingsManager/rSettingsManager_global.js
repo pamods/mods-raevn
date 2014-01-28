@@ -3,7 +3,7 @@
 //------------------------------------
 // rSettingsManager_global.js
 // Created by Raevn
-// Version 1.5.1 (2014/01/28)
+// Version 1.5.2 (2014/01/28)
 //------------------------------------
 
 function initialSettingValue(id, value) {
