@@ -217,5 +217,3 @@ model.defaults = function () {
 	}
 	model.oldDefaults();
 };
-
-model.addSetting_Slider("Test Slider", "test_slider", "UI", 0, 100, 50, "Test");
