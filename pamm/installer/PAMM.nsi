@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "PA Mod Manager"
-!define PRODUCT_VERSION "3.1.0"
+!define PRODUCT_VERSION "3.1.1"
 !define PRODUCT_PUBLISHER "Raevn"
 !define PRODUCT_WEB_SITE "https://forums.uberent.com/threads/rel-pa-mod-manager-v2-0-2.50726/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PAMM.hta"
@@ -63,7 +63,7 @@ Section "MainSection" SEC01
   File "Backup\manager\img\img_start_bground_sample.jpg"
   File "Backup\manager\img\loading.gif"
   File "Backup\manager\img\refresh.png"
-  
+  File "Backup\manager\img\favicon.ico"
   File "Backup\manager\img\like.png"
   File "Backup\manager\img\log.png"
   File "Backup\manager\img\log_select.png"
@@ -121,6 +121,7 @@ Section Uninstall
   Delete "$INSTDIR\manager\img\log_select.png"
   Delete "$INSTDIR\manager\img\settings.png"
   Delete "$INSTDIR\manager\img\settings_select.png"
+  Delete "$INSTDIR\manager\img\favicon.ico"
 
   Delete "$SMPROGRAMS\Planetary Annihilation\Uninstall PA Mod Manager.lnk"
   Delete "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk"
