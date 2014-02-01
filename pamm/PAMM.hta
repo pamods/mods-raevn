@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>PA UI Mod Manager</title>
-		<HTA:APPLICATION ID="PAMM" APPLICATIONNAME="PA UI Mod Manager" SCROLL="no" SINGLEINSTANCE="no">
+		<HTA:APPLICATION ID="PAMM" APPLICATIONNAME="PA UI Mod Manager" SCROLL="no" SINGLEINSTANCE="no" ICON="manager\img\favicon.ico">
 		<link href="manager\pamm.css" rel="stylesheet" type="text/css">
 	</head>
 
@@ -42,8 +42,8 @@
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
 		var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 		
-		var datePAMM = "2014/02/01";
-		var strPAMMversion = "3.1.0";
+		var datePAMM = "2014/02/02";
+		var strPAMMversion = "3.1.1";
 		
 		/* Localisation Functions */
 		function jsGetLocaleText(strKey, strLocale) {
@@ -86,7 +86,7 @@
 		
 		function jsSortOnlineMods() {
 			switch (strOnlineModsSort) {
-				case "LAST UPDATED":
+				case "LAST_UPDATED":
 					objOnlineMods.sort(sort_by('date', false, function(x) { return new Date(x); } ));
 					break;
 				case "TITLE":
@@ -1034,10 +1034,8 @@
 			Call CreateFolderIfNotExists(objShell.expandenvironmentstrings("%LOCALAPPDATA%") & "\Uber Entertainment\Planetary Annihilation\mods\rPAMM\ui\mods\")
 			Call CreateFolderIfNotExists(objShell.expandenvironmentstrings("%LOCALAPPDATA%") & "\Uber Entertainment\Planetary Annihilation\pamm_cache\")
 			
-			If Not(objFSO.FileExists(strModsDirectoryPath & "\rPAMM\modinfo.json")) Then
-				Set objPAMMFile = objFSO.GetFile("manager\modinfo.json")
-				Call objPAMMFile.Copy(strModsDirectoryPath & "\rPAMM\modinfo.json", false)
-			End If
+			Set objPAMMFile = objFSO.GetFile("manager\modinfo.json")
+			Call objPAMMFile.Copy(strModsDirectoryPath & "\rPAMM\modinfo.json", true)
 		End Sub
 		
 		Sub CreateFolderIfNotExists(strPath)
@@ -1121,83 +1119,112 @@
 		'Writes Options file
 		Sub WriteOptionsJSON()
 			Dim objStream
-			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeText = 2
+			Const adLF = 10
 		
 			Set objStream = CreateObject("ADODB.Stream")
 			objStream.CharSet = "utf-8"	
+			objStream.Type = adTypeText
+			objStream.Mode = adModeReadWrite
+			objStream.LineSeparator = adLF
 			
 			Call objStream.open()
 				
 			Call objStream.WriteText(jsGetOptionsDataString())
-			Call objStream.SaveToFile(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME, adSaveCreateOverWrite)
+			Call WriteUTF8WithoutBOM(objStream, strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME)
 			
 			Call jsAddLogMessage("Writing options file", 4)
 			
+			Call objStream.flush()
 			Call objStream.close()
 		End Sub
 		
 		'Writes data to ui_mod_list.js
 		Sub WriteUIModListJS()
 			Dim objStream
-			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeText = 2
+			Const adLF = 10
 		
 			Set objStream = CreateObject("ADODB.Stream")
 			objStream.CharSet = "utf-8"	
+			objStream.Type = adTypeText
+			objStream.Mode = adModeReadWrite
+			objStream.LineSeparator = adLF
 			
 			Call objStream.open()
 			
 			Call objStream.WriteText("var global_mod_list = " & jsGetUIModListGlobalDataString() & ";" & NEW_LINE & NEW_LINE)
 			Call objStream.WriteText("var scene_mod_list = " & jsGetUIModListSceneDataString())
-			Call objStream.SaveToFile(strModsDirectoryPath & "\rPAMM\ui\mods\ui_mod_list.js", adSaveCreateOverWrite)
+			Call WriteUTF8WithoutBOM(objStream, strModsDirectoryPath & "\rPAMM\ui\mods\ui_mod_list.js")
 			
 			Call jsAddLogMessage("Writing ui_mod_list.js", 4)
 			
+			Call objStream.flush()
 			Call objStream.close()
 		End Sub
 		
 		'Writes data to mods_list.json
 		Sub WriterModListJS()
 			Dim objStream
-			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeText = 2
+			Const adLF = 10
 		
 			Set objStream = CreateObject("ADODB.Stream")
 			objStream.CharSet = "utf-8"	
-		
+			objStream.Type = adTypeText
+			objStream.Mode = adModeReadWrite
+			objStream.LineSeparator = adLF
+			
 			Call objStream.open()
 			
 			Call jsAddLogMessage("Writing mods_list.json", 4)
 			Call objStream.WriteText(jsGetInstalledModListDataString())
 			
-			Call objStream.SaveToFile(strModsDirectoryPath & "\rPAMM\ui\mods\mods_list.json", adSaveCreateOverWrite)
+			Call WriteUTF8WithoutBOM(objStream, strModsDirectoryPath & "\rPAMM\ui\mods\mods_list.json")
 			
+			Call objStream.flush()
 			Call objStream.close()
 		End Sub
 		
 		'Writes data to mods.json
 		Sub WriteModsJSON()
 			Dim objStream
-			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeText = 2
+			Const adLF = 10
 		
 			Set objStream = CreateObject("ADODB.Stream")
 			objStream.CharSet = "utf-8"	
+			objStream.Type = adTypeText
+			objStream.Mode = adModeReadWrite
+			objStream.LineSeparator = adLF
 			
 			Call objStream.open()
 			
 			Call jsAddLogMessage("Writing mods.json", 4)
 			Call objStream.WriteText(jsGetModsJSONDataString())
 			
-			Call objStream.SaveToFile(strModsDirectoryPath & "\mods.json", adSaveCreateOverWrite)
+			Call WriteUTF8WithoutBOM(objStream, strModsDirectoryPath & "\mods.json")
 			
+			Call objStream.flush()
 			Call objStream.close()
 		End Sub
 		
 		'Writes the contents of a mods modinfo.json
 		Sub WriteModinfoJSON(strModID)
 			Dim objStream
-			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeText = 2
+			Const adLF = 10
 		
 			Set objStream = CreateObject("ADODB.Stream")
 			objStream.CharSet = "utf-8"	
+			objStream.Type = adTypeText
+			objStream.Mode = adModeReadWrite
+			objStream.LineSeparator = adLF
 		
 			If objFSO.FileExists(strModsDirectoryPath & "\" & strModID & "\modinfo.json") Then
 			
@@ -1206,10 +1233,31 @@
 				Call jsAddLogMessage("Writing modsinfo.json for mod '" & strModID & "'", 4)
 				Call objStream.WriteText(jsGetInstalledModDataString(strModID))
 			
-				Call objStream.SaveToFile(strModsDirectoryPath & "\" & strModID & "\modinfo.json", adSaveCreateOverWrite)
+				Call WriteUTF8WithoutBOM(objStream, strModsDirectoryPath & "\" & strModID & "\modinfo.json")
 				
+				Call objStream.flush()
 				Call objStream.close()
 			End If
+		End Sub
+		
+		Sub WriteUTF8WithoutBOM(objStream, strSavePath)
+			Dim objBinaryStream
+			Const adSaveCreateOverWrite = 2
+			Const adModeReadWrite = 3
+			Const adTypeBinary = 1
+			
+			Set objBinaryStream = CreateObject("ADODB.Stream")
+			objBinaryStream.Type = adTypeBinary
+			objBinaryStream.Mode = adModeReadWrite
+			objBinaryStream.Open
+			
+			objStream.position = 3
+			objStream.CopyTo objBinaryStream
+	
+			objBinaryStream.SaveToFile strSavePath, adSaveCreateOverWrite
+			
+			Call objBinaryStream.flush()
+			Call objBinaryStream.close()
 		End Sub
 		
 		'Downloads and installs a mod
@@ -1424,7 +1472,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
 				<input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.0</a>, <span class="LOC_by">by</span> Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.1</a>, <span class="LOC_by">by</span> Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
