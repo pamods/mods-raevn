@@ -73,8 +73,8 @@ Section "MainSection" SEC01
   ;TODO: Remove old rPAMM modinfo.json
   
   CreateDirectory "$SMPROGRAMS\Planetary Annihilation"
-  CreateShortCut "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk" "$INSTDIR\PAMM.hta"
-  CreateShortCut "$DESKTOP\PA Mod Manager.lnk" "$INSTDIR\PAMM.hta"
+  CreateShortCut "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk" "$INSTDIR\PAMM.hta" "" "$INSTDIR\manager\img\favicon.ico"
+  CreateShortCut "$DESKTOP\PA Mod Manager.lnk" "$INSTDIR\PAMM.hta" "" "$INSTDIR\manager\img\favicon.ico"
 SectionEnd
 
 Section -AdditionalIcons
