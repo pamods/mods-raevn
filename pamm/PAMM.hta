@@ -7,8 +7,10 @@
 	</head>
 
 	<script type="text/javascript" src="manager\json3.min.js"></script>
+	<script type="text/javascript" src="manager\jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="manager\locale.js"></script>
 	
-	<script type="text/javascript">
+	<script type="text/javascript">	
 		self.resizeTo(520, 600);
 		
 		var objInstalledMods = [];
@@ -18,10 +20,16 @@
 		
 		var strCurrentPanel = "news";
 		var strOnlineModsFilter = "ALL";
-		var strOnlineModsSort = "LAST UPDATED";
+		var strOnlineModsSort = "LAST_UPDATED";
 		var boolAutoWrite = true;
+		var boolOnline = true;
 		var intDownloading = 0;
 		var strModInstalling = "";
+		var intLogLevel = 0;
+		var intLogNumber = 0;
+		var intLikeCountRemaining = 0;
+		var intMessageID = 0;
+		var strCurrentLocale = "en";
 		
 		var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist.json";
 		var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
@@ -32,10 +40,35 @@
 		var PAMM_VERSION_DATA_URL = "http://pa.raevn.com/pammversion.json";
 		var PAMM_MOD_ID = "rPAMM";
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
+		var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 		
-		var datePAMM = new Date("2014/01/06");
-		var strPAMMversion = "3.0.4";
+		var datePAMM = "2014/02/01";
+		var strPAMMversion = "3.1.0";
 		
+		/* Localisation Functions */
+		function jsGetLocaleText(strKey, strLocale) {
+			if (strlocaleText[strKey] != null) {
+				if (strlocaleText[strKey][strLocale] != null && strlocaleText[strKey][strLocale] != "") {
+					return strlocaleText[strKey][strLocale];
+				} else if (strlocaleText[strKey]["en"] != null) {
+					return strlocaleText[strKey]["en"];
+				}
+			}
+			return null;
+		}
+		
+		function jsApplyLocaleText() {
+			for (var i = 0; i < strLocaleTextItems.length; i++) {
+				var objLocItems = $(".LOC_" + strLocaleTextItems[i]);
+				if (objLocItems.length > 0) {
+					if (objLocItems.prop("tagName") == "INPUT") {
+						objLocItems.attr("value", jsGetLocaleText(strLocaleTextItems[i], strCurrentLocale));
+					} else {
+						objLocItems.text(jsGetLocaleText(strLocaleTextItems[i], strCurrentLocale));
+					}
+				}
+			}
+		}
 		
 		/* Sorting Functions */
 		function sort_random(){
@@ -64,6 +97,9 @@
 					break;
 				case "BUILD":
 					objOnlineMods.sort(sort_by('build', true, null));
+					break;
+				case "LIKES":
+					objOnlineMods.sort(sort_by('likes', false, parseInt));
 					break;
 				case "DOWNLOADS":
 					objOnlineMods.sort(sort_by('downloads', false, parseInt));
@@ -165,6 +201,46 @@
 				}
 			}
 			
+			document.getElementById("setting_installLocation").value = objOptions["pa_path"];
+			
+			if (objOptions["debug"] != null) {
+				document.getElementById("setting_debug").checked = objOptions["debug"];
+			} else {
+				document.getElementById("setting_debug").checked = false;
+			}
+			jsToggleDebugMode();
+			
+			if (objOptions["verbose"] != null) {
+				document.getElementById("setting_verbose").checked = objOptions["verbose"];
+			} else {
+				document.getElementById("setting_verbose").checked = false;
+			}
+			jsToggleVerboseMode();
+			
+			if (objOptions["filter"]  != null) {
+				strOnlineModsFilter = objOptions["filter"];
+				document.getElementById('filter_text').innerHTML = "<span class='LOC_" + strOnlineModsFilter + "'>" + jsGetLocaleText(strOnlineModsFilter, strCurrentLocale) + "</span>";
+			}
+			
+			if (objOptions["sort"]  != null) {
+				strOnlineModsSort = objOptions["sort"];
+				document.getElementById('sort_text').innerHTML = '<a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_' + strOnlineModsSort + '">' + jsGetLocaleText(strOnlineModsSort, strCurrentLocale) + '</span></a>';
+				
+				if (strOnlineModsSort == "RANDOM") {
+					document.getElementById('sort_text').innerHTML += ' <a href="#" onmousedown="jsGenerateOnlineModsListHTML()"><img src="manager/img/refresh.png" border=0></a>';
+				}
+			}
+			
+			if (objOptions["tab"] != null) {
+				jsDisplayPanel(objOptions["tab"]);
+				document.getElementById('setting_defaultTab').value = objOptions["tab"];
+			}
+			
+			if (objOptions["locale"] != null) {
+				document.getElementById('setting_language').value = objOptions["locale"];
+				jsSetLanguage();
+			}
+			
 			document.getElementById("btnLaunch").disabled = strPrompt == null;
 			WriteOptionsJSON();
 		}
@@ -176,7 +252,7 @@
 		function jsGetOption(strOption) {
 			return objOptions[strOption];
 		}
-		
+				
 		/* Installed Mod Functions */
 		function jsLoadInstalledModData(strModID, strModDataString) {
 			var objCurrentMod = {};
@@ -225,6 +301,7 @@
 		function jsSetModEnabledStatus(strModID, boolEnabled) {
 			var objThisMod = jsGetInstalledMod(strModID);
 			objThisMod.enabled = boolEnabled;
+			jsAddLogMessage("Mod '" + objThisMod.display_name + "' " + (boolEnabled ? "ENABLED" : "DISABLED"), 3);
 						
 			if (boolEnabled == true) {
 				var boolReadyToEnable = true;
@@ -265,16 +342,22 @@
 		
 		/* HTML Generation Functions */
 		function jsGenerateOnlineModsListHTML() {
-			document.getElementById("mod_download_inner").innerHTML = "";
+			jsAddLogMessage("Generating Available Mods List", 3);
 			jsSortOnlineMods();
-					
-			for(var i = 0; i < objOnlineMods.length; i++) {
+			
+			var strHTML = "";
+			var intOnlineMods = objOnlineMods.length;
+			
+			for(var i = 0; i < intOnlineMods; i++) {
 				var mod = objOnlineMods[i];
 				var id = mod.id;
 				
 				var strFiltered = "";
 				var strDate = mod.date ? " (" + mod.date + ")" : "";
 				var strBuild = mod.build ? ", build " + mod.build : "";
+				var strIcon = "<div class='mod_icon'><img width='100' height='100' src='" + (mod.icon ? mod.icon : "http://pa.raevn.com/icons/generic.png") + "'></div>";
+				var strDisplayName = mod["display_name_" + strCurrentLocale] ? mod["display_name_" + strCurrentLocale] : mod.display_name;
+				var strDescription = mod["description_" + strCurrentLocale] ? mod["description_" + strCurrentLocale] : mod.description;
 				
 				var strModCategory = "";
 				if (mod.category != null) {
@@ -286,43 +369,58 @@
 					}
 				}
 				
-				var strForumLink = mod.forum ? "<div class='mod_link'>[ <a href='#' onClick='LaunchURL(\"" + mod.forum + "\")'>forum</a> ]</div>" : "";
-				var strInstallCount = "<img src='manager/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_count'>" + mod.downloads + " time" + (mod.downloads != 1 ? "s" : "") + "</div>";
-				var strDownloadText = "install";
+				var strForumLink = mod.forum ? "<div class='mod_link'>[ <a href='#' onClick='LaunchURL(\"" + mod.forum + "\")'><span class='LOC_forum'>forum</span></a> ]</div>" : "";
+				var strInstallCount = "<img src='manager/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_count'>" + mod.downloads + "</div>";
+				var strLikeCount = ""
+				
+				if (mod.likes != null) {
+					if (mod.likes == -2) {
+						strLikeCount = "<span id='" + id + "_like_count' class='mod_count'>Loading...</span>"
+					}
+					if (mod.likes >= 0) {
+						strLikeCount = "<img src='manager/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_likes'>" + mod.likes + "</div>";
+					}
+				}
+
+				var strDownloadText = "<span class='LOC_install'>install</span>";
+				var strDownloadType = "install";
 				var strNew = "";
 				
 				var dateNow = new Date();
 				var dateUpdate = new Date(mod.date);
 				if ((dateNow - dateUpdate)/(1000*60*60*24) < MOD_IS_NEW_PERIOD_DAYS) {
-					strNew = "<span class='mod_new'>! NEW</span>"
+					strNew = "<span class='mod_new'>! <span class='LOC_NEW'>NEW</span></span>"
 				} else {
-					if (strOnlineModsFilter == "NEWLY UPDATED") {
+					if (strOnlineModsFilter == "NEWLY_UPDATED") {
 						strFiltered = "mod_filtered";
 					}
 				}
-								
-				if (jsGetInstalledMod(id) != null) {
-					if (mod.date > jsGetInstalledMod(id).date) {
-						strDownloadText = "update";
+				
+				var objInstalledMod = jsGetInstalledMod(id);
+				if (objInstalledMod != null) {
+					if (mod.date > objInstalledMod.date) {
+						strDownloadText = "<span class='LOC_update'>update</span>";
+						strDownloadType = "update";
 					} else {
-						strDownloadText = "reinstall";
-						if (strOnlineModsFilter == "REQUIRES UPDATE") {
+						strDownloadText = "<span class='LOC_reinstall'>reinstall</span>";
+						strDownloadType = "reinstall";
+						if (strOnlineModsFilter == "REQUIRES_UPDATE") {
 							strFiltered = "mod_filtered";
 						}
 					}
-					if (strOnlineModsFilter == "NOT INSTALLED") {
+					if (strOnlineModsFilter == "NOT_INSTALLED") {
 						strFiltered = "mod_filtered";
 					}
 				} else {
-					strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='Call jsInstallMod(\"" + mod.url + "\", \"" + id + "\")'>install</a> ]</div>";
-					if (strOnlineModsFilter == "INSTALLED" || strOnlineModsFilter == "REQUIRES UPDATE") {
+					strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='Call jsInstallMod(\"" + mod.url + "\", \"" + id + "\")'><span class='LOC_install'>install</span></a> ]</div>";
+					if (strOnlineModsFilter == "INSTALLED" || strOnlineModsFilter == "REQUIRES_UPDATE") {
 						strFiltered = "mod_filtered";
 					}
 				}
 				
 				var strRequires = "";
 				if (mod["requires"] != null) {
-					strRequires = "<div class='mod_requires'>REQUIRES: ";
+					strRequires = "<div class='mod_requires'><span class='LOC_REQUIRES'>REQUIRES</span>: ";
 					for (var j = 0; j < mod["requires"].length; j++) {
 						var strClass = "mod_requirement";
 						if (jsGetInstalledMod(mod["requires"][j]) == null) {
@@ -336,18 +434,22 @@
 					strRequires += "</div>";
 				}
 				
-				var strDownloadLink = "<div class='mod_link mod_link_" + strDownloadText + "'>[ <a href='#' onClick='jsPreInstallMod(\"" + mod.url + "\", \"" + id + "\", {})'>" + strDownloadText + "</a> ]</div>";
+				var strDownloadLink = "<div class='mod_link mod_link_" + strDownloadType + "'>[ <a href='#' onClick='jsPreInstallMod(\"" + mod.url + "\", \"" + id + "\", {})'>" + strDownloadText + "</a> ]</div>";
 
-				var strHTML = "<div class='download_mod " + strFiltered + "'><div class='mod_background'></div><div class='mod_icon'><img src='http://pa.raevn.com/icons/generic.png'></div><div class='mod_container_online'><div class='mod_name'>" + mod.display_name + "</div><div class='mod_author'>by " + mod.author + "</div><br/><div class='mod_version'>Version: " + mod.version + strBuild + strDate + "</div>" + strNew + strRequires + "<div class='mod_description'>" + mod.description + "</div><div class='mod_category'>" + strModCategory + "</div>" + strForumLink + strDownloadLink + strInstallCount + "</div></div>"
-				document.getElementById("mod_download_inner").innerHTML += strHTML;
+				strHTML += "<div class='download_mod " + strFiltered + "'><div class='mod_background'></div>" + strIcon + "<div class='mod_container_online'><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strNew + strRequires + "<div class='mod_description'>" + strDescription + "</div><div class='mod_category'>" + strModCategory + "</div>" + strForumLink + strDownloadLink + strInstallCount + strLikeCount + "</div></div>"
 			}
 			
+			document.getElementById("mod_download_inner").innerHTML = strHTML;
+			
+			jsApplyLocaleText();
 		}
 
 		function jsGenerateInstalledModsListHTML() {
+			jsAddLogMessage("Generating Installed Mods List", 3);
 			document.getElementById("mod_list").innerHTML = "";
 						
-			for(var i = 0; i < objInstalledMods.length; i++) {
+			var intInstalledMods = objInstalledMods.length;
+			for(var i = 0; i < intInstalledMods; i++) {
 				var mod = objInstalledMods[i];
 				var id = mod.id;
 				if (id != PAMM_MOD_ID) {				
@@ -356,20 +458,23 @@
 					var strInstalled = "";
 					var strDownloadLink = "";
 					
-					var strForumLink = mod.forum ? "<div class='mod_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='LaunchURL(\"" + mod.forum + "\")'>forum</a> ]</div>" : "";
-					var strUninstallLink = "<div class='mod_link mod_link_uninstall' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>uninstall</a> ]</div>";
+					var strDisplayName = mod["display_name_" + strCurrentLocale] ? mod["display_name_" + strCurrentLocale] : mod.display_name;
+					
+					var strForumLink = mod.forum ? "<div class='mod_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='LaunchURL(\"" + mod.forum + "\")'><span class='LOC_forum'>forum</span></a> ]</div>" : "";
+					var strUninstallLink = "<div class='mod_link mod_link_uninstall' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'><span class='LOC_uninstall'>uninstall</span></a> ]</div>";
 					
 					var strDate = mod.date ? " (" + mod.date + ")" : "";
-					var strBuild = mod.build ? ", build " + mod.build : "";
+					var strBuild = mod.build ? ", <span class='LOC_build'>build</span> " + mod.build : "";
 									
 					if (jsGetOnlineMod(id) != null && mod.date < jsGetOnlineMod(id).date) {
-						strInstalled = "<div class='mod_update_available'>UPDATE AVAILABLE</div>";
-						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + jsGetOnlineMod(id).url + "\",\"" + id + "\", {})'>update</a> ]</div>";
+						jsAddLogMessage("Update available for installed mod '" + mod.display_name + "': " + jsGetOnlineMod(id).version + " (" + jsGetOnlineMod(id).date + ")", 3);
+						strInstalled = "<div class='mod_update_available'><span class='LOC_UPDATE_AVAILABLE'>UPDATE AVAILABLE</span></div>";
+						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + jsGetOnlineMod(id).url + "\",\"" + id + "\", {})'><span class='LOC_update'>update</span></a> ]</div>";
 					}
 					
 					var strRequires = "";
 					if (mod["requires"] != null) {
-						strRequires = "<div class='mod_requires'>REQUIRES: ";
+						strRequires = "<div class='mod_requires'><span class='LOC_REQUIRES'>REQUIRES</span>: ";
 						for (var j = 0; j < mod["requires"].length; j++) {
 							var strClass = "mod_requirement";
 							if (jsGetInstalledMod(mod["requires"][j]) == null) {
@@ -383,11 +488,12 @@
 						strRequires += "</div>";
 					}
 					
-					var strHTML = "<div class='mod'><div class='mod_background'></div><div class='mod_enable'><input type='checkbox' id='mod" + id + "' onClick=\"jsModEnabledToggle('" + id + "')\"/></div><div class='mod_container_install' onClick=\"jsToggleInstalledMod('" + id + "')\"><div class='mod_name'>" + mod.display_name + "</div><div class='mod_author'>by " + mod.author + "</div><br/><div class='mod_version'>Version: " + mod.version + strBuild + strDate + "</div>" + strInstalled + "<br/>" + strRequires + strForumLink + strDownloadLink + strUninstallLink + "</div></div>";
+					var strHTML = "<div class='mod'><div class='mod_background'></div><div class='mod_enable'><input type='checkbox' id='mod" + id + "' onClick=\"jsModEnabledToggle('" + id + "')\"/></div><div class='mod_container_install' onClick=\"jsToggleInstalledMod('" + id + "')\"><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strInstalled + "<br/>" + strRequires + strForumLink + strDownloadLink + strUninstallLink + "</div></div>";
 					document.getElementById("mod_list").innerHTML += strHTML;
 					document.getElementById("mod" + id).checked = mod.enabled;
 				}
 			}
+			jsApplyLocaleText();
 		}
 		
 		
@@ -411,9 +517,18 @@
 		}
 		
 		/* HTML Function Calls */
+		function jsSetLanguage() {
+			strCurrentLocale = document.getElementById("setting_language").value;
+			objOptions["locale"] = strCurrentLocale;
+			jsAddLogMessage("Setting locale to " + strCurrentLocale, 3);
+			jsGenerateInstalledModsListHTML();
+			jsGenerateOnlineModsListHTML();
+			WriteOptionsJSON();
+		}
+		
 		function jsToggleAvailableModsSort() {
 			switch (strOnlineModsSort) {
-				case "LAST UPDATED":
+				case "LAST_UPDATED":
 					strOnlineModsSort = "TITLE";
 					break;
 				case "TITLE":
@@ -426,18 +541,24 @@
 					strOnlineModsSort = "DOWNLOADS";
 					break;
 				case "DOWNLOADS":
+					strOnlineModsSort = "LIKES";
+					break;
+				case "LIKES":
 					strOnlineModsSort = "RANDOM";
 					break;
 				case "RANDOM":
-					strOnlineModsSort = "LAST UPDATED";
+					strOnlineModsSort = "LAST_UPDATED";
 					break;
 			}
 			
-			document.getElementById('sort_text').innerHTML = '<a href="#" onmousedown="jsToggleAvailableModsSort()">' + strOnlineModsSort + '</a>';
+			document.getElementById('sort_text').innerHTML = '<a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_' + strOnlineModsSort + '">' + jsGetLocaleText(strOnlineModsSort, strCurrentLocale) + '</span></a>';
 			
 			if (strOnlineModsSort == "RANDOM") {
 				document.getElementById('sort_text').innerHTML += ' <a href="#" onmousedown="jsGenerateOnlineModsListHTML()"><img src="manager/img/refresh.png" border=0></a>';
 			}
+			jsAddLogMessage("Available Mod sort by " + strOnlineModsSort + " applied", 4);
+			objOptions["sort"] = strOnlineModsSort;
+			WriteOptionsJSON();
 			jsGenerateOnlineModsListHTML();
 		}
 		
@@ -447,19 +568,22 @@
 					strOnlineModsFilter = "INSTALLED";
 					break;
 				case "INSTALLED":
-					strOnlineModsFilter = "REQUIRES UPDATE";
+					strOnlineModsFilter = "REQUIRES_UPDATE";
 					break;
-				case "REQUIRES UPDATE":
-					strOnlineModsFilter = "NEWLY UPDATED";
+				case "REQUIRES_UPDATE":
+					strOnlineModsFilter = "NEWLY_UPDATED";
 					break;
-				case "NEWLY UPDATED":
-					strOnlineModsFilter = "NOT INSTALLED";
+				case "NEWLY_UPDATED":
+					strOnlineModsFilter = "NOT_INSTALLED";
 					break;
-				case "NOT INSTALLED":
+				case "NOT_INSTALLED":
 					strOnlineModsFilter = "ALL";
 					break;
 			}
-			document.getElementById('filter_text').innerHTML = strOnlineModsFilter;
+			document.getElementById('filter_text').innerHTML = "<span class='LOC_" + strOnlineModsFilter + "'>" + jsGetLocaleText(strOnlineModsFilter, strCurrentLocale) + "</span>";
+			jsAddLogMessage("Available Mod filter " + strOnlineModsFilter + " applied", 4);
+			objOptions["filter"] = strOnlineModsFilter;
+			WriteOptionsJSON();
 			jsGenerateOnlineModsListHTML();
 		}
 		
@@ -470,6 +594,10 @@
 			document.getElementById('modListButton').style.color = strPanelName == 'installed' ? '#F9F9F9' : '#888888';
 			document.getElementById('download').style.display = strPanelName == 'download' ? 'block' : 'none';
 			document.getElementById('modDownloadButton').style.color = strPanelName == 'download' ? '#F9F9F9' : '#888888';
+			document.getElementById('log').style.display = strPanelName == 'log' ? 'block' : 'none';
+			document.getElementById('log_icon').src = strPanelName == 'log' ? 'manager\\img\\log_select.png' : 'manager\\img\\log.png';
+			document.getElementById('settings').style.display = strPanelName == 'settings' ? 'block' : 'none';
+			document.getElementById('settings_icon').src = strPanelName == 'settings' ? 'manager\\img\\settings_select.png' : 'manager\\img\\settings.png';
 			strCurrentPanel = strPanelName;
 		}
 			
@@ -516,49 +644,88 @@
 			
 			if (boolConfirm == true) {
 				UninstallMod(strModID);
-				jsRefresh(false);
+				jsRefresh(false, false);
 			}
 		}
 		
 		/* Download Functions */
+		function jsCheckOnlineStatus() {
+			var HTTP_OK = 200;
+			jsAddLogMessage("Checking online status", 3);
+			
+			boolOnline = false;
+			
+			try {
+				var oXMLHTTP = new ActiveXObject("MSXML2.XMLHTTP");
+			} catch(e) {
+				jsAddLogMessage("Critical Error: Could not create MSXML2.XMLHTTP ActiveX object: " + e.message, 1);
+			}
+			
+			oXMLHTTP.open("GET", PAMM_ONLINE_TEST_URL + "?r=" + Math.random(), false);
+			
+			try {
+				document.getElementById("downloading").style.display = "block";
+				jsAddLogMessage("[Message ID: " + intMessageID + "] GET <span class='log_url' title='" + PAMM_ONLINE_TEST_URL + "'>&lt;url&gt;</span>", 4);
+				oXMLHTTP.send();
+			} catch(e) {
+				jsAddLogMessage("Network Error: attempting to send request to " + PAMM_ONLINE_TEST_URL + "?r=" + Math.random() + ": " + e.message, 1);
+			}
+			intMessageID++;
+			if (oXMLHTTP.readyState == 4) {
+				if (oXMLHTTP.status == HTTP_OK) {
+					boolOnline = true;
+				}
+			}
+			document.getElementById("downloading").style.display = "none";
+			jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
+		}
+		
 		function jsDownload(strURL, strOutput, strOutputFilePath, successFunction) {
 			try {
 				var oXMLHTTP = new ActiveXObject("MSXML2.XMLHTTP");
 			} catch(e) {
-				alert("Critical Error: Could not create MSXML2.XMLHTTP ActiveX object");
+				jsAddLogMessage("Critical Error: Could not create MSXML2.XMLHTTP ActiveX object: " + e.message, 1);
 			}
 		
 			oXMLHTTP.open("GET", strURL, true);
-			oXMLHTTP.onreadystatechange = function() { jsDownloadStateChange(oXMLHTTP, strOutput, strOutputFilePath, successFunction);};
+			
+			var intCurrentMessageID = intMessageID;
+			oXMLHTTP.onreadystatechange = function() { jsDownloadStateChange(oXMLHTTP, strURL, intCurrentMessageID, strOutput, strOutputFilePath, successFunction);};
+			intMessageID++;
 			
 			try {
-				oXMLHTTP.send();
-				intDownloading++;
 				document.getElementById("downloading").style.display = "block";
+				jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] GET <span class='log_url' title='" + strURL + "'>&lt;url&gt;</span>", 4);
+				intDownloading++;
+				oXMLHTTP.send();
 			} catch(e) {
-				alert("Network Error: attempting to send request to " + strURL + " - " + e.message);
+				jsAddLogMessage("Network Error: attempting to send request to " + strURL + ": " + e.message, 1);
 			}
 
 		}
 		
-		function jsDownloadStateChange(oXMLHTTP, strOutput, strOutputFilePath, successFunction) {
+		function jsDownloadStateChange(oXMLHTTP, strURL, intID, strOutput, strOutputFilePath, successFunction) {
 			var HTTP_OK = 200;
+			var HTTP_NOT_FOUND = 404;
 			var adTypeBinary = 1;
 			var adTypeText = 2;
 			var adSaveCreateOverWrite = 2;
+			var xmlReadyStates = ['Request not initialized', 'Server connection established', 'Request received ', 'Processing request', 'Request finished and response is ready'];
 			
-			try {
-				var oStream = new ActiveXObject("ADODB.Stream");
-			} catch(e) {
-				alert("Critical Error: Could not create ADODB.Stream ActiveX object");
-				return 1;
-			}
-			
+			//jsAddLogMessage("[Message ID: " + intID + "] " + xmlReadyStates[oXMLHTTP.readyState], 4);
 			if (oXMLHTTP.readyState == 4) {
+			
+				try {
+					var oStream = new ActiveXObject("ADODB.Stream");
+				} catch(e) {
+					jsAddLogMessage("Critical Error: Could not create ADODB.Stream ActiveX object", 1);
+				}
+			
 				intDownloading--;
 				if (intDownloading == 0) {
 					document.getElementById("downloading").style.display = "none";
 				}
+				jsAddLogMessage("[Message ID: " + intID + "] HTTP " + oXMLHTTP.statusText + " (" + oXMLHTTP.status + ") <span class='log_url' title='" + strURL + "'>&lt;url&gt;</span>", 4);
 				if (oXMLHTTP.status == HTTP_OK) {
 					if (strOutput == "string") {
 						oStream.Type = adTypeBinary;
@@ -566,7 +733,7 @@
 						oStream.Write (oXMLHTTP.responseBody);
 						oStream.Position = 0;
 						oStream.Type = adTypeText;
-						oStream.CharSet = "shift_jis";
+						oStream.CharSet = "utf-8"; //"shift_jis";
 						var strText = oStream.ReadText (oStream.Size)
 						oStream.Close();
 						if (successFunction != null) {
@@ -582,7 +749,7 @@
 						try {
 							oStream.SaveToFile(strOutputFilePath, adSaveCreateOverWrite);
 						} catch(e) {
-							alert("Write Error: Could not save file '" + strOutputFilePath + ": " + e.message);
+							jsAddLogMessage("Write Error: Could not save file '" + strOutputFilePath + "': " + e.message, 1);
 						}
 						
 						oStream.Close();
@@ -595,9 +762,12 @@
 							eval(successFunction);
 						}
 					}
+				} else if (oXMLHTTP.status == HTTP_NOT_FOUND) {
+				} else {
 				}
+				oStream = null;
+			} else {
 			}
-			oStream = null;
 			oXMLHTTP = null;
 		}
 		
@@ -610,25 +780,109 @@
 			}
 		}
 		
-		function jsRefresh(boolShowLoading) {
+		function jsRefresh(boolShowLoading, boolDownloadData) {
 			if (boolShowLoading == true) {
 				document.getElementById("news_data").innerHTML = "<div class=\"loading\">Loading...</div>";
 				document.getElementById("mod_list").innerHTML = "<div class=\"loading\">Loading...</div>";
 				document.getElementById("mod_download_inner").innerHTML = "<div class=\"loading\">Loading...</div>";
 			}
-			jsDownloadNews();
+			
+			if (boolDownloadData == true) {
+				jsCheckOnlineStatus();
+			}
+			
+			if (boolOnline == false) {
+				document.getElementById("news_data").innerHTML = "<div class=\"loading\">Mod Manager is offline</div>";	
+				document.getElementById("mod_download_inner").innerHTML = "<div class=\"loading\">Mod Manager is offline</div>";
+			}
+			
+			jsAddLogMessage("Refreshing Data", 2);
+			
+			if (boolDownloadData == true) {
+				jsDownloadNews();
+				jsDownloadOnlineMods();
+			}
 			FindInstalledMods();
 			objInstalledMods.sort(sort_by('display_name', true, null));
-			jsDownloadOnlineMods();
+			jsGenerateInstalledModsListHTML();
+		}
+		
+		/* Settings Functions */
+		function jsToggleDebugMode() {
+			jsSetLogLevel(document.getElementById("setting_debug").checked ? 4 : objOptions["verbose"] ? 3 : 2);
+			objOptions["debug"] = document.getElementById("setting_debug").checked;
+			WriteOptionsJSON();
+		}
+		
+		function jsToggleVerboseMode() {
+			jsSetLogLevel(document.getElementById("setting_debug").checked ? 4 : document.getElementById("setting_verbose").checked ? 3 : 2);
+			objOptions["verbose"] = document.getElementById("setting_verbose").checked;
+			WriteOptionsJSON();
+		}
+		
+		function jsSetDefaultTab() {
+			objOptions["tab"] = document.getElementById("setting_defaultTab").value;
+			jsAddLogMessage("Setting default tab to " + objOptions["tab"], 3);
+			WriteOptionsJSON();
+		}
+		
+		/* Log Functions */
+		function jsAddLogMessage(strText, intLevel) {
+			var strType = "INFO";
+			if (intLevel == 1) { 
+				strType = "ERROR"; 
+			}
+			if (intLevel == 4) { 
+				strType = "DEBUG"; 
+			}
+			
+			var objCurrentTime = new Date();
+			var strHours = objCurrentTime.getHours() < 10 ? "0" + objCurrentTime.getHours() : objCurrentTime.getHours();
+			var strMinutes = objCurrentTime.getMinutes() < 10 ? "0" + objCurrentTime.getMinutes() : objCurrentTime.getMinutes();
+			var strSeconds = objCurrentTime.getSeconds() < 10 ? "0" + objCurrentTime.getSeconds() : objCurrentTime.getSeconds();
+
+			document.getElementById("log_data").innerHTML += '<div id="log_' + intLogNumber + '" class="log_entry' + (intLevel == 4 ? "_debug" : "") + ' log_level' + intLevel + '"><div class="log_time">' + strHours + ':' + strMinutes + ':' + strSeconds + '</div><div class="log_type">[' + strType + ']</div> ' + strText + '</div>';
+			
+			if (intLevel <= intLogLevel) { 
+				$("#log_" + intLogNumber).css({display: "block"});
+			}
+
+			document.getElementById("log_data").scrollTop = document.getElementById("log_data").scrollHeight;
+			intLogNumber++;
+		}
+		
+		function jsSetLogLevel(intLevel) {
+			var strLevel = "INFO";
+			if (intLevel == 1) { 
+				strLevel = "ERROR"; 
+			}
+			if (intLevel == 3) { 
+				strLevel = "INFO - VERBOSE"; 
+			}
+			if (intLevel == 4) { 
+				strLevel = "DEBUG"; 
+			}
+			if (intLevel != intLogLevel) {
+				jsAddLogMessage("Setting log level to " + intLevel + " (" + strLevel + ")", 3);
+				intLogLevel = intLevel;
+				$(".log_level3").css({display: intLogLevel >= 3 ? "block" : "none"});
+				$(".log_level4").css({display: intLogLevel >= 4 ? "block" : "none"});
+			}
 		}
 		
 		/* Downloads & Asynch Callbacks */
 		function jsDownloadNewPAMMinstaller(strPath) {
-			jsDownload(objPAMMVersionData.url, "file", strPath, "InstallPAMM('" + objPAMMVersionData.filename + "')");
+			if (boolOnline == true) {
+				jsAddLogMessage("Downloading new PAMM installer", 2);
+				jsDownload(objPAMMVersionData.url, "file", strPath, "InstallPAMM('" + objPAMMVersionData.filename + "')");
+			}
 		}
 				
 		function jsDownloadOnlineMods(strURL) {
-			jsDownload(ONLINE_MODS_LIST_URL + "?r=" + Math.random(), "string", null, "jsDownloadOnlineMods_asynch(strText)");
+			if (boolOnline == true) {
+				jsAddLogMessage("Downloading available mods list", 2);
+				jsDownload(ONLINE_MODS_LIST_URL + "?r=" + Math.random(), "string", null, "jsDownloadOnlineMods_asynch(strText)");
+			}
 		}
 		
 		function jsDownloadOnlineMods_asynch(strResult) {
@@ -637,17 +891,21 @@
 				var objModData = JSON.parse(strResult);
 				for (var id in objModData) {
 					objModData[id]["id"] = id;
+					objModData[id]["likes"] = -2;
 					objOnlineMods.push(objModData[id]);
 				}
 				
 				jsDownloadOnlineModDownloadCount();
-			} catch (err) {
-				alert("Error loading online mod data");
+			} catch (e) {
+				jsAddLogMessage("Error loading online mod data: " + e.message, 1);
 			}
 		}
 		
 		function jsDownloadOnlineModDownloadCount() {
-			jsDownload(ONLINE_MODS_DOWNLOAD_COUNT_URL + "?r=" + Math.random(), "string", null, "jsDownloadOnlineModDownloadCount_asynch(strText)");
+			if (boolOnline == true) {
+				jsAddLogMessage("Getting availailable mod download counts", 2);
+				jsDownload(ONLINE_MODS_DOWNLOAD_COUNT_URL + "?r=" + Math.random(), "string", null, "jsDownloadOnlineModDownloadCount_asynch(strText)");
+			}
 		}
 		
 		function jsDownloadOnlineModDownloadCount_asynch(strResult) {
@@ -657,32 +915,88 @@
 					objOnlineMods[i]["downloads"] = objOnlineModsDownloadCount[objOnlineMods[i].id] ? objOnlineModsDownloadCount[objOnlineMods[i].id] : 0;
 				}
 				
-				jsGenerateInstalledModsListHTML();
 				jsGenerateOnlineModsListHTML();
+				jsGenerateInstalledModsListHTML();
+				jsDownloadOnlineModLikeCount();
 				jsUpdateFiles();
-			} catch (err) {
-				alert("Error loading online mod download count data");
+			} catch (e) {
+				jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
 			}
 		}
 		
+		function jsDownloadOnlineModLikeCount() {
+			jsAddLogMessage("Getting mod likes", 2);
+			for (var i = 0; i < objOnlineMods.length; i++) {
+				
+			
+				if (objOnlineMods[i]["forum"] != null) {
+					if (objOnlineMods[i]["forum"].indexOf("forums.uberent.com") > -1) {
+						intLikeCountRemaining++;
+						jsDownload(objOnlineMods[i]["forum"], "string", null, "jsDownloadOnlineModLikeCount_asynch('" + objOnlineMods[i].id + "' , strText)");
+					} else {
+						jsAddLogMessage("Invalid forum link for mod '" + objOnlineMods[i]["display_name"] + "' (Not from forums.uberent.com)", 3);
+						objOnlineMods[i]["likes"] = -1;
+					}
+				} else {
+					jsAddLogMessage("Missing forum link for mod '" + objOnlineMods[i]["display_name"] + "'", 3);
+					objOnlineMods[i]["likes"] = -1;
+				}
+			}
+			
+			var objTimer = setInterval(function() {
+				if(intLikeCountRemaining == 0) {
+					jsGenerateOnlineModsListHTML();
+					clearInterval(objTimer);
+				}
+			}, 100);
+		}
+		
+		function jsDownloadOnlineModLikeCount_asynch(intModID, strResult) {
+			var objOnlineMod = jsGetOnlineMod(intModID)
+			try {
+				var objNodes = $(strResult).find(".message").first().find(".LikeText");
+				var intLikes = objNodes.children(".username").length;
+				if  (objNodes.children(".OverlayTrigger").length > 0) {
+					var strText = objNodes.children(".OverlayTrigger").text();
+					intLikes += parseInt(strText);
+				}
+				objOnlineMod["likes"] = intLikes;
+				jsAddLogMessage("Like count for mod '" + objOnlineMod["display_name"] + "': " + intLikes, 3);
+			} catch (e) {
+				jsAddLogMessage("Error loading online mod like count data: " + e.message, 1);
+				objOnlineMod["likes"] = -1;
+			}
+			intLikeCountRemaining--;
+		}
+		
 		function jsDownloadPAMMversion() {
-			jsDownload(PAMM_VERSION_DATA_URL + "?r=" + Math.random(), "string", null, "jsDownloadPAMMversion_asynch(strText)");
+			if (boolOnline == true) {
+				jsAddLogMessage("Checking for PAMM updates", 2);
+				jsDownload(PAMM_VERSION_DATA_URL + "?r=" + Math.random(), "string", null, "jsDownloadPAMMversion_asynch(strText)");
+			}
 		}
 		
 		function jsDownloadPAMMversion_asynch(strResult) {
 			try {
 				objPAMMVersionData = JSON.parse(strResult);
 				var dateLatestPAMM = new Date(objPAMMVersionData.date);
-				if (datePAMM < dateLatestPAMM) {
+				jsAddLogMessage("Latest version of PAMM: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
+				if (new Date(datePAMM) < dateLatestPAMM) {
+					jsAddLogMessage("New version of PAMM available: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
 					UpdatePAMM(objPAMMVersionData.version, objPAMMVersionData.filename);
+				} else {
+					jsAddLogMessage("Latest version of PAMM installed", 2);
 				}
-			} catch (err) {
-				alert("Error loading PAMM version data");
+			} catch (e) {
+				jsAddLogMessage("Error loading PAMM version data: " + e.message, 1);
 			}
 		}
 		
 		function jsDownloadNews() {
-			jsDownload(NEWS_URL + "?r=" + Math.random(), "string", null, "jsDownloadNews_asynch(strText)");
+			if (boolOnline == true) {
+				jsAddLogMessage("Downloading news", 2);
+				jsDownload(NEWS_URL + "?r=" + Math.random(), "string", null, "jsDownloadNews_asynch(strText)");
+			}
 		}
 		
 		function jsDownloadNews_asynch(strResult) {
@@ -728,12 +1042,14 @@
 		
 		Sub CreateFolderIfNotExists(strPath)
 			If Not(objFSO.FolderExists(strPath)) Then
+				Call jsAddLogMessage("Creating Folder: " & strPath, 4)
 				objFSO.CreateFolder(strPath)
 			End If
 		End Sub
 		
 		'Launches a URL in the user's browser of choice
 		Sub LaunchURL(strURL)
+			Call jsAddLogMessage("Launching URL: " & strURL, 3)
 			objShell.Run(strURL)
 		End Sub
 		
@@ -746,104 +1062,153 @@
 		Sub FindInstalledMods()
 			Dim objFolder
 			Dim objFile
-			Dim objModInfoFile
 			Dim objFiles
-			Const ForReading = 1
+			Dim intMods
+			Dim objStream
+
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"			
+			
+			
 			
 			Set objFolder = objFSO.GetFolder(strModsDirectoryPath)
 
 			Call jsClearInstalledModData()
 			
+			intMods = 0
 			For Each objSubFolder in objFolder.SubFolders
 				Set objFiles = objSubFolder.Files
 				For Each objFile in objFiles
 					If objFile.Name = "modinfo.json" Then
-						Set objModInfoFile = objFSO.OpenTextFile(objSubFolder.path & "\" & objFile.name, ForReading, False)
-						Call jsLoadInstalledModData(objSubFolder.name, objModInfoFile.ReadAll())
-						Call objModInfoFile.close()
+						Call objStream.open()
+						
+						Call jsAddLogMessage("Found installed mod: " & objSubFolder.name, 3)
+						Call objStream.LoadFromFile(objSubFolder.path & "\" & objFile.name)
+						
+						Call jsLoadInstalledModData(objSubFolder.name, objStream.ReadText())
+						
+						Call objStream.close()
+						intMods = intMods + 1
 					End If
 				Next
 			Next
+			Call jsAddLogMessage("Found " & intMods & " installed mods", 2)
 			
 			Call jsUpdateFiles()
 		End Sub
 		
 		'Loads in options data
 		Sub LoadOptions()
-			Dim objOptionsFile
-			Const ForReading = 1
+			Dim objStream
+
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
 			
 			If objFSO.FileExists(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME) = True Then
-				Set objOptionsFile = objFSO.OpenTextFile(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME, ForReading, False)
-				Call jsLoadOptionsData(objOptionsFile.ReadAll)
-				Call objOptionsFile.close()
+				Call objStream.open()
+				Call jsAddLogMessage("Options file found, loading settings", 3)
+				
+				Call objStream.LoadFromFile(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME)
+				Call jsLoadOptionsData(objStream.ReadText())
+				
+				Call objStream.close()
 			Else
+				Call jsAddLogMessage("Options file not found, using defaults", 3)
 				Call jsLoadOptionsData("{}")
 			End If
 		End Sub
 		
 		'Writes Options file
 		Sub WriteOptionsJSON()
-			Dim objOptionsFile
-			Const ForWriting = 2
+			Dim objStream
+			Const adSaveCreateOverWrite = 2
 		
-			Set objOptionsFile = objFSO.OpenTextFile(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME, ForWriting, True)
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
 			
-			objOptionsFile.Write(jsGetOptionsDataString())
+			Call objStream.open()
+				
+			Call objStream.WriteText(jsGetOptionsDataString())
+			Call objStream.SaveToFile(strPAMMCacheDirectoryPath & "\" & PAMM_OPTIONS_FILENAME, adSaveCreateOverWrite)
 			
-			Call objOptionsFile.close()
+			Call jsAddLogMessage("Writing options file", 4)
+			
+			Call objStream.close()
 		End Sub
 		
 		'Writes data to ui_mod_list.js
 		Sub WriteUIModListJS()
-			Dim objModsFile
-			Const ForWriting = 2
+			Dim objStream
+			Const adSaveCreateOverWrite = 2
 		
-			Set objModsFile = objFSO.OpenTextFile(strModsDirectoryPath & "\rPAMM\ui\mods\ui_mod_list.js", ForWriting, True)
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
 			
-			objModsFile.Write("var global_mod_list = " & jsGetUIModListGlobalDataString() & ";" & NEW_LINE & NEW_LINE)
-			objModsFile.Write("var scene_mod_list = " & jsGetUIModListSceneDataString())
+			Call objStream.open()
 			
-			Call objModsFile.close()
+			Call objStream.WriteText("var global_mod_list = " & jsGetUIModListGlobalDataString() & ";" & NEW_LINE & NEW_LINE)
+			Call objStream.WriteText("var scene_mod_list = " & jsGetUIModListSceneDataString())
+			Call objStream.SaveToFile(strModsDirectoryPath & "\rPAMM\ui\mods\ui_mod_list.js", adSaveCreateOverWrite)
+			
+			Call jsAddLogMessage("Writing ui_mod_list.js", 4)
+			
+			Call objStream.close()
 		End Sub
 		
 		'Writes data to mods_list.json
 		Sub WriterModListJS()
-			Dim objModsFile
-			Const ForWriting = 2
+			Dim objStream
+			Const adSaveCreateOverWrite = 2
 		
-			Set objModsFile = objFSO.OpenTextFile(strModsDirectoryPath & "\rPAMM\ui\mods\mods_list.json", ForWriting, True)
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
+		
+			Call objStream.open()
 			
-			objModsFile.Write(jsGetInstalledModListDataString())
+			Call jsAddLogMessage("Writing mods_list.json", 4)
+			Call objStream.WriteText(jsGetInstalledModListDataString())
 			
-			Call objModsFile.close()
+			Call objStream.SaveToFile(strModsDirectoryPath & "\rPAMM\ui\mods\mods_list.json", adSaveCreateOverWrite)
 			
-			Call objModsFile.close()
+			Call objStream.close()
 		End Sub
 		
 		'Writes data to mods.json
 		Sub WriteModsJSON()
-			Dim objModsFile
-			Const ForWriting = 2
+			Dim objStream
+			Const adSaveCreateOverWrite = 2
 		
-			Set objModsFile = objFSO.OpenTextFile(strModsDirectoryPath & "\mods.json", ForWriting, True)
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
 			
-			objModsFile.Write(jsGetModsJSONDataString())
+			Call objStream.open()
 			
-			Call objModsFile.close()
+			Call jsAddLogMessage("Writing mods.json", 4)
+			Call objStream.WriteText(jsGetModsJSONDataString())
+			
+			Call objStream.SaveToFile(strModsDirectoryPath & "\mods.json", adSaveCreateOverWrite)
+			
+			Call objStream.close()
 		End Sub
 		
 		'Writes the contents of a mods modinfo.json
 		Sub WriteModinfoJSON(strModID)
-			Dim objModInfoFile
-			Const ForWriting = 2
+			Dim objStream
+			Const adSaveCreateOverWrite = 2
+		
+			Set objStream = CreateObject("ADODB.Stream")
+			objStream.CharSet = "utf-8"	
 		
 			If objFSO.FileExists(strModsDirectoryPath & "\" & strModID & "\modinfo.json") Then
-				Set objModInfoFile = objFSO.OpenTextFile(strModsDirectoryPath & "\" & strModID & "\modinfo.json", ForWriting, True)
 			
-				objModInfoFile.Write(jsGetInstalledModDataString(strModID))
+				Call objStream.open()
+				
+				Call jsAddLogMessage("Writing modsinfo.json for mod '" & strModID & "'", 4)
+				Call objStream.WriteText(jsGetInstalledModDataString(strModID))
 			
-				Call objModInfoFile.close()
+				Call objStream.SaveToFile(strModsDirectoryPath & "\" & strModID & "\modinfo.json", adSaveCreateOverWrite)
+				
+				Call objStream.close()
 			End If
 		End Sub
 		
@@ -857,7 +1222,10 @@
 			
 			Call Randomize()
 			Call RemoveFileFromCache(strModFileName)
+			
 			Call jsDownload(MANAGE_URL & "?download=" & strModID & "&r=" & rnd(), null, null, null)
+			
+			Call jsAddLogMessage("Downloading mod '" & strModID & "'", 3)
 			Call jsDownload(strURL, "file", strPAMMCacheDirectoryPath & "\" & strModFileName, "UninstallMod('" & strModID & "'); ExtractMod('" & strModFileName & "', '" & strModID & "')")
 		End Sub
 		
@@ -872,8 +1240,9 @@
 				set objFiles = objApp.NameSpace(strPAMMCacheDirectoryPath & "\" & strFileName).items
 
 				'Extract to mods directory
+				Call jsAddLogMessage("Installing mod '" & strModID & "'", 3)
 				objApp.NameSpace(strModsDirectoryPath).CopyHere(objFiles)
-				Call jsRefresh(false)
+				Call jsRefresh(false, false)
 				Call jsSetModEnabledStatus(strModID, true)
 			End If
 			
@@ -889,6 +1258,8 @@
 			If objFSO.FileExists(strPAMMCacheDirectoryPath & "\" & strFileName) = True Then
 				On Error Resume Next
 				Err.Clear
+				
+				Call jsAddLogMessage("Clearing cached file '" & strFileName & "'", 4)
 				
 				'Can throw errors
 				objFSO.deleteFile strPAMMCacheDirectoryPath & "\" & strFileName, true
@@ -908,6 +1279,8 @@
 			If objFSO.FolderExists(strModsDirectoryPath & "\" & strModID) = True Then
 				On Error Resume Next
 				Err.Clear
+				
+				Call jsAddLogMessage("Uninstalling mod '" & strModID & "'", 2)
 				
 				'Can throw errors
 				objFSO.deleteFolder strModsDirectoryPath & "\" & strModID, true
@@ -964,38 +1337,94 @@
 
 	<body onLoad="jsOnLoad()">
 		<div id="container">
-			<div id="installed">
-				<div class="mod_list_background"></div>
-				<div id="mod_list">
+			<div id="installed" class="tab">
+				<div id="mod_list_background" class="tab_background"></div>
+				<div id="mod_list" class="tab_content">
 				</div>
 			</div>
-			<div id="download">
-				<div class="mod_download_background"></div>
+			<div id="download" class="tab">
+				<div id="mod_download_background" class="tab_background"></div>
 				<div class="mod_download_options">
-					<div class="filter_options">SHOW: <a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()">ALL</a></div><div class="sort_options">SORT: <span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()">LAST UPDATED</a></span></div>
+					<div class="filter_options"><span class="LOC_SHOW">SHOW</span>: <br/><a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()"><span class="LOC_ALL">ALL</span></a></div><div class="sort_options"><span class="LOC_SORT">SORT</span>: <br/><span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_LAST_UPDATED">LAST UPDATED</span></a></span></div>
 				</div>
-				<div id="mod_download">
+				<div id="mod_download" class="tab_content">
 					<div id="mod_download_inner">
 					</div>
 				</div>
 			</div>
-			<div id="news">
-				<div class="news_background"></div>
-				<div id="news_data">
+			<div id="news" class="tab">
+				<div id="news_background" class="tab_background"></div>
+				<div id="news_data" class="tab_content">
 					
 				</div>
 			</div>
+			<div id="log" class="tab">
+				<div id="log_background" class="tab_background"></div>
+				<div id="log_data" class="tab_content">
+					<div class="log_heading"><span class="LOC_LOG">LOG</span></div>
+				</div>
+			</div>
+			<div id="settings" class="tab">
+				<div id="settings_background" class="tab_background"></div>
+				<div id="settings_data" class="tab_content">
+					<div class = "settings_heading"><span class="LOC_SETTINGS">SETTINGS</span></div>
+					<div class="settings_items">
+						<table class="settings_table">
+							<tr>
+								<td><span class="setting_heading"><span class="LOC_Language">Language</span>:</span></td>
+								<td>
+									<select id="setting_language" onChange="jsSetLanguage()">
+										<option value="en">ENGLISH</option>
+										<option value="fr">FRANÇAIS</option>
+										<option value="nl">NEDERLANDS</option>
+										<option value="de">DEUTSCH</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="setting_heading"><span class="LOC_Default_Tab">Default Tab</span>:</span></td>
+								<td>
+									<select id="setting_defaultTab" onChange="jsSetDefaultTab()">
+										<option value="news" class="LOC_NEWS">NEWS</option>
+										<option value="installed" class="LOC_INSTALLED_MODS">INSTALLED MODS</option>
+										<option value="download" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="setting_heading"><span class="LOC_Verbose_Log">Verbose Log</span>:</span></td>
+								<td><input id="setting_verbose" type="checkbox" onClick="jsToggleVerboseMode()"/></td>
+							</tr>
+							<tr>
+								<td><span class="setting_heading"><span class="LOC_Debug_Mode">Debug Mode</span>:</span></td>
+								<td><input id="setting_debug" type="checkbox" onClick="jsToggleDebugMode()"/></td>
+							</tr>
+							<tr>
+								<td colspan="2">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
+									<input id="setting_installLocation" type="text" disabled="true" class="textInput"/>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
 			<img src="manager\img\img_pa_logo_alpha.png">
-			<h1>MOD MANAGER</h1>
+			<h1><span class="LOC_MOD_MANAGER">MOD MANAGER</span></h1>
 			
-			<div class="button"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')">NEWS</a></div>
-			<div class="button"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')">INSTALLED MODS</a></div>
-			<div class="button"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')">AVAILABLE MODS</a></div>
+			<div class="button"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')"><span class="LOC_NEWS">NEWS</span></a></div>
+			<div class="button"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')"><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a></div>
+			<div class="button"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')"><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div>
+			<div class="button"><a href="#" id="logButton" onclick="jsDisplayPanel('log')"><img id="log_icon" src="manager\img\log.png"></a></div>
+			<div class="button"><a href="#" id="settingsButton" onclick="jsDisplayPanel('settings')"><img id="settings_icon" src="manager\img\settings.png"></a></div>
 			<div class="buttons">
-				<input id="btnLaunch" type="button" value="Launch PA" onClick="LaunchPA()"/>
-				<input type="button" value="Refresh" onClick="jsRefresh(true)"/>
-				<input type="button" value="Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/">Version 3.0.4</a>, by Raevn</div>
+				<input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
+				<input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
+				<input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.0</a>, <span class="LOC_by">by</span> Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
@@ -1005,12 +1434,15 @@
 	
 	<script type="text/javascript">
 		function jsOnLoad() {
+			jsApplyLocaleText();
 			document.getElementById("btnLaunch").disabled = true;
 			LoadOptions();
 			setTimeout(function() {
-				jsDownloadPAMMversion();
-				jsRefresh(true);
-				}, 500);
+				jsRefresh(true, true);
+				if (boolOnline == true) {
+					jsDownloadPAMMversion();
+				}
+			}, 500);
 		}
 	</script>
 </html>

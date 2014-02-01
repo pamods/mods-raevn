@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "PA Mod Manager"
-!define PRODUCT_VERSION "3.0.4"
+!define PRODUCT_VERSION "3.1.0"
 !define PRODUCT_PUBLISHER "Raevn"
 !define PRODUCT_WEB_SITE "https://forums.uberent.com/threads/rel-pa-mod-manager-v2-0-2.50726/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PAMM.hta"
@@ -52,6 +52,8 @@ Section "MainSection" SEC01
   SetOverwrite ifnewer
   File "Backup\PAMM.hta"
   SetOutPath "$INSTDIR\manager"
+  File "Backup\manager\locale.js"
+  File "Backup\manager\jquery-1.10.2.min.js"
   File "Backup\manager\modinfo.json"
   File "Backup\manager\json3.min.js"
   File "Backup\manager\pamm.css"
@@ -61,6 +63,12 @@ Section "MainSection" SEC01
   File "Backup\manager\img\img_start_bground_sample.jpg"
   File "Backup\manager\img\loading.gif"
   File "Backup\manager\img\refresh.png"
+  
+  File "Backup\manager\img\like.png"
+  File "Backup\manager\img\log.png"
+  File "Backup\manager\img\log_select.png"
+  File "Backup\manager\img\settings.png"
+  File "Backup\manager\img\settings_select.png"
   
   ;TODO: Remove old rPAMM modinfo.json
   
@@ -101,11 +109,18 @@ Section Uninstall
   Delete "$INSTDIR\manager\modinfo.json"
   Delete "$INSTDIR\manager\json3.min.js"
   Delete "$INSTDIR\manager\pamm.css"
+  Delete "$INSTDIR\manager\locale.js"
+  Delete "$INSTDIR\manager\jquery-1.10.2.min.js"
   Delete "$INSTDIR\manager\img\download.png"
   Delete "$INSTDIR\manager\img\img_pa_logo_alpha.png"
   Delete "$INSTDIR\manager\img\img_start_bground_sample.jpg"
   Delete "$INSTDIR\manager\img\loading.gif"
   Delete "$INSTDIR\manager\img\refresh.png"
+  Delete "$INSTDIR\manager\img\like.png"
+  Delete "$INSTDIR\manager\img\log.png"
+  Delete "$INSTDIR\manager\img\log_select.png"
+  Delete "$INSTDIR\manager\img\settings.png"
+  Delete "$INSTDIR\manager\img\settings_select.png"
 
   Delete "$SMPROGRAMS\Planetary Annihilation\Uninstall PA Mod Manager.lnk"
   Delete "$SMPROGRAMS\Planetary Annihilation\PA Mod Manager.lnk"
