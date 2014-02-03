@@ -9,7 +9,7 @@ var strlocaleText = {
 		"en": "MOD MANAGER",
 		"fr": "GESTIONNAIRE DE MODS",
 		"nl": "MOD BEHEERDER",
-		"de": "MOD VERWALTER"
+		"de": "MOD MANAGER"
 	},
 	"NEWS": {
 		"en": "NEWS",
@@ -57,7 +57,7 @@ var strlocaleText = {
 		"en": "by",
 		"fr": "par",
 		"nl": "door",
-		"de": "durch"
+		"de": "von"
 	},
 	"build": {
 		"en": "build",
@@ -99,7 +99,7 @@ var strlocaleText = {
 		"en": "reinstall",
 		"fr": "réinstaller",
 		"nl": "herinstalleren",
-		"de": "herinstallieren"
+		"de": "erneut installieren"
 	},
 	"NEW": {
 		"en": "NEW",
@@ -189,7 +189,7 @@ var strlocaleText = {
 		"en": "RANDOM",
 		"fr": "ARBITRAIRE",
 		"nl": "WILLEKEURIG",
-		"de": "WILLKÜRLICH"
+		"de": "ZUFALL"
 	},
 	"LOG": {
 		"en": "LOG",
@@ -213,7 +213,7 @@ var strlocaleText = {
 		"en": "Verbose Log",
 		"fr": "Journal verbeux de bord",
 		"nl": "Uitgebreid logboek",
-		"de": "Umfassend Logbuch"
+		"de": "Umfassendes Logbuch"
 	},
 	"Debug_Mode": {
 		"en": "Debug Mode",
@@ -225,13 +225,13 @@ var strlocaleText = {
 		"en": "PA Install Location",
 		"fr": "Répertoire d'installation de PA",
 		"nl": "PA installatiemap",
-		"de": "PA installationspfad"
+		"de": "PA Installationspfad"
 	},
-	"LANGUAGE": {
-		"en": "LANGUAGE",
-		"fr": "LANGUE",
-		"nl": "TAAL",
-		"de": "SPRACHE"
+	"Language": {
+		"en": "Language",
+		"fr": "Langue",
+		"nl": "Taal",
+		"de": "Sprache"
 	},
 	"Loading": {
 		"en": "Loading",
@@ -279,5 +279,5 @@ var strLocaleTextItems = [
 	"Verbose_Log",
 	"Debug_Mode",
 	"PA_Install_Location",
-	"LANGUAGE",
+	"Language",
 	"Loading"];

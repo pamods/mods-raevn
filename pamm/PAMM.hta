@@ -42,8 +42,8 @@
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
 		var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 		
-		var datePAMM = "2014/02/02";
-		var strPAMMversion = "3.1.1";
+		var datePAMM = "2014/02/03";
+		var strPAMMversion = "3.1.2";
 		
 		/* Localisation Functions */
 		function jsGetLocaleText(strKey, strLocale) {
@@ -1040,7 +1040,6 @@
 		
 		Sub CreateFolderIfNotExists(strPath)
 			If Not(objFSO.FolderExists(strPath)) Then
-				Call jsAddLogMessage("Creating Folder: " & strPath, 4)
 				objFSO.CreateFolder(strPath)
 			End If
 		End Sub
@@ -1472,7 +1471,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
 				<input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.1</a>, <span class="LOC_by">by</span> Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.2</a>, <span class="LOC_by">by</span> Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">
