@@ -1,0 +1,69 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.rblueprintinfoframework",
+    "display_name": "Blueprint Info Framework",
+    "description": "A Framework for obtaining unit, tool and ammo data",
+    "author": "Raevn",
+    "version": "1.0.0",
+    "signature": "not yet implemented",
+    "priority": 10,
+    "enabled": true,
+    "id": "rBlueprintInfoFramework",
+    "forum": "https://forums.uberent.com/threads/wip-blueprint-info-framework.56213/",
+    "category": [
+        "framework"
+    ],
+    "global_mod_list": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework.js"
+    ],
+    "connect_to_game": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "game_over": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "icon_atlas": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "live_game": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "load_planet": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "lobby": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "matchmaking": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "new_game": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "server_browser": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "settings": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "special_icon_atlas": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "start": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_start.js"
+    ],
+    "system_editor": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "transit": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "social": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "replay_browser": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "date": "2014/02/13",
+    "build": "59607"
+}
