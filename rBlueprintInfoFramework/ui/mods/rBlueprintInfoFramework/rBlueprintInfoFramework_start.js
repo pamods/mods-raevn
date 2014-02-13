@@ -7,8 +7,8 @@ bif.registerBIFReadyCallback(function() {
 	model.showingBIF(false);
 });
 		
-$('.fadeContainer').append(
-	'<div id="div_popup_overlay" data-bind="visible: bif.showingBIF">' +
+$('body').append(
+	'<div id="div_popup_overlay" data-bind="visible: showingBIF">' +
 	    '<div class="div_popup">' +
 			'<div class="div_popup_panel" style="border: 1px solid #888888;">' +
 				'<img src="coui://ui/alpha/shared/img/loading.gif"><div class="div_popup_primary_msg">Loading Blueprint Information ...</div>' +
