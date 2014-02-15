@@ -1,3 +1,11 @@
+//===================================================
+// rBlueprintInfoFramework - Blueprint Info Framework
+//---------------------------------------------------
+// rBlueprintInfoFramework.js
+// Created by Raevn
+// Version 1.1.0 (2014/02/15)
+//---------------------------------------------------
+
 var bif = {};
 bif.bifReadyCallbacks = [];
 
@@ -31,6 +39,7 @@ if (decode(sessionStorage.bif) != null) {
 
 bif.loadJSONdata = function(src) {
 	var jsonXMLHttpRequestObject = new XMLHttpRequest();
+	
     try
     {
         jsonXMLHttpRequestObject.open('GET', src, false);
@@ -42,6 +51,28 @@ bif.loadJSONdata = function(src) {
         return;
     }
     return JSON.parse(jsonXMLHttpRequestObject.responseText);
+}
+
+bif.fileExists = function(src, callback){
+
+    var http = new XMLHttpRequest();
+	
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			console.log(http.status);
+			callback(src, http.status != 404 && http.status != 0);
+		}
+	}
+
+    try
+    {
+		http.open('HEAD', src, true);
+		http.send();
+    }
+    catch( err ) 
+	{
+		callback(src, false);
+	}
 }
 
 bif.initialiseBIF = function(force, cacheBuildData) {
@@ -109,6 +140,16 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 		bif.units[currentUnitID].id = currentUnitID;
 		bif.units[currentUnitID].path = currentUnitPath;
 		bif.units[currentUnitID].buildIndex = "" + (999 - bif.units[currentUnitID].display_group) + "" + (999 - bif.units[currentUnitID].display_index);
+		
+		bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + currentUnitID + ".png", function (src, exists) {
+			console.log(src + " : " + exists);
+			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
+		});
+		
+		bif.fileExists("coui://ui/alpha/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
+			bif.units[currentUnitID].buildPicture = exists == true ? src : null;
+		});
+		
 		bif.loaded_units++;
 		
 		//Load Tool Data
@@ -583,6 +624,40 @@ bif.getUnitBlueprint = function(unitID) {
 	}
 	
 	return bif.units[unitID];
+}
+
+/*
+getUnitBlueprintInline
+----------------------
+Get the blueprint of the unit with the specified unitID, with tool and ammo blueprint data incorporated
+
+Params:
+	unitID - (Text) The ID of a unit blueprint
+
+Returns:
+    null - a unit with the given unit ID does not exist
+	associative array - the blueprint of the unit
+*/
+bif.getUnitBlueprintInline = function(unitID) {
+	if (bif.checkBIFReady("getUnitBlueprintInline") == false) {
+		return null;
+	}
+
+	if (bif.checkBIFBlueprintExists("getUnitBlueprintInline", "units", unitID) == false) {
+		return null;
+	}
+	
+	var inlinedBlueprint = bif.units[unitID];
+	
+	if (inlinedBlueprint.tools != null) {
+		for (var i = 0; i < inlinedBlueprint.tools.length; i++) {
+			if (inlinedBlueprint.tools[i].spec_id != null) {
+				inlinedBlueprint.tools[i].spec_blueprint = bif.getToolBlueprintInline(bif.getBlueprintIDFromPath(inlinedBlueprint.tools[i].spec_id));
+			}
+		}
+	}
+	
+	return inlinedBlueprint;
 }
 
 /*
@@ -1244,6 +1319,36 @@ bif.getToolBlueprint = function(toolID) {
 	}
 	
 	return bif.tools[toolID];
+}
+
+/*
+getToolBlueprintInline
+----------------------
+Get the blueprint of the tool with the specified toolID, with ammo blueprint data incorporated
+
+Params:
+	toolID - (Text) The ID of a tool blueprint
+
+Returns:
+    null - a tool with the given tool ID does not exist
+	associative array - the blueprint of the tool
+*/
+bif.getToolBlueprintInline = function(toolID) {
+	if (bif.checkBIFReady("getToolBlueprintInline") == false) {
+		return null;
+	}
+
+	if (bif.checkBIFBlueprintExists("getToolBlueprintInline", "tools", toolID) == false) {
+		return null;
+	}
+	
+	var inlinedBlueprint = bif.tools[toolID];
+	
+	if (inlinedBlueprint.ammo_id != null) {
+		inlinedBlueprint.ammo_blueprint = bif.getAmmoBlueprint(bif.getBlueprintIDFromPath(inlinedBlueprint.ammo_id));
+	}
+	
+	return inlinedBlueprint;
 }
 
 /*

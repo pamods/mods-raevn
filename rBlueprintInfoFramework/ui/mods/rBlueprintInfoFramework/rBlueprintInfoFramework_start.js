@@ -1,3 +1,11 @@
+//===================================================
+// rBlueprintInfoFramework - Blueprint Info Framework
+//---------------------------------------------------
+// rBlueprintInfoFramework_start.js
+// Created by Raevn
+// Version 1.1.0 (2014/02/15)
+//---------------------------------------------------
+
 model.BIFReady = ko.observable(bif.getBIFReady());
 model.showingBIF = ko.observable(false);
 model.inMainMenu = ko.computed(function () { return !model.inStartupSequence() && !model.showingEULA() && !model.inRegionSetup() && !model.showingBIF();});
