@@ -129,7 +129,7 @@
 	</div>
     <!-- ko if: showUnitInfo -->
 		<div class="unitDatabase_unitInfo">
-			<img class="unitDatabase_unitPicture" src="" data-bind="attr: { src: model.selectedUnitBlueprint().buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : model.selectedUnitBlueprint().buildPicture }" /> 
+			<img class="unitDatabase_unitPicture" src="" data-bind="attr: { src: model.selectedUnitBlueprint().buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : model.selectedUnitBlueprint().buildPicture }" /> 
 			<div class="unitDatabase_unitName" data-bind="text: model.selectedUnitBlueprint().display_name ? model.selectedUnitBlueprint().display_name : '[' + model.selectedUnitBlueprint().id + ']'"></div>
 			<div class="unitDatabase_unitDescription" data-bind="text: model.selectedUnitBlueprint().description"></div>
 			<div class="unitDatabase_unitDetailCont" data-bind="if: model.selectedUnitBlueprint().max_health"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/hp.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().max_health"></span></div>
