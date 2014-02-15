@@ -9,7 +9,7 @@
 		<!-- ko foreach: unitBlueprints_basicBots -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -17,7 +17,7 @@
 		<!-- ko foreach: unitBlueprints_advancedBots -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -25,7 +25,7 @@
 		<!-- ko foreach: unitBlueprints_basicVehicles -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -33,7 +33,7 @@
 		<!-- ko foreach: unitBlueprints_advancedVehicles -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -41,7 +41,7 @@
 		<!-- ko foreach: unitBlueprints_basicAircraft -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -49,7 +49,7 @@
 		<!-- ko foreach: unitBlueprints_advancedAircraft -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -57,7 +57,7 @@
 		<!-- ko foreach: unitBlueprints_basicNaval -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -65,7 +65,7 @@
 		<!-- ko foreach: unitBlueprints_advancedNaval -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -73,7 +73,7 @@
 		<!-- ko foreach: unitBlueprints_basicOrbital -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -81,7 +81,7 @@
 		<!-- ko foreach: unitBlueprints_advancedOrbital -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -89,7 +89,7 @@
 		<!-- ko foreach: unitBlueprints_basicStructures -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
@@ -97,7 +97,7 @@
 		<!-- ko foreach: unitBlueprints_advancedStructures -->
 				<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 					<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 					</a>
 				</div>
 		<!-- /ko -->
@@ -105,7 +105,7 @@
 		<!-- ko foreach: unitBlueprints_commanders -->
 				<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 					<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 					</a>
 				</div>
 		<!-- /ko -->
@@ -121,7 +121,7 @@
 			<!-- ko foreach: unitBlueprints_other -->
 					<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
 						<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-							<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+							<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
 						</a>
 					</div>
 			<!-- /ko -->
@@ -405,7 +405,7 @@
 									<div class="unitDatabase_unitBuildEntry">
 										<div class="unitDatabase_unitBuildEntryPicture">
 											<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-											<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture }" /> 
+											<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture }" /> 
 										</div>
 										<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
 										<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +(bif.getUnitBlueprint($data).build_metal_cost / $parent.selectedUnitBuildArmMetalDemand()).toFixed(2) + 's'"></div>
@@ -429,7 +429,7 @@
 								<div class="unitDatabase_unitBuildEntry">
 									<div class="unitDatabase_unitBuildEntryPicture">
 										<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-										<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
+										<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
 									</div>
 									<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
 									<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +($parent.selectedUnitBlueprint().build_metal_cost / $parent.selectedUnitBuildArmMetalDemandOfBuilder($data)).toFixed(2) + 's'"></div>
@@ -448,7 +448,7 @@
 				<div class="unitDatabase_unitBuildEntry">
 					<div class="unitDatabase_unitBuildEntryPicture">
 						<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-						<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == '' ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
+						<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
 					</div>
 					<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
 					<div class="unitDatabase_unitDescription" data-bind="text: bif.getUnitBlueprint($data).description"></div>

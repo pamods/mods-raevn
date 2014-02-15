@@ -55,9 +55,7 @@ model.selectedTypeBlueprints = ko.computed(function() {
 
 model.selectedUnitBlueprint = ko.computed(function() {
 	if (model.selectedUnitBlueprintID() != "") {
-		console.log(model.selectedUnitBlueprintID());
 		var unitBlueprint = bif.getUnitBlueprintInline(model.selectedUnitBlueprintID());
-		console.log(unitBlueprint);
 		model.selectedUnitVisionUnderwater(null);
 		model.selectedUnitVisionSurface(null);
 		model.selectedUnitVisionOrbital(null);
