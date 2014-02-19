@@ -1,13 +1,14 @@
-initialSettingValue('commander_hp_display_show', 'ALWAYS');
+(function() {
+	initialSettingValue('commander_hp_display_show', 'ALWAYS');
 
-var commanderImages = new Array('img/build_bar/units/imperial_delta.png', 'img/build_bar/units/imperial_alpha.png', 'img/build_bar/units/raptor_base.png', 'img/build_bar/units/quad_base.png');
-var settings = decode(localStorage.settings);
+	var commanderImages = new Array('img/build_bar/units/imperial_delta.png', 'img/build_bar/units/imperial_alpha.png', 'img/build_bar/units/raptor_base.png', 'img/build_bar/units/quad_base.png', 'img/build_bar/units/tank_base.png');
+	var settings = decode(localStorage.settings);
 
-model.commander_hp_display_show = ko.computed(function() { return settings['commander_hp_display_show'] == 'ALWAYS'});
+	model.commander_hp_display_show = ko.computed(function() { return settings['commander_hp_display_show'] == 'ALWAYS'});
 
-createFloatingFrame('commander_info_frame', 320, 58, {'offset': 'topRight', 'left': -320});
+	createFloatingFrame('commander_info_frame', 320, 58, {'offset': 'topRight', 'left': -320});
 
-$('#commander_info_frame_content').append(
+	$('#commander_info_frame_content').append(
 		'<table id="commander_info" data-bind="visible: model.armySize() > 0 && ( model.armyAlertModel.commanderUnderAttack() || model.commander_hp_display_show())">' + //Only display commander info bar if player isn't dead (has more than 1 unit).
 			'<tbody>' +
 				'<tr data-bind="click: function() { api.select.commander(); api.camera.track(true); }">' +
@@ -33,3 +34,4 @@ $('#commander_info_frame_content').append(
 				'</tr>' +
 			'</tbody>' +
 		'</table>');
+})();
