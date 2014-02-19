@@ -3,209 +3,217 @@
 //------------------------------
 // rUnitDatabase_start.js
 // Created by Raevn
-// Version 1.0.0 (2014/02/15)
+// Version 1.1.0 (2014/02/20)
 //------------------------------
 
-model.unitBlueprints_basicBots = ko.observable([]);
-model.unitBlueprints_advancedBots = ko.observable([]);
-model.unitBlueprints_basicVehicles = ko.observable([]);
-model.unitBlueprints_advancedVehicles = ko.observable([]);
-model.unitBlueprints_basicAircraft = ko.observable([]);
-model.unitBlueprints_advancedAircraft = ko.observable([]);
-model.unitBlueprints_basicNaval = ko.observable([]);
-model.unitBlueprints_advancedNaval = ko.observable([]);
-model.unitBlueprints_basicOrbital = ko.observable([]);
-model.unitBlueprints_advancedOrbital = ko.observable([]);
-model.unitBlueprints_basicStructures = ko.observable([]);
-model.unitBlueprints_advancedStructures = ko.observable([]);
-model.unitBlueprints_commanders = ko.observable([]);
-model.unitBlueprints_other = ko.observable([]);
+loadScript("coui://ui/mods/rUnitDatabase/underscore-min.js");
+loadScript("coui://ui/mods/rUnitDatabase/backbone-min.js");
+loadScript("coui://ui/mods/rUnitDatabase/pretty-json-min.js");
 
-model.showOtherUnits = ko.observable(false);
+//Blueprint Data
+model.ud = {};
+model.ud.basicBots = ko.observable([]);
+model.ud.advancedBots = ko.observable([]);
+model.ud.basicVehicles = ko.observable([]);
+model.ud.advancedVehicles = ko.observable([]);
+model.ud.basicAircraft = ko.observable([]);
+model.ud.advancedAircraft = ko.observable([]);
+model.ud.basicNaval = ko.observable([]);
+model.ud.advancedNaval = ko.observable([]);
+model.ud.basicOrbital = ko.observable([]);
+model.ud.advancedOrbital = ko.observable([]);
+model.ud.basicStructures = ko.observable([]);
+model.ud.advancedStructures = ko.observable([]);
+model.ud.commanders = ko.observable([]);
+model.ud.other = ko.observable([]);
 
-model.showUnitDatabase = ko.observable(false);
-model.selectedUnitBlueprintID = ko.observable("");
-model.selectedType = ko.observable("");
-
-model.showUnitInfo = ko.computed(function() {return model.selectedUnitBlueprintID() != "" });
-model.showTypeInfo = ko.computed(function() {return model.selectedType() != "" });
-
-model.selectedUnitVisionUnderwater = ko.observable();
-model.selectedUnitVisionSurface = ko.observable();
-model.selectedUnitVisionOrbital = ko.observable();
-model.selectedUnitVisionCelestial = ko.observable();
-model.selectedUnitRadarUnderwater = ko.observable();
-model.selectedUnitRadarSurface = ko.observable();
-model.selectedUnitRadarOrbital = ko.observable();
-model.selectedUnitRadarCelestial = ko.observable();
-model.selectedUnitHasVision = ko.observable();
-model.selectedUnitHasRadar = ko.observable();
-
-model.selectedTypeBlueprints = ko.computed(function() {
-	if (model.selectedType() != "") {
-		var blueprintIDs = bif.getBuildableUnitIDsFromArray(bif.getFilteredUnitIDs(model.selectedType()));
-		if ($.inArray("base_commander", blueprintIDs) > -1) {
-			blueprintIDs.splice($.inArray("base_commander", blueprintIDs), 1);
-		}
-		return bif.getBlueprintIDsFromBlueprints(bif.sortBlueprintsByAttribute(bif.getUnitBlueprintsFromArray(blueprintIDs), "display_name", "text", true));
-	} else {
+//Selected Type Data
+model.ud.selectedType = ko.observable(null);
+model.ud.selectedTypeBlueprints = ko.computed(function() {
+	if (model.ud.selectedType() == null) {
 		return [];
 	}
+	var blueprintIDs = bif.getBuildableUnitIDsFromArray(bif.getFilteredUnitIDs(model.ud.selectedType()));
+	if ($.inArray("base_commander", blueprintIDs) > -1) {
+		blueprintIDs.splice($.inArray("base_commander", blueprintIDs), 1);
+	}
+	if ($.inArray("imperial_base", blueprintIDs) > -1) {
+		blueprintIDs.splice($.inArray("imperial_base", blueprintIDs), 1);
+	}
+	return bif.getBlueprintIDsFromBlueprints(bif.sortBlueprintsByAttribute(bif.getUnitBlueprintsFromArray(blueprintIDs), "display_name", "text", true));
 });
 
-model.selectedUnitBlueprint = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		var unitBlueprint = bif.getUnitBlueprintInline(model.selectedUnitBlueprintID());
-		model.selectedUnitVisionUnderwater(null);
-		model.selectedUnitVisionSurface(null);
-		model.selectedUnitVisionOrbital(null);
-		model.selectedUnitVisionCelestial(null);
-		model.selectedUnitRadarUnderwater(null);
-		model.selectedUnitRadarSurface(null);
-		model.selectedUnitRadarOrbital(null);
-		model.selectedUnitRadarCelestial(null);
-		
-		if (unitBlueprint.recon && unitBlueprint.recon.observer && unitBlueprint.recon.observer.items) {
-			for (var i = 0; i < unitBlueprint.recon.observer.items.length; i++) {
-				var reconItem = unitBlueprint.recon.observer.items[i];
-				if (reconItem.channel == "sight") {
-					switch (reconItem.layer) {
-						case "celestial":
-							model.selectedUnitVisionCelestial(reconItem);
-							break;
-						case "orbital":
-							model.selectedUnitVisionOrbital(reconItem);
-							break;
-						case "surface_and_air":
-							model.selectedUnitVisionSurface(reconItem);
-							break;
-					}
-				} 
-				if (reconItem.channel == "radar") {
-					switch (reconItem.layer) {
-						case "celestial":
-							model.selectedUnitRadarCelestial(reconItem);
-							break;
-						case "orbital":
-							model.selectedUnitRadarOrbital(reconItem);
-							break;
-						case "surface_and_air":
-							model.selectedUnitRadarSurface(reconItem);
-							break;
-					}
-				} 
-			}
-		}
-		model.selectedUnitHasVision(model.selectedUnitVisionOrbital() || model.selectedUnitVisionSurface() || model.selectedUnitVisionUnderwater() || model.selectedUnitVisionCelestial());
-		model.selectedUnitHasRadar(model.selectedUnitRadarOrbital() || model.selectedUnitRadarSurface() || model.selectedUnitRadarUnderwater() || model.selectedUnitRadarCelestial());
-		return unitBlueprint;
-	} else {
+//Selected Unit Data
+model.ud.selectedUnitBlueprintID = ko.observable(null);
+model.ud.selectedUnitBlueprint = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return {};
 	}
-});
-
-model.selectedUnitTypes = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		if (model.selectedUnitBlueprint().unit_types != null) {
-			return model.selectedUnitBlueprint().unit_types.map(function(unit_type) { 
-				return unit_type.substring(9, unit_type.length);
-			}).filter(function (el) {
-				return el.substring(0,1) != "_";
-			});
-		} else {
-			return [];
+	
+	var unitBlueprint = bif.getUnitBlueprintInline(model.ud.selectedUnitBlueprintID());
+	
+	var reconData = {
+		"observer": {
+			"radar": {
+				"celestial": 0,
+				"orbital": 0,
+				"surface_and_air": 0
+			},
+			"sight": {
+				"celestial": 0,
+				"orbital": 0,
+				"surface_and_air": 0
+			},
+		},
+		"observable": {
+			"ignore_sight" : false
 		}
-	} else {
-		return [];
-	}
-});
-
-model.selectedUnitBuiltBy = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		var blueprints = bif.getBuildableUnitIDsFromArray(bif.getUnitBuiltByUnitIDs(model.selectedUnitBlueprintID()));
-		
-		if (bif.getUnitIDIsBuiltBy(model.selectedUnitBlueprintID(), "imperial_delta") == true) {
-			blueprints = blueprints.concat(bif.getFilteredUnitIDs("Commander"));
-			blueprints.splice(blueprints.indexOf("base_commander"), 1);
+	};
+	
+	if (unitBlueprint.recon != null) {
+		if(unitBlueprint.recon.observable != null) {
+			reconData["observable"].ignore_sight = unitBlueprint.recon.observable.ignore_sight;
 		}
-		return blueprints;
-	} else {
+		if (unitBlueprint.recon.observer != null) {
+			if (unitBlueprint.recon.observer.items != null) {
+				for (var i = 0; i < unitBlueprint.recon.observer.items.length; i++) {
+					var reconItem = unitBlueprint.recon.observer.items[i];
+					reconData["observer"][reconItem.channel][reconItem.layer] = reconItem.radius;
+				}
+			}
+		}
+	}
+	model.ud.selectedUnitRecon(reconData);
+	model.ud.selectedUnitHasVision(model.ud.selectedUnitRecon()["observer"]["sight"].surface_and_air > 0 || model.ud.selectedUnitRecon()["observer"]["sight"].orbital > 0 || model.ud.selectedUnitRecon()["observer"]["sight"].celestial > 0);
+	model.ud.selectedUnitHasRadar(model.ud.selectedUnitRecon()["observer"]["radar"].surface_and_air > 0 || model.ud.selectedUnitRecon()["observer"]["radar"].orbital > 0 || model.ud.selectedUnitRecon()["observer"]["radar"].celestial > 0);
+	model.ud.selectedUnitHasObservable(model.ud.selectedUnitRecon()["observable"].ignore_sight);
+	model.ud.selectedUnitWreckageFrac(0.5);
+	if (unitBlueprint.wreckage_health_frac != null) {
+		model.ud.selectedUnitWreckageFrac(unitBlueprint.wreckage_health_frac);
+	}
+	
+	model.ud.selectedUnitBlueprintRaw();
+	
+	return unitBlueprint;
+});
+
+model.ud.selectedUnitBlueprintRaw = function() { 
+	var node = new PrettyJSON.view.Node({el:$('#rawBlueprint'),data:bif.sortBlueprintAlphabetically(bif.getUnitBlueprint(model.ud.selectedUnitBlueprintID()))}); 
+	node.expandAll();
+};
+
+model.ud.selectedUnitWreckageFrac = ko.observable();
+model.ud.selectedUnitRecon = ko.observable();
+model.ud.selectedUnitHasVision = ko.observable();
+model.ud.selectedUnitHasRadar = ko.observable();
+model.ud.selectedUnitHasObservable = ko.observable();
+
+model.ud.selectedUnitTypes = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return [];
+	}
+	
+	if (model.ud.selectedUnitBlueprint().unit_types != null) {
+		return model.ud.selectedUnitBlueprint().unit_types.map(function(unit_type) { 
+			return unit_type.substring(9, unit_type.length);
+		}).filter(function (el) {
+			return el.substring(0,1) != "_";
+		});
 	}
 });
 
-
-model.selectedUnitBuilds = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		return bif.getBuildableUnitIDsFromArray(bif.getUnitBuildableTypeUnitIDs(model.selectedUnitBlueprintID()));
-	} else {
+model.ud.selectedUnitBuiltBy = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return [];
 	}
+	
+	var blueprints = bif.getBuildableUnitIDsFromArray(bif.getUnitBuiltByUnitIDs(model.ud.selectedUnitBlueprintID()));
+	
+	if (bif.getUnitIDIsBuiltBy(model.ud.selectedUnitBlueprintID(), "imperial_delta") == true) {
+		blueprints = blueprints.concat(bif.getFilteredUnitIDs("Commander"));
+		blueprints.splice(blueprints.indexOf("base_commander"), 1);
+	}
+	return blueprints;
 });
 
-model.selectedUnitBuildArm = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		var buildArms = bif.getUnitBlueprintBuildArmIDs(model.selectedUnitBlueprintID());
-		return buildArms[0];
-	} else {
+
+model.ud.selectedUnitBuilds = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
+		return [];
+	}
+	return bif.getBuildableUnitIDsFromArray(bif.getUnitBuildableTypeUnitIDs(model.ud.selectedUnitBlueprintID()));
+});
+
+model.ud.selectedUnitBuildArm = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return null;
 	}
+	
+	var buildArms = bif.getUnitBlueprintBuildArmIDs(model.ud.selectedUnitBlueprintID());
+	return buildArms[0];
 });
 
-model.selectedUnitBuildArmMetalDemand = ko.computed(function() {
-	if (model.selectedUnitBuildArm() != null) {
-		return bif.getToolBlueprint(model.selectedUnitBuildArm()).construction_demand.metal;
-	} else {
+model.ud.selectedUnitBuildArmMetalDemand = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null || model.ud.selectedUnitBuildArm() == null) {
 		return null;
 	}
+	return bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).construction_demand.metal;
 });
 
-model.selectedUnitBuildArmMetalDemandOfBuilder = function(unitID) {
-	if (model.selectedUnitBlueprintID() != "") {
-		var buildArms = bif.getUnitBlueprintBuildArmIDs(unitID);
+model.ud.selectedUnitBuildArmMetalDemandOfBuilder = function(unitID) {
+	if (model.ud.selectedUnitBlueprintID() == null) {
+		return null;
+	}
+	
+	var buildArms = bif.getUnitBlueprintBuildArmIDs(unitID);
+	
+	if (bif.getToolBlueprint(buildArms[0])!= null) {
 		return bif.getToolBlueprint(buildArms[0]).construction_demand.metal;
-	} else {
-		return null;
 	}
+	return null;
 }
 
-model.selectedUnitWeapons = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		var unitWeapons = bif.getUnitBlueprintWeaponIDs(model.selectedUnitBlueprintID());
-		var unitWeaponsBlueprint = [];
-		for (var i = 0; i < unitWeapons.length; i++) {
-			unitWeaponsBlueprint[i] = bif.getToolBlueprint(unitWeapons[i]);
-		}
-		return unitWeaponsBlueprint;
-	} else {
+model.ud.selectedUnitWeapons = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return [];
 	}
+	var unitWeapons = bif.getUnitBlueprintWeaponIDs(model.ud.selectedUnitBlueprintID());
+	var unitWeaponsBlueprint = [];
+	for (var i = 0; i < unitWeapons.length; i++) {
+		unitWeaponsBlueprint[i] = bif.getToolBlueprintInline(unitWeapons[i]);
+	}
+	return unitWeaponsBlueprint;
 });
 
-model.selectedUnitHasBuilds = ko.computed(function() {return model.selectedUnitBuilds().length > 0});
-model.selectedUnitHasBuiltBy = ko.computed(function() {return model.selectedUnitBuiltBy().length > 0});
+model.ud.selectedUnitHasBuilds = ko.computed(function() {return model.ud.selectedUnitBuilds().length > 0});
+model.ud.selectedUnitHasBuiltBy = ko.computed(function() {return model.ud.selectedUnitBuiltBy().length > 0});
 
-model.selectedUnitHasFiringCue = ko.computed(function() {
-	if (model.selectedUnitBlueprintID() != "") {
-		if (model.selectedUnitBlueprint().events) {
-			return model.selectedUnitBlueprint().events.firing != null;
-		} else {
-			return false;
-		}
-	} else {
+model.ud.selectedUnitHasFiringCue = ko.computed(function() {
+	if (model.ud.selectedUnitBlueprintID() == null) {
 		return false;
+	}
+	if (model.ud.selectedUnitBlueprint().events != null) {
+		return model.ud.selectedUnitBlueprint().events.firing != null;
 	}
 });
 
 getSortedFilteredUnitList = function(filter) {
+	if (bif.getBIFReady() == false) {
+		return [];
+	}
+	
 	return bif.getBlueprintsArray(bif.sortBlueprintsByBuildOrder(bif.getUnitBlueprintsFromArray(bif.getBuildableUnitIDsFromArray(bif.getFilteredUnitIDs(filter)))));
 }
 
 getSortedUnitListUnbuildable = function(blueprints) {
+	if (bif.getBIFReady() == false) {
+		return [];
+	}
+
 	var unbuildableBlueprints = [];
 	
 	for (var i = 0; i < blueprints.length; i++) {
-		if (bif.getUnitIDIsBuildable(blueprints[i]) == false && (bif.unitHasType(blueprints[i], "UNITTYPE_Commander") == false || blueprints[i] == "base_commander")) {
+		if (bif.getUnitIDIsBuildable(blueprints[i]) == false && (bif.unitHasType(blueprints[i], "UNITTYPE_Commander") == false || blueprints[i] == "base_commander" || blueprints[i] == "imperial_base")) {
 			unbuildableBlueprints.push(blueprints[i]);
 		}
 	}
@@ -214,29 +222,35 @@ getSortedUnitListUnbuildable = function(blueprints) {
 }
 
 bif.registerBIFReadyCallback(function() {
-	model.unitBlueprints_basicBots(getSortedFilteredUnitList("Bot & Basic & Mobile"));
-	model.unitBlueprints_advancedBots(getSortedFilteredUnitList("Bot & Advanced & Mobile"));
-	model.unitBlueprints_basicVehicles(getSortedFilteredUnitList("Tank & Basic & Mobile"));
-	model.unitBlueprints_advancedVehicles(getSortedFilteredUnitList("Tank & Advanced & Mobile"));
-	model.unitBlueprints_basicAircraft(getSortedFilteredUnitList("Air & Basic & Mobile"));
-	model.unitBlueprints_advancedAircraft(getSortedFilteredUnitList("Air & Advanced & Mobile"));
-	model.unitBlueprints_basicNaval(getSortedFilteredUnitList("Naval & Basic & Mobile"));
-	model.unitBlueprints_advancedNaval(getSortedFilteredUnitList("Naval & Advanced & Mobile"));
-	model.unitBlueprints_basicOrbital(getSortedFilteredUnitList("Orbital & Basic & Mobile"));
-	model.unitBlueprints_advancedOrbital(getSortedFilteredUnitList("Orbital & Advanced & Mobile"));
-	model.unitBlueprints_basicStructures(getSortedFilteredUnitList("CmdBuild | FabBuild | CombatFabBuild | (Structure & Basic)"));
-	model.unitBlueprints_advancedStructures(getSortedFilteredUnitList("Structure & FabAdvBuild - (Structure & FabBuild) | (Structure & Advanced)"));
+	model.ud.basicBots(getSortedFilteredUnitList("Bot & Basic & Mobile"));
+	model.ud.advancedBots(getSortedFilteredUnitList("Bot & Advanced & Mobile"));
+	model.ud.basicVehicles(getSortedFilteredUnitList("Tank & Basic & Mobile"));
+	model.ud.advancedVehicles(getSortedFilteredUnitList("Tank & Advanced & Mobile"));
+	model.ud.basicAircraft(getSortedFilteredUnitList("Air & Basic & Mobile"));
+	model.ud.advancedAircraft(getSortedFilteredUnitList("Air & Advanced & Mobile"));
+	model.ud.basicNaval(getSortedFilteredUnitList("Naval & Basic & Mobile"));
+	model.ud.advancedNaval(getSortedFilteredUnitList("Naval & Advanced & Mobile"));
+	model.ud.basicOrbital(getSortedFilteredUnitList("Orbital & Basic & Mobile"));
+	model.ud.advancedOrbital(getSortedFilteredUnitList("Orbital & Advanced & Mobile"));
+	model.ud.basicStructures(getSortedFilteredUnitList("CmdBuild | FabBuild | CombatFabBuild | (Structure & Basic)"));
+	model.ud.advancedStructures(getSortedFilteredUnitList("Structure & FabAdvBuild - (Structure & FabBuild) | (Structure & Advanced)"));
 	
 	var commanders = bif.getUnitBlueprintsFromArray(bif.getFilteredUnitIDs("Commander"));
 	delete commanders["base_commander"];
+	delete commanders["imperial_base"];
 	commanders = bif.getBlueprintsArray(bif.sortBlueprintsByBuildOrder(commanders));
-	model.unitBlueprints_commanders(commanders);
+	model.ud.commanders(commanders);
 
-	model.unitBlueprints_other(getSortedUnitListUnbuildable(bif.getUnitIDs()));
+	model.ud.other(getSortedUnitListUnbuildable(bif.getUnitIDs()));
 });
 
-$('#A11').parent().parent().parent().before('<tr><td class="td_start_menu_item" data-bind="click: function () { model.showUnitDatabase(!model.showUnitDatabase())}"><span class="link_start_menu_item"><a href="#" id="A8" data-bind="click_sound: \'default\', rollover_sound: \'default\'"><span class="start_menu_item_lbl" >UNIT DATABASE</span></a></span></td></tr>');
+//Toggles
+model.ud.showOtherUnits = ko.observable(false);
+model.ud.showUnitDatabase = ko.observable(false);
+model.ud.showUnitInfo = ko.computed(function() {return model.ud.selectedUnitBlueprintID() != null });
+model.ud.showUnitInfoRaw = ko.observable(false);
+model.ud.showTypeInfo = ko.computed(function() {return model.ud.selectedType() != null });
+
+$('#A11').parent().parent().parent().before('<tr><td class="td_start_menu_item" data-bind="click: function () { model.ud.showUnitDatabase(!model.ud.showUnitDatabase())}"><span class="link_start_menu_item"><a href="#" id="A8" data-bind="click_sound: \'default\', rollover_sound: \'default\'"><span class="start_menu_item_lbl" >UNIT DATABASE</span></a></span></td></tr>');
 
 $.get("coui://ui/mods/rUnitDatabase/rUnitDatabase.html", function (data) {$(".fadeContainer").append(data); ko.applyBindings(model, document.getElementById("unitDatabase"));});
-
-

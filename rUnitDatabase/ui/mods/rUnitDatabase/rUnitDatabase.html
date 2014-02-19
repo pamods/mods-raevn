@@ -1,456 +1,461 @@
-<div id="unitDatabase" data-bind="visible: showUnitDatabase">
+
+
+<div id="unitDatabase" data-bind="visible: model.ud.showUnitDatabase">
 <div class="unitDatabase_cont">
 	<div class="unitDatabase_header">
 		<span class="unitDatabase_title">PLANETARY ANNIHILATION UNIT DATABASE</span>
-		<div class="unitDatabase_close" data-bind="click: function() {showUnitDatabase(false)}">X</div>
+		<div class="unitDatabase_close" data-bind="click: function() {model.ud.showUnitDatabase(false)}">X</div>
 	</div>
 	<div class="unitDatabase_units">
 		<div class="unitDatabase_unitsHeading">Bots</div>
-		<!-- ko foreach: unitBlueprints_basicBots -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicBots -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_clear">&nbsp;</div>
-		<!-- ko foreach: unitBlueprints_advancedBots -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.advancedBots -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Vehicles</div>
-		<!-- ko foreach: unitBlueprints_basicVehicles -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicVehicles -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_clear">&nbsp;</div>
-		<!-- ko foreach: unitBlueprints_advancedVehicles -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.advancedVehicles -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Aircraft</div>
-		<!-- ko foreach: unitBlueprints_basicAircraft -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicAircraft -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_clear">&nbsp;</div>
-		<!-- ko foreach: unitBlueprints_advancedAircraft -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.advancedAircraft -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Naval</div>
-		<!-- ko foreach: unitBlueprints_basicNaval -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicNaval -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_clear">&nbsp;</div>
-		<!-- ko foreach: unitBlueprints_advancedNaval -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.advancedNaval -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Orbital</div>
-		<!-- ko foreach: unitBlueprints_basicOrbital -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicOrbital -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_clear">&nbsp;</div>
-		<!-- ko foreach: unitBlueprints_advancedOrbital -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.advancedOrbital -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Basic Structures</div>
-		<!-- ko foreach: unitBlueprints_basicStructures -->
-			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<!-- ko foreach: model.ud.basicStructures -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Advanced Structures</div>
-		<!-- ko foreach: unitBlueprints_advancedStructures -->
-				<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-					<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
-					</a>
-				</div>
+		<!-- ko foreach: model.ud.advancedStructures -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
+				</a>
+			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Commanders</div>
-		<!-- ko foreach: unitBlueprints_commanders -->
-				<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-					<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-						<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
-					</a>
-				</div>
+		<!-- ko foreach: model.ud.commanders -->
+			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
+				</a>
+			</div>
 		<!-- /ko -->
 		<div class="unitDatabase_unitsHeading">Other
-		<!-- ko if: !model.showOtherUnits() -->
-			<div class="unitDatabase_unitsOtherToggle" data-bind="click: function() { model.showOtherUnits(true)}">( SHOW )</div>
+		<!-- ko if: !model.ud.showOtherUnits() -->
+			<div class="unitDatabase_unitsOtherToggle" data-bind="click: function() { model.ud.showOtherUnits(true)}">( SHOW )</div>
 		<!-- /ko -->
-		<!-- ko if: model.showOtherUnits() -->
-			<div class="unitDatabase_unitsOtherToggle" data-bind="click: function() { model.showOtherUnits(false)}">( HIDE )</div>
+		<!-- ko if: model.ud.showOtherUnits() -->
+			<div class="unitDatabase_unitsOtherToggle" data-bind="click: function() { model.ud.showOtherUnits(false)}">( HIDE )</div>
 		<!-- /ko -->
 		</div>
-		<div data-bind="if: model.showOtherUnits()">
-			<!-- ko foreach: unitBlueprints_other -->
-					<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.selectedUnitBlueprintID()}">
-						<a data-bind="click: function () {$parent.selectedUnitBlueprintID($data.id); $parent.selectedType('')}">
-							<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : $data.buildPicture }" /> 
+		<div data-bind="if: model.ud.showOtherUnits()">
+			<!-- ko foreach: model.ud.other -->
+					<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
+						<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+							<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 						</a>
 					</div>
 			<!-- /ko -->
 		</div>
 	</div>
-    <!-- ko if: showUnitInfo -->
+    <!-- ko if: model.ud.showUnitInfo() -->
 		<div class="unitDatabase_unitInfo">
-			<img class="unitDatabase_unitPicture" src="" data-bind="attr: { src: model.selectedUnitBlueprint().buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : model.selectedUnitBlueprint().buildPicture }" /> 
-			<div class="unitDatabase_unitName" data-bind="text: model.selectedUnitBlueprint().display_name ? model.selectedUnitBlueprint().display_name : '[' + model.selectedUnitBlueprint().id + ']'"></div>
-			<div class="unitDatabase_unitDescription" data-bind="text: model.selectedUnitBlueprint().description"></div>
-			<div class="unitDatabase_unitDetailCont" data-bind="if: model.selectedUnitBlueprint().max_health"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/hp.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().max_health"></span></div>
-			<div class="unitDatabase_unitDetailCont" data-bind="if: model.selectedUnitBlueprint().build_metal_cost"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().build_metal_cost"></span></div>
-			<div class="unitDatabase_unitDetailCont unitDatabase_unitID" data-bind="text: '[ ' + model.selectedUnitBlueprint().id + ' ]'"></div>
-			<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_unitStrategicIcon" src="" data-bind="attr: { src: model.selectedUnitBlueprint().strategicIcon }" /></div>
-			
-			<div class="unitDatabase_unitTypes">
-				<!-- ko foreach: selectedUnitTypes -->
-					<!-- ko if: $index -->
-						<span class="unitDatabase_unitTypesSeparator"> | </span>
-					<!-- /ko -->
-					<span class="unitDatabase_unitType" data-bind="text: $data, click: function() {$parent.selectedUnitBlueprintID(''); $parent.selectedType($data)}"></span>
-				<!-- /ko -->
-			</div>
-			<div class="unitDatabase_unitDetailSectionHeading"></div>
-			<div class="unitDatabase_unitDetailSectionHeading"></div>
-			
-			<!-- ko if: selectedUnitBlueprint().command_caps || (model.selectedUnitBlueprint().consumption && model.selectedUnitBlueprint().consumption.energy) || bif.unitHasType(selectedUnitBlueprintID(),"UNITTYPE_Structure") || model.selectedUnitBlueprint().spawn_layers || model.selectedUnitBlueprint().feature_requirements || bif.unitHasType(selectedUnitBlueprintID(),"UNITTYPE_Mobile") || model.selectedUnitBlueprint().transportable || model.selectedUnitBlueprint().transporter -->
-				<div class="unitDatabase_unitDetailSectionHeading">General</div>
-			<!-- /ko -->
-			<!-- ko if: selectedUnitBlueprint().command_caps || (model.selectedUnitBlueprint().consumption && model.selectedUnitBlueprint().consumption.energy) -->
-				<div class="unitDatabase_unitDetailSectionSubHeading">Commands: </div><div class="unitDatabase_unitDetailCont"></div>
-				<div class="unitDatabase_unitDetailCont">
-					<!-- ko foreach: selectedUnitBlueprint().command_caps -->
-						<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/' + $data + '.png'}">
-						<!-- ko if: $data == "ORDER_FactoryBuild" -->
-							<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_BuildContinuous.png'}">
-							<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_BuildNormal.png'}">
+			<img class="unitDatabase_unitPicture" src="" data-bind="attr: { src: model.ud.selectedUnitBlueprint().buildPicture == null ? (model.ud.selectedUnitBlueprint().base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : model.ud.selectedUnitBlueprint().buildPicture }" /> 
+			<div class="unitDatabase_unitName" data-bind="text: model.ud.selectedUnitBlueprint().display_name ? model.ud.selectedUnitBlueprint().display_name : '[ ' + model.ud.selectedUnitBlueprint().id + ' ]'"></div>
+			<div class="unitDatabase_unitDescription" data-bind="text: model.ud.selectedUnitBlueprint().description"></div>
+			<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_unitStrategicIcon" src="" data-bind="attr: { src: model.ud.selectedUnitBlueprint().strategicIcon }" /></div>
+			<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitBlueprint().max_health"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/hp.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().max_health"></span></div>
+			<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitBlueprint().build_metal_cost"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().build_metal_cost"></span></div>
+			<!-- ko if: model.ud.showUnitInfoRaw() == true -->
+				<div class="unitDatabase_unitDetailCont unitDatabase_unitID">[ <span class="unitDatabase_showRawHover" data-bind="click: function() {model.ud.showUnitInfoRaw(false)}, text: model.ud.selectedUnitBlueprint().id"></span> ]</div>
+				
+				<div class="unitDatabase_unitTypes">
+					<!-- ko foreach: model.ud.selectedUnitTypes -->
+						<!-- ko if: $index -->
+							<span class="unitDatabase_unitSeparator"> | </span>
 						<!-- /ko -->
-					<!-- /ko -->
-					<!-- ko if: model.selectedUnitBlueprint().consumption && model.selectedUnitBlueprint().consumption.energy -->
-						<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_EnergyNormal.png'}">
-						<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_EnergyHold.png'}">
+						<span class="unitDatabase_unitType" data-bind="text: $data, click: function() {$parent.ud.selectedUnitBlueprintID(null); $parent.ud.selectedType($data)}"></span>
 					<!-- /ko -->
 				</div>
-			<!-- /ko -->
-			
-			<!-- ko if: bif.unitHasType(selectedUnitBlueprintID(),"UNITTYPE_Structure") -->
-				<!-- ko if: model.selectedUnitBlueprint().building_skirt -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Skirt: </div>
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().building_skirt[0] + ' x ' + model.selectedUnitBlueprint().building_skirt[1]"></span></div>
-				<!-- /ko -->
-			<!-- /ko -->
 				
-			<!-- ko if: model.selectedUnitBlueprint().spawn_layers -->
-				<div class="unitDatabase_unitDetailSectionSubHeading">Build layers: </div>
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_Air" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Air</span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_LandHorizontal" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Land</span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_AnyHorizontalGroundOrWaterSurface" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Land, Water</span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_AnySurface" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Land, Water</span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_WaterSurface" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Water</span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().spawn_layers == "WL_Orbital" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Orbital</span></div>
-				<!-- /ko -->
-			<!-- /ko -->
-				
-			<!-- ko if: model.selectedUnitBlueprint().feature_requirements -->
-				<div class="unitDatabase_unitDetailSectionSubHeading">Build Restrictions: </div>
-				<!-- ko if: model.selectedUnitBlueprint().feature_requirements[0] == "metal_spot" -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Metal spots only</span></div>
-				<!-- /ko -->
-			<!-- /ko -->
-			
-			<!-- ko if: bif.unitHasType(selectedUnitBlueprintID(),"UNITTYPE_Mobile") -->
-				<!-- ko if: model.selectedUnitBlueprint().navigation -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Movement: </div>
-					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/max_speed.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().navigation.move_speed + 'm/s'"></span></div>
-					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/acceleration.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().navigation.acceleration + 'm/s/s'"></span></div>
-					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/brake.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().navigation.brake + 'm/s/s'"></span></div>
-					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().navigation.turn_speed + '°/s'"></span></div>
-					<div class="unitDatabase_unitDetailSectionSubHeading">Movement Class: </div>
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().navigation.type"></span></div>
-				<!-- /ko -->
-			<!-- /ko -->
-			
-			
-			
-			<!-- ko if: model.selectedUnitBlueprint().transportable || model.selectedUnitBlueprint().transporter -->
-				<div class="unitDatabase_unitDetailSectionSubHeading">Capabilities: </div>
-				<!-- ko if: model.selectedUnitBlueprint().transporter -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: 'transport (' + model.selectedUnitBlueprint().transporter.capacity + ')'"></span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().transportable -->
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">transportable</span></div>
-				<!-- /ko -->
-			<!-- /ko -->
-			<div class="unitDatabase_clear">&nbsp;</div>
-			
-			<!-- ko if: selectedUnitHasVision() || selectedUnitHasRadar() -->
-				<div class="unitDatabase_unitDetailSectionHeading">Intel</div>
-				<!-- ko if: selectedUnitHasVision() -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Vision: </div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitVisionCelestial()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_celestial.png"> <span class="unitDatabase_unitDetail">CELESTIAL</span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitVisionOrbital()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_orbital.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitVisionOrbital().radius + 'm'"></span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitVisionSurface()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_surface.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitVisionSurface().radius + 'm'"></span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitVisionUnderwater()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_underwater.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitVisionUnderwater().radius + 'm'"></span></div>
-				<!-- /ko -->
-				
-				<!-- ko if: selectedUnitHasRadar() -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Radar: </div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitRadarCelestial()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_celestial.png"> <span class="unitDatabase_unitDetail">CELESTIAL</span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitRadarOrbital()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_orbital.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitRadarOrbital().radius + 'm'"></span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitRadarSurface()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_surface.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitRadarSurface().radius + 'm'"></span></div>
-					<div class="unitDatabase_unitDetailCont" data-bind="if: selectedUnitRadarUnderwater()"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_underwater.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitRadarUnderwater().radius + 'm'"></span></div>
-				<!-- /ko -->
+				<div class="unitDatabase_unitDetailSectionHeading"></div>
 				<div class="unitDatabase_clear">&nbsp;</div>
+				
+				<div class="unitDatabase_raw" id="rawBlueprint">
+				
+				</div>
 			<!-- /ko -->
-			
-			<!-- ko if: model.selectedUnitBlueprint().production || model.selectedUnitBlueprint().consumption || model.selectedUnitBlueprint().storage || model.selectedUnitBlueprint().energy_efficiency_requirement -->
-				<div class="unitDatabase_unitDetailSectionHeading">Economy</div>
-				<!-- ko if: model.selectedUnitBlueprint().production -->
-					<!-- ko if: model.selectedUnitBlueprint().production.metal -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Metal Production: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().production.metal"></span></div>
-					<!-- /ko -->
-					<!-- ko if: model.selectedUnitBlueprint().production.energy -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Energy Production: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().production.energy"></span></div>
-					<!-- /ko -->
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().consumption -->
-					<!-- ko if: model.selectedUnitBlueprint().consumption.metal -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Metal Consumption: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().consumption.metal"></span></div>
-					<!-- /ko -->
-					<!-- ko if: model.selectedUnitBlueprint().consumption.energy -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Energy Consumption: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().consumption.energy"></span></div>
-					<!-- /ko -->
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().energy_efficiency_requirement -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Energy Efficiency Requirement: </div>
-					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().energy_efficiency_requirement * 100 + '%'"></span></div>
-				<!-- /ko -->
-				<!-- ko if: model.selectedUnitBlueprint().storage -->
-					<!-- ko if: model.selectedUnitBlueprint().storage.metal -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Metal Storage: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().storage.metal"></span></div>
-					<!-- /ko -->
-					<!-- ko if: model.selectedUnitBlueprint().storage.energy -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Energy Storage: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.selectedUnitBlueprint().storage.energy"></span></div>
-					<!-- /ko -->
-				<!-- /ko -->
-				<div class="unitDatabase_clear">&nbsp;</div>
-			<!-- /ko -->
-			
-			
-			<!-- ko if: selectedUnitWeapons().length -->
-				<!-- ko foreach: selectedUnitWeapons -->
-					<div class="unitDatabase_unitDetailSectionHeading noClear" data-bind="text: 'Weapon: ' + $data.id"></div>
-					<!-- ko if: $parent.selectedUnitHasFiringCue() -->
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/sound.png" data-bind="click_sound: $parent.selectedUnitBlueprint().events.firing.audio_cue"></div>
-					<!-- /ko -->
-					<div class="unitDatabase_clear"></div>
-					
-					<!-- ko if: $data.target_layers -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Targets: </div>
-						<!-- ko foreach: $data.target_layers -->
-							<span class="unitDatabase_unitDetail unitDatabase_unitTypesSeparator" data-bind="if: $index">|</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Air' || $data == 'Air'">Air</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Orbital'">Orbital</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_AnySurface'">Land, Water Surface</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_LandHorizontal'">Land</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_WaterSurface'">Water Surface</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Underwater'">Underwater</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Seafloor'">Sea Floor</span>
-							<span class="unitDatabase_unitDetail" data-bind="if: $parent.target_layers.length == 1">&nbsp;</span>
+			<!-- ko if: model.ud.showUnitInfoRaw() != true -->
+				<div class="unitDatabase_unitDetailCont unitDatabase_unitID">[ <span class="unitDatabase_showRawHover" data-bind="click: function() {model.ud.showUnitInfoRaw(true); model.ud.selectedUnitBlueprintRaw()}, text: model.ud.selectedUnitBlueprint().id"></span> ]</div>
+				
+				<div class="unitDatabase_unitTypes">
+					<!-- ko foreach: model.ud.selectedUnitTypes -->
+						<!-- ko if: $index -->
+							<span class="unitDatabase_unitSeparator"> | </span>
 						<!-- /ko -->
+						<span class="unitDatabase_unitType" data-bind="text: $data, click: function() {$parent.ud.selectedUnitBlueprintID(null); $parent.ud.selectedType($data)}"></span>
 					<!-- /ko -->
-					<div class="unitDatabase_unitDetailContClear"></div>
-					<!-- ko if: $data.ammo_blueprint.damage && $data.ammo_blueprint.damage != 0 -->
-						<div class="unitDatabase_unitDetailCont">
-							<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/damage.png"> <span class="unitDatabase_unitDetail" data-bind="text: +($data.ammo_blueprint.damage).toFixed(2) + ' damage'"></span>
-							<span class="unitDatabase_unitDetail" data-bind="text: ' every ' + (1 / $data.rate_of_fire).toFixed(2) + ' seconds'"></span>
-							<span class="unitDatabase_unitDetail" data-bind="text: '(' + $data.ammo_blueprint.damage / (1 / $data.rate_of_fire) + ' dps)'"></span>
-						</div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/weapon_range.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.max_range + 'm'"></span></div>
-					<!-- /ko -->
-					<!-- ko if: $data.ammo_blueprint.splash_damage && $data.ammo_blueprint.splash_damage != 0 -->
-						<div class="unitDatabase_unitDetailContClear">
-							<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/damage.png"> <span class="unitDatabase_unitDetail" data-bind="text: +($data.ammo_blueprint.splash_damage).toFixed(2) + ' splash damage in '"></span>
-							<span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.splash_radius + 'm radius'"></span>
-							<!-- ko if: $data.ammo_blueprint.splash_damages_allies -->
-								<span class="unitDatabase_unitDetail"> DAMAGES ALLIES</span>
+				</div>
+				<div class="unitDatabase_unitDetailSectionHeading"></div>
+				
+				<!-- ko if: model.ud.selectedUnitBlueprint().inherited -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().inherited.length > 0 -->
+					<div class="unitDatabase_unitDetailSectionHeading">Blueprint</div>
+					<div class="unitDatabase_unitDetailSectionSubHeading">Inherited By: </div>
+							<!-- ko foreach: model.ud.selectedUnitBlueprint().inherited -->
+								<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitSeparator" data-bind="if: $index">|</span></div>
+								<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail unitDatabase_unitInherited" data-bind="text: bif.getUnitName($data), click: function() {$parent.ud.selectedUnitBlueprintID($data)}"></span></div>
 							<!-- /ko -->
-						</div>
 					<!-- /ko -->
-					<!-- ko if: $data.ammo_blueprint.ammo_type != "PBAOE" -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Projectile: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/max_speed.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.initial_velocity + 'm/s'"></span></div>
-						<!-- ko if: $data.ammo_blueprint.turn_rate != 0 && $data.ammo_blueprint.turn_rate -->
-							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.turn_rate + '°/s'"></span></div>
-						<!-- /ko -->
-						<!-- <div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.lifetime + 's'"></span></div> -->
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/projectile.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.flight_type"></span></div>	
-					<!-- /ko -->
-					<!-- ko if: $data.ammo_per_shot -->
-						<div class="unitDatabase_unitDetailSectionSubHeading">Projectile Cost: </div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_per_shot"></span></div>
-						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: '-' + $data.ammo_demand + ' drain'"></span></div>
-						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: ' (' + ($data.ammo_capacity / $data.ammo_per_shot) + ' shots stored)'"></span></div>
-					<!-- /ko -->
-					<div class="unitDatabase_clear"></div>
-
-					<!--
-					<table>
-						<tr>
-							<td>
-								<div class="unitDatabase_unitDetailSectionSubHeading">Range: </div>
-							</td>
-							<td>
-								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/weapon_range.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.max_range + 'm'"></span></div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div class="unitDatabase_unitDetailSectionSubHeading">Pitch: </div>
-							</td>
-							<td>
-								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/pitch.png"><span class="unitDatabase_unitDetail" data-bind="text: $data.pitch_range + '°'"></span></div>
-								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.pitch_rate + '°/s'"></span></div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div class="unitDatabase_unitDetailSectionSubHeading">Yaw: </div>
-							</td>
-							<td>
-								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/yaw.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.yaw_range + '°'"></span></div>
-								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.yaw_rate + '°/s'"></span></div>
-							</td>
-						</tr>
-					</table>
-					-->
 					<div class="unitDatabase_clear">&nbsp;</div>
 				<!-- /ko -->
-			<!-- /ko -->
-			
-			
-			
-			<!-- ko if: selectedUnitBuildArm -->
-				<div class="unitDatabase_unitDetailSectionHeading">Construction</div>
-				<div class="unitDatabase_unitDetailSectionSubHeading">Demand: </div>
-				<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: bif.getToolBlueprint(model.selectedUnitBuildArm()).construction_demand.metal"></span></div>
-				<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: bif.getToolBlueprint(model.selectedUnitBuildArm()).construction_demand.energy"></span></div>
-				<div class="unitDatabase_unitDetailSectionSubHeading">Efficiency: </div>
-				<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: (bif.getToolBlueprint(model.selectedUnitBuildArm()).construction_demand.energy / bif.getToolBlueprint(model.selectedUnitBuildArm()).construction_demand.metal).toFixed(2) + ' e/m'"></span></div>
-				<!-- ko if: bif.getToolBlueprint(model.selectedUnitBuildArm()).max_range -->
-					<div class="unitDatabase_unitDetailSectionSubHeading">Range: </div>
-					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/build_range.png"> <span class="unitDatabase_unitDetail" data-bind="text: bif.getToolBlueprint(model.selectedUnitBuildArm()).max_range + 'm'"></span></div>
+				
+				<!-- ko if: model.ud.selectedUnitBlueprint().command_caps || (model.ud.selectedUnitBlueprint().consumption && model.ud.selectedUnitBlueprint().consumption.energy) || bif.unitHasType(model.ud.selectedUnitBlueprintID(),"UNITTYPE_Structure") || model.ud.selectedUnitBlueprint().spawn_layers || model.ud.selectedUnitBlueprint().feature_requirements || bif.unitHasType(model.ud.selectedUnitBlueprintID(),"UNITTYPE_Mobile") || model.ud.selectedUnitBlueprint().transportable || model.ud.selectedUnitBlueprint().transporter -->
+					<div class="unitDatabase_unitDetailSectionHeading">General</div>
+				<!-- /ko -->
+				<!-- ko if: model.ud.selectedUnitBlueprint().command_caps || (model.ud.selectedUnitBlueprint().consumption && model.ud.selectedUnitBlueprint().consumption.energy) -->
+					<div class="unitDatabase_unitDetailSectionSubHeading">Commands: </div><div class="unitDatabase_unitDetailCont"></div>
+					<div class="unitDatabase_unitDetailCont">
+						<!-- ko foreach: model.ud.selectedUnitBlueprint().command_caps -->
+							<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/' + $data + '.png'}">
+							<!-- ko if: $data == "ORDER_FactoryBuild" -->
+								<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_BuildContinuous.png'}">
+								<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_BuildNormal.png'}">
+							<!-- /ko -->
+						<!-- /ko -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().consumption && model.ud.selectedUnitBlueprint().consumption.energy -->
+							<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_EnergyNormal.png'}">
+							<img width="24" height="24" src="" data-bind="attr: {src: 'coui://ui/mods/rUnitDatabase/img/ORDER_EnergyHold.png'}">
+						<!-- /ko -->
+					</div>
+				<!-- /ko -->
+				
+				<!-- ko if: bif.unitHasType(model.ud.selectedUnitBlueprintID(),"UNITTYPE_Structure") -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().building_skirt -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Skirt: </div>
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().building_skirt[0] + ' x ' + model.ud.selectedUnitBlueprint().building_skirt[1]"></span></div>
+					<!-- /ko -->
+				<!-- /ko -->
+					
+				<!-- ko if: model.ud.selectedUnitBlueprint().spawn_layers -->
+					<div class="unitDatabase_unitDetailSectionSubHeading">Build layers: </div>
+					<div class="unitDatabase_unitDetailCont">
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_Air'">Air</span>
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_LandHorizontal'">Land</span>
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_AnyHorizontalGroundOrWaterSurface'">Land, Water</span>
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_AnySurface'">Land, Water</span>
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_WaterSurface'">Water</span>
+						<span class="unitDatabase_unitDetail" data-bind="if: model.ud.selectedUnitBlueprint().spawn_layers == 'WL_Orbital'">Orbital</span>
+					</div>
+				<!-- /ko -->
+					
+				<!-- ko if: model.ud.selectedUnitBlueprint().feature_requirements -->
+					<div class="unitDatabase_unitDetailSectionSubHeading">Build Restrictions: </div>
+					<!-- ko if: model.ud.selectedUnitBlueprint().feature_requirements[0] == "metal_spot" -->
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">Metal spots only</span></div>
+					<!-- /ko -->
+				<!-- /ko -->
+				
+				<!-- ko if: bif.unitHasType(model.ud.selectedUnitBlueprintID(),"UNITTYPE_Mobile") -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().navigation -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Movement: </div>
+						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/max_speed.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().navigation.move_speed + ' m/s'"></span>
+							<!-- ko if: model.ud.selectedUnitBlueprint().celestial_velocity_multiplier -->
+								<span class="unitDatabase_unitDetail" data-bind="text: '(  x' + model.ud.selectedUnitBlueprint().celestial_velocity_multiplier + ' celestial )'"></span>
+							<!-- /ko -->
+						</div>
+						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/acceleration.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().navigation.acceleration + ' m/s/s'"></span></div>
+						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/brake.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().navigation.brake + ' m/s/s'"></span></div>
+						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().navigation.turn_speed + ' °/s'"></span></div>
+						<div class="unitDatabase_unitDetailSectionSubHeading">Movement Class: </div>
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().navigation.type"></span></div>
+					<!-- /ko -->
+				<!-- /ko -->
+				
+				
+				
+				<!-- ko if: model.ud.selectedUnitBlueprint().transportable || model.ud.selectedUnitBlueprint().transporter -->
+					<div class="unitDatabase_unitDetailSectionSubHeading">Capabilities: </div>
+					<!-- ko if: model.ud.selectedUnitBlueprint().transporter -->
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: 'transport (' + model.ud.selectedUnitBlueprint().transporter.capacity + ')'"></span></div>
+					<!-- /ko -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().transportable -->
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">transportable</span></div>
+					<!-- /ko -->
 				<!-- /ko -->
 				<div class="unitDatabase_clear">&nbsp;</div>
-			<!-- /ko -->
-			
-			<table class="unitDatabase_unitDetailTable">
-				<tr>
-					<!-- ko if: selectedUnitHasBuilds() || model.selectedUnitBlueprint().buildable_projectiles -->
-						<td>
-							<div class="unitDatabase_unitDetailSectionHeading">Builds</div>
-							<!-- ko foreach: selectedUnitBuilds -->
+				
+				<!-- ko if: model.ud.selectedUnitHasVision() || model.ud.selectedUnitHasRadar() || model.ud.selectedUnitHasObservable() -->
+					<div class="unitDatabase_unitDetailSectionHeading">Intel</div>
+					<!-- ko if: model.ud.selectedUnitHasVision() -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Sight: </div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['sight'].celestial > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_celestial.png"> <span class="unitDatabase_unitDetail">CELESTIAL</span></div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['sight'].orbital > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_orbital.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitRecon()['observer']['sight'].orbital + 'm'"></span></div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['sight'].surface_and_air > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_surface.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitRecon()['observer']['sight'].surface_and_air + 'm'"></span></div>
+					<!-- /ko -->				
+					<!-- ko if: model.ud.selectedUnitHasRadar() -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Radar: </div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['radar'].celestial > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_celestial.png"> <span class="unitDatabase_unitDetail">CELESTIAL</span></div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['radar'].orbital > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_orbital.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitRecon()['observer']['radar'].orbital + 'm'"></span></div>
+						<div class="unitDatabase_unitDetailCont" data-bind="if: model.ud.selectedUnitRecon()['observer']['radar'].surface_and_air > 0"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/intel_surface.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitRecon()['observer']['radar'].surface_and_air + 'm'"></span></div>
+					<!-- /ko -->
+					<!-- ko if: model.ud.selectedUnitHasObservable() -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Counter-Intel: </div>
+						<!-- ko if: model.ud.selectedUnitRecon()['observable'].ignore_sight -->
+							<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail">INVISIBLE</span></div>
+						<!-- /ko -->
+					<!-- /ko -->
+					<div class="unitDatabase_clear">&nbsp;</div>
+				<!-- /ko -->
+				
+				<!-- ko if: model.ud.selectedUnitBlueprint().production || model.ud.selectedUnitBlueprint().consumption || model.ud.selectedUnitBlueprint().storage || model.ud.selectedUnitBlueprint().energy_efficiency_requirement -->
+					<div class="unitDatabase_unitDetailSectionHeading">Economy</div>
+					<!-- ko if: model.ud.selectedUnitBlueprint().production -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().production.metal -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Metal Production: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().production.metal"></span></div>
+						<!-- /ko -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().production.energy -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Energy Production: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().production.energy"></span></div>
+						<!-- /ko -->
+					<!-- /ko -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().consumption -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().consumption.metal -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Metal Consumption: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().consumption.metal"></span></div>
+						<!-- /ko -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().consumption.energy -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Energy Consumption: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().consumption.energy"></span></div>
+						<!-- /ko -->
+					<!-- /ko -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().energy_efficiency_requirement -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Energy Efficiency Requirement: </div>
+						<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().energy_efficiency_requirement * 100 + '%'"></span></div>
+					<!-- /ko -->
+					<!-- ko if: model.ud.selectedUnitBlueprint().storage -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().storage.metal -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Metal Storage: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().storage.metal"></span></div>
+						<!-- /ko -->
+						<!-- ko if: model.ud.selectedUnitBlueprint().storage.energy -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Energy Storage: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitBlueprint().storage.energy"></span></div>
+						<!-- /ko -->
+					<!-- /ko -->
+					<div class="unitDatabase_clear">&nbsp;</div>
+				<!-- /ko -->
+				
+				
+				<!-- ko if: model.ud.selectedUnitWeapons().length -->
+					<!-- ko foreach: model.ud.selectedUnitWeapons -->
+						<div class="unitDatabase_unitDetailSectionHeading noClear" data-bind="text: 'Weapon: ' + $data.id"></div>
+						<!-- ko if: $parent.ud.selectedUnitHasFiringCue() -->
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/sound.png" data-bind="click_sound: $parent.ud.selectedUnitBlueprint().events.firing.audio_cue"></div>
+						<!-- /ko -->
+						<div class="unitDatabase_clear"></div>
+						
+						<!-- ko if: $data.target_layers -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Targets: </div>
+							<!-- ko foreach: $data.target_layers -->
+								<span class="unitDatabase_unitDetail unitDatabase_unitTypesSeparator" data-bind="if: $index">|</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Air' || $data == 'Air'">Air</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Orbital'">Orbital</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_AnySurface'">Land, Water Surface</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_LandHorizontal'">Land</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_WaterSurface'">Water Surface</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Underwater'">Underwater</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $data == 'WL_Seafloor'">Sea Floor</span>
+								<span class="unitDatabase_unitDetail" data-bind="if: $parent.target_layers.length == 1">&nbsp;</span>
+							<!-- /ko -->
+						<!-- /ko -->
+						<div class="unitDatabase_unitDetailContClear"></div>
+						<!-- ko if: $data.ammo_blueprint.damage && $data.ammo_blueprint.damage != 0 -->
+							<div class="unitDatabase_unitDetailCont">
+								<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/damage.png"> <span class="unitDatabase_unitDetail" data-bind="text: +($data.ammo_blueprint.damage).toFixed(2) + ' damage'"></span>
+								<span class="unitDatabase_unitDetail" data-bind="text: ' every ' + (1 / $data.rate_of_fire).toFixed(2) + ' seconds'"></span>
+								<span class="unitDatabase_unitDetail" data-bind="text: '(' + $data.ammo_blueprint.damage / (1 / $data.rate_of_fire) + ' dps)'"></span>
+							</div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/weapon_range.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.max_range + 'm'"></span></div>
+						<!-- /ko -->
+						<!-- ko if: $data.ammo_blueprint.splash_damage && $data.ammo_blueprint.splash_damage != 0 -->
+							<div class="unitDatabase_unitDetailContClear">
+								<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/damage.png"> <span class="unitDatabase_unitDetail" data-bind="text: +($data.ammo_blueprint.splash_damage).toFixed(2) + ' splash damage in '"></span>
+								<span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.splash_radius + 'm radius'"></span>
+								<!-- ko if: $data.ammo_blueprint.splash_damages_allies -->
+									<span class="unitDatabase_unitDetail"> DAMAGES ALLIES</span>
+								<!-- /ko -->
+							</div>
+						<!-- /ko -->
+						<!-- ko if: $data.ammo_blueprint.ammo_type != "PBAOE" -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Projectile: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/max_speed.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.initial_velocity + 'm/s'"></span></div>
+							<!-- ko if: $data.ammo_blueprint.turn_rate != 0 && $data.ammo_blueprint.turn_rate -->
+								<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/turn.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.turn_rate + '°/s'"></span></div>
+							<!-- /ko -->
+							<!-- <div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.lifetime + 's'"></span></div> -->
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/projectile.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_blueprint.flight_type"></span></div>	
+						<!-- /ko -->
+						<!-- ko if: $data.ammo_per_shot -->
+							<div class="unitDatabase_unitDetailSectionSubHeading">Projectile Cost: </div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: $data.ammo_per_shot"></span></div>
+							<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: '-' + $data.ammo_demand + ' drain'"></span></div>
+							<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: ' (' + ($data.ammo_capacity / $data.ammo_per_shot) + ' shots stored)'"></span></div>
+						<!-- /ko -->
+						<div class="unitDatabase_clear"></div>
+						<div class="unitDatabase_clear">&nbsp;</div>
+					<!-- /ko -->
+				<!-- /ko -->
+				
+				<!-- ko if: model.ud.selectedUnitBlueprint().max_health -->
+					<div class="unitDatabase_unitDetailSectionHeading">Wreckage</div>
+					<div class="unitDatabase_unitDetailSectionSubHeading">Health: </div>
+					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: model.ud.selectedUnitWreckageFrac() * model.ud.selectedUnitBlueprint().max_health"></span></div>	
+					<div class="unitDatabase_clear">&nbsp;</div>
+				<!-- /ko -->
+				
+				<!-- ko if: model.ud.selectedUnitBuildArm -->
+					<div class="unitDatabase_unitDetailSectionHeading">Construction</div>
+					<div class="unitDatabase_unitDetailSectionSubHeading">Demand: </div>
+					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/metal.png"> <span class="unitDatabase_unitDetail" data-bind="text: bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).construction_demand.metal"></span></div>
+					<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/energy.png"> <span class="unitDatabase_unitDetail" data-bind="text: bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).construction_demand.energy"></span></div>
+					<div class="unitDatabase_unitDetailSectionSubHeading">Efficiency: </div>
+					<div class="unitDatabase_unitDetailCont"><span class="unitDatabase_unitDetail" data-bind="text: (bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).construction_demand.energy / bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).construction_demand.metal).toFixed(2) + ' e/m'"></span></div>
+					<!-- ko if: bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).max_range -->
+						<div class="unitDatabase_unitDetailSectionSubHeading">Range: </div>
+						<div class="unitDatabase_unitDetailCont"><img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/build_range.png"> <span class="unitDatabase_unitDetai l" data-bind="text: bif.getToolBlueprint(model.ud.selectedUnitBuildArm()).max_range + 'm'"></span></div>
+					<!-- /ko -->
+					<div class="unitDatabase_clear">&nbsp;</div>
+				<!-- /ko -->
+				
+				<table class="unitDatabase_unitDetailTable">
+					<tr>
+						<!-- ko if: model.ud.selectedUnitHasBuilds() || model.ud.selectedUnitBlueprint().buildable_projectiles -->
+							<td>
+								<div class="unitDatabase_unitDetailSectionHeading">Builds</div>
+								<!-- ko foreach: model.ud.selectedUnitBuilds -->
+										<div class="unitDatabase_unitBuildEntry">
+											<div class="unitDatabase_unitBuildEntryPicture">
+												<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
+												<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : bif.getUnitBlueprint($data).buildPicture }" /> 
+											</div>
+											<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.ud.selectedUnitBlueprintID($data);}"></div>
+											<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +(bif.getUnitBlueprint($data).build_metal_cost / $parent.ud.selectedUnitBuildArmMetalDemand()).toFixed(2) + 's'"></div>
+										</div>
+								<!-- /ko -->
+								<!-- ko foreach: model.ud.selectedUnitBlueprint().buildable_projectiles -->
+									<div class="unitDatabase_unitBuildEntry">
+										<div class="unitDatabase_unitBuildEntryPicture">
+											<img class="img_build_unitSI" src="" data-bind="attr: { src: 'coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_' + bif.getBlueprintIDFromPath($data) + '.png' }" /> 
+											<img class="img_build_unit" src="" data-bind="attr: { src: 'coui://ui/alpha/live_game/img/build_bar/units/' + bif.getBlueprintIDFromPath($data) + '.png' }" /> 
+										</div>
+										<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +(bif.getAmmoBlueprint(bif.getBlueprintIDFromPath($data)).build_metal_cost / $parent.ud.selectedUnitBuildArmMetalDemand()).toFixed(2) + 's'"></div>
+									</div>
+								<!-- /ko -->
+							</td>
+						<!-- /ko -->
+						<!-- ko if: model.ud.selectedUnitHasBuiltBy() -->
+							<td>
+								<div class="unitDatabase_unitDetailSectionHeading">Built By</div>
+								<!-- ko foreach: model.ud.selectedUnitBuiltBy -->
 									<div class="unitDatabase_unitBuildEntry">
 										<div class="unitDatabase_unitBuildEntryPicture">
 											<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-											<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture }" /> 
+											<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : bif.getUnitBlueprint($data).buildPicture}" /> 
 										</div>
-										<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
-										<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +(bif.getUnitBlueprint($data).build_metal_cost / $parent.selectedUnitBuildArmMetalDemand()).toFixed(2) + 's'"></div>
+										<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.ud.selectedUnitBlueprintID($data)}"></div>
+										<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +($parent.ud.selectedUnitBlueprint().build_metal_cost / $parent.ud.selectedUnitBuildArmMetalDemandOfBuilder($data)).toFixed(2) + 's'"></div>
 									</div>
-							<!-- /ko -->
-							<!-- ko foreach: model.selectedUnitBlueprint().buildable_projectiles -->
-								<div class="unitDatabase_unitBuildEntry">
-									<div class="unitDatabase_unitBuildEntryPicture">
-										<img class="img_build_unitSI" src="" data-bind="attr: { src: 'coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_' + bif.getBlueprintIDFromPath($data) + '.png' }" /> 
-										<img class="img_build_unit" src="" data-bind="attr: { src: 'coui://ui/alpha/live_game/img/build_bar/units/' + bif.getBlueprintIDFromPath($data) + '.png' }" /> 
-									</div>
-									<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +(bif.getAmmoBlueprint(bif.getBlueprintIDFromPath($data)).build_metal_cost / $parent.selectedUnitBuildArmMetalDemand()).toFixed(2) + 's'"></div>
-								</div>
-							<!-- /ko -->
-						</td>
-					<!-- /ko -->
-					<!-- ko if: selectedUnitHasBuiltBy() -->
-						<td>
-							<div class="unitDatabase_unitDetailSectionHeading">Built By</div>
-							<!-- ko foreach: selectedUnitBuiltBy -->
-								<div class="unitDatabase_unitBuildEntry">
-									<div class="unitDatabase_unitBuildEntryPicture">
-										<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-										<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
-									</div>
-									<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
-									<img class="unitDatabase_statIcon" src="coui://ui/mods/rUnitDatabase/img/time.png"> <div class="unitDatabase_unitBuildTime" data-bind="text: +($parent.selectedUnitBlueprint().build_metal_cost / $parent.selectedUnitBuildArmMetalDemandOfBuilder($data)).toFixed(2) + 's'"></div>
-								</div>
-							<!-- /ko -->
-						</td>
-					<!-- /ko -->
-			</table>
+								<!-- /ko -->
+							</td>
+						<!-- /ko -->
+				</table>
+			<!-- /ko -->
 		</div>
 	<!-- /ko -->
-    <!-- ko if: showTypeInfo -->
+	<!-- ko if: model.ud.showTypeInfo -->
 		<div class="unitDatabase_typeInfo">
-			<div class="unitDatabase_typeName" data-bind="text: 'Unit Type: ' + model.selectedType()"></div>
+			<div class="unitDatabase_typeName" data-bind="text: 'Unit Type: ' + model.ud.selectedType()"></div>
 			<div class="unitDatabase_clear">&nbsp;</div>
-			<!-- ko foreach: selectedTypeBlueprints -->
+			<!-- ko foreach: model.ud.selectedTypeBlueprints -->
 				<div class="unitDatabase_unitBuildEntry">
 					<div class="unitDatabase_unitBuildEntryPicture">
 						<img class="img_build_unitSI" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).strategicIcon }" /> 
-						<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? 'coui://ui/mods/rUnitDatabase/img/unknown.png' : bif.getUnitBlueprint($data).buildPicture}" /> 
+						<img class="img_build_unit" src="" data-bind="attr: { src: bif.getUnitBlueprint($data).buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : bif.getUnitBlueprint($data).buildPicture}" /> 
 					</div>
-					<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.selectedUnitBlueprintID($data); $parent.selectedType('')}"></div>
+					<div class="unitDatabase_unitBuildName" data-bind="text: bif.getUnitName($data), click: function () {$parent.ud.selectedUnitBlueprintID($data); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw();}"></div>
 					<div class="unitDatabase_unitDescription" data-bind="text: bif.getUnitBlueprint($data).description"></div>
 				</div>
 			<!-- /ko -->

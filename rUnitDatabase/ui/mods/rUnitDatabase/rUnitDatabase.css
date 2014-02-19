@@ -108,6 +108,12 @@
 	overflow: auto;
 }
 
+.unitDatabase_raw {
+	font-family: courier;
+	font-size: 12px;
+	color: #888888;
+}
+
 .unitDatabase_unitPicture {
 	float: left;
 	padding-right: 6px;
@@ -158,6 +164,15 @@
 	color: #888888;
 	padding-bottom: 6px;
 }
+.unitDatabase_showRaw {
+	font-size: 14px;
+	color: #888888;
+	padding-bottom: 6px;
+}
+
+.unitDatabase_showRawHover:hover {
+	text-decoration: underline;
+}
 
 .unitDatabase_unitTypes {
 	font-size: 14px;
@@ -168,8 +183,16 @@
 	text-decoration: underline;
 }
 
-.unitDatabase_unitTypesSeparator {
+.unitDatabase_unitSeparator {
 	color: #888888;
+}
+
+.unitDatabase_unitInherited {
+	color: #00ffff;
+}
+
+.unitDatabase_unitInherited:hover {
+	text-decoration: underline;
 }
 
 .unitDatabase_unitDetailCont {

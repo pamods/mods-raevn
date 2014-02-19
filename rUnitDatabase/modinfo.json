@@ -4,7 +4,7 @@
     "display_name": "Unit Database",
     "description": "View details on all PA units",
     "author": "Raevn",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "signature": "not yet implemented",
     "priority": 100,
     "enabled": true,
@@ -16,11 +16,12 @@
     ],
     "start": [
         "coui://ui/mods/rUnitDatabase/rUnitDatabase_start.js",
-        "coui://ui/mods/rUnitDatabase/rUnitDatabase.css"
+        "coui://ui/mods/rUnitDatabase/rUnitDatabase.css",
+        "coui://ui/mods/rUnitDatabase/pretty-json.css"
     ],
     "requires": [
         "rBlueprintInfoFramework"
     ],
-    "date": "2014/02/15",
-    "build": "59607"
+    "date": "2014/02/20",
+    "build": "61250"
 }
