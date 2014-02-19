@@ -42,7 +42,6 @@ bif.loadJSONdata = function(src) {
 	
     try
     {
-		jsonXMLHttpRequestObject.timeout = 5000;
         jsonXMLHttpRequestObject.open('GET', src, false);
         jsonXMLHttpRequestObject.send('');
     }
