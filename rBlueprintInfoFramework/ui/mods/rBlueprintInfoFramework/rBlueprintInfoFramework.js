@@ -3,7 +3,7 @@
 //---------------------------------------------------
 // rBlueprintInfoFramework.js
 // Created by Raevn
-// Version 1.1.0 (2014/02/15)
+// Version 1.2.0 (2014/02/20)
 //---------------------------------------------------
 
 var bif = {};
@@ -42,6 +42,7 @@ bif.loadJSONdata = function(src) {
 	
     try
     {
+		jsonXMLHttpRequestObject.timeout = 5000;
         jsonXMLHttpRequestObject.open('GET', src, false);
         jsonXMLHttpRequestObject.send('');
     }
@@ -55,19 +56,19 @@ bif.loadJSONdata = function(src) {
 
 bif.fileExists = function(src, callback){
 
-    var http = new XMLHttpRequest();
+    var jsonXMLHttpRequestObject = new XMLHttpRequest();
 	
-	http.onreadystatechange = function() {
-		if (http.readyState == 4) {
-			console.log(http.status);
-			callback(src, http.status != 404 && http.status != 0);
+	jsonXMLHttpRequestObject.onreadystatechange = function() {
+		if (jsonXMLHttpRequestObject.readyState == 4) {
+			callback(src, jsonXMLHttpRequestObject.status != 404 && jsonXMLHttpRequestObject.status != 0);
 		}
 	}
 
     try
     {
-		http.open('HEAD', src, true);
-		http.send();
+		jsonXMLHttpRequestObject.timeout = 5000;
+		jsonXMLHttpRequestObject.open('HEAD', src, true);
+		jsonXMLHttpRequestObject.send('');
     }
     catch( err ) 
 	{
@@ -141,14 +142,16 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 		bif.units[currentUnitID].path = currentUnitPath;
 		bif.units[currentUnitID].buildIndex = "" + (999 - bif.units[currentUnitID].display_group) + "" + (999 - bif.units[currentUnitID].display_index);
 		
-		bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + currentUnitID + ".png", function (src, exists) {
-			console.log(src + " : " + exists);
+		var iconName = bif.units[currentUnitID].si_name ? bif.units[currentUnitID].si_name : currentUnitID;
+		bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
 			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
 		});
 		
 		bif.fileExists("coui://ui/alpha/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
 			bif.units[currentUnitID].buildPicture = exists == true ? src : null;
 		});
+		
+		bif.units[currentUnitID].inherited = [];
 		
 		bif.loaded_units++;
 		
@@ -187,8 +190,8 @@ bif.doToolBlueprint = function(currentToolPath, currentToolID) {
 		bif.tools[currentToolID] = bif.loadBlueprintInfoRecursive(data, currentToolID, "tools");
 		bif.tools[currentToolID].id = currentToolID;
 		bif.tools[currentToolID].path = currentToolPath;
+		bif.tools[currentToolID].inherited = [];
 		bif.loaded_tools++;
-		
 		
 		//Load Ammo Data
 		
@@ -220,6 +223,7 @@ bif.doAmmoBlueprint = function(currentAmmoPath, currentAmmoID) {
 		bif.ammo[currentAmmoID] = bif.loadBlueprintInfoRecursive(data, currentAmmoID, "ammo");
 		bif.ammo[currentAmmoID].id = currentAmmoID;
 		bif.ammo[currentAmmoID].path = currentAmmoPath;
+		bif.ammo[currentAmmoID].inherited = [];
 		bif.loaded_ammo++;
 		
 		if (bif.loaded_ammo == bif.ammo_count) {
@@ -248,7 +252,27 @@ bif.loadBlueprintInfoRecursive = function(blueprintData, blueprintID, type) {
 		blueprintData["inheritance"].push(baseBlueprintID);
 		
 		//We've returned up the chain, so the result can be cached.
-		bif[type][baseBlueprintID] = baseBlueprintData;
+		if (bif[type][baseBlueprintID] == null) {
+			bif[type][baseBlueprintID] = baseBlueprintData;
+			bif[type][baseBlueprintID].id = baseBlueprintID;
+			bif[type][baseBlueprintID].path = blueprintData.base_spec;
+			bif[type][baseBlueprintID].inherited = [];
+			if (type == "units") {
+				if (bif[type][baseBlueprintID].unit_types != null) {
+					bif[type][baseBlueprintID].unit_types.push("UNITTYPE__" + baseBlueprintID);
+				}
+				bif[type][baseBlueprintID].buildIndex = "" + (999 - bif[type][baseBlueprintID].display_group) + "" + (999 - bif[type][baseBlueprintID].display_index);
+				
+				var iconName = bif.units[baseBlueprintID].si_name ? bif.units[baseBlueprintID].si_name : baseBlueprintID;
+				bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
+					bif[type][baseBlueprintID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
+				});
+				
+				bif.fileExists("coui://ui/alpha/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
+					bif[type][baseBlueprintID].buildPicture = exists == true ? src : null;
+				});
+			}
+		}
 	} else {
 		blueprintData["inheritance"] = [];
 	}
@@ -269,6 +293,30 @@ bif.generateBIFcache = function() {
 		var currentUnitID = bif.units_id[i];
 
 		bif.getUnitBuiltByUnitIDs(currentUnitID);
+	}
+	
+	for (var i = 0; i < bif.unit_count; i++) {
+		var currentUnitID = bif.units_id[i];
+		if (bif.units[currentUnitID].base_spec != null) {
+			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.units[currentUnitID].base_spec);
+			bif.units[baseBlueprintID].inherited.push(currentUnitID);
+		}
+	}
+	
+	for (var i = 0; i < bif.tool_count; i++) {
+		var currentToolID = bif.tools_id[i];
+		if (bif.tools[currentToolID].base_spec != null) {
+			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.tools[currentToolID].base_spec);
+			bif.tools[baseBlueprintID].inherited.push(currentToolID);
+		}
+	}
+	
+	for (var i = 0; i < bif.ammo_count; i++) {
+		var currentAmmoID = bif.ammo_id[i];
+		if (bif.ammo[currentAmmoID].base_spec != null) {
+			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.ammo[currentAmmoID].base_spec);
+			bif.ammo[baseBlueprintID].inherited.push(currentAmmoID);
+		}
 	}
 	
 	bif.getBuildableUnitIDs();
@@ -396,7 +444,7 @@ bif.registerBIFReadyCallback = function(functionCallback) {
 /*
 getBIFReady
 -----------
-Gets the currentl loaded state of BIF
+Gets the currently loaded state of BIF
 
 Params:
 	none
@@ -406,6 +454,34 @@ Returns:
 */
 bif.getBIFReady = function() {
 	return bif.initialised;
+}
+
+/*
+sortBlueprintAlphabetically
+---------------------------
+Sort a given blueprint by alphabetically order based on attribute names
+
+Params:
+	blueprint - (Associative Array) The blueprint to sort
+	
+Returns:
+	associative array - the sorted blueprint
+*/
+bif.sortBlueprintAlphabetically = function(blueprint) {
+	if (bif.checkBIFReady("sortBlueprintAlphabetically") == false) {
+		return null;
+	}
+	
+	var blueprintAsArray = $.map(blueprint, function(value, index) { return [index] });
+	blueprintAsArray.sort();
+	
+	var sortedBlueprint = {};
+	
+	for (var i = 0; i < blueprintAsArray.length; i++) {
+		sortedBlueprint[blueprintAsArray[i]] = blueprint[blueprintAsArray[i]];
+	}
+	
+	return sortedBlueprint;
 }
 
 /*
@@ -423,6 +499,9 @@ Returns:
 	associative array - the provided blueprints, sorted. If an invalid type is given, the original associative array will be returned
 */
 bif.sortBlueprintsByAttribute = function(blueprints, attribute, type, ascending) {
+	if (bif.checkBIFReady("sortBlueprintsByAttribute") == false) {
+		return null;
+	}
 	var blueprintsAsArray = bif.getBlueprintsArray(blueprints);
 	
 	switch (type) {
@@ -438,7 +517,7 @@ bif.sortBlueprintsByAttribute = function(blueprints, attribute, type, ascending)
 
 /*
 getBlueprintIDsFromBlueprints
----------------------------
+-----------------------------
 Returns an array of blueprint IDs from a given associative array of blueprints
 
 Params:
@@ -647,7 +726,7 @@ bif.getUnitBlueprintInline = function(unitID) {
 		return null;
 	}
 	
-	var inlinedBlueprint = bif.units[unitID];
+	var inlinedBlueprint = $.extend(true, {}, bif.units[unitID]);
 	
 	if (inlinedBlueprint.tools != null) {
 		for (var i = 0; i < inlinedBlueprint.tools.length; i++) {
@@ -656,7 +735,6 @@ bif.getUnitBlueprintInline = function(unitID) {
 			}
 		}
 	}
-	
 	return inlinedBlueprint;
 }
 
@@ -1342,7 +1420,7 @@ bif.getToolBlueprintInline = function(toolID) {
 		return null;
 	}
 	
-	var inlinedBlueprint = bif.tools[toolID];
+	var inlinedBlueprint = $.extend(true, {}, bif.tools[toolID]);
 	
 	if (inlinedBlueprint.ammo_id != null) {
 		inlinedBlueprint.ammo_blueprint = bif.getAmmoBlueprint(bif.getBlueprintIDFromPath(inlinedBlueprint.ammo_id));
