@@ -41,9 +41,11 @@
 		var PAMM_MOD_ID = "rPAMM";
 		var PAMM_OPTIONS_FILENAME = "pamm.json";
 		var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
+		var strModsDirectoryPath
+		var strPAMMCacheDirectoryPath
 		
-		var datePAMM = "2014/02/03";
-		var strPAMMversion = "3.1.2";
+		var datePAMM = "2014/02/22";
+		var strPAMMversion = "3.2.0";
 		
 		/* Localisation Functions */
 		function jsGetLocaleText(strKey, strLocale) {
@@ -137,7 +139,7 @@
 		}
 		
 		function jsGetUIModListSceneDataString() {
-			var scene_mod_list  = {"connect_to_game": [], "game_over": [], "icon_atlas": [], "live_game": [], "load_planet": [], "lobby": [], "matchmaking": [], "new_game": [], "server_browser": [], "settings": [], "special_icon_atlas": [], "start": [], "system_editor": [], "transit": [], "social": [], "replay_browser": []};
+			var scene_mod_list  = {"connect_to_game": [], "game_over": [], "icon_atlas": [], "live_game": [], "load_planet": [], "lobby": [], "matchmaking": [], "new_game": [], "server_browser": [], "settings": [], "special_icon_atlas": [], "start": [], "system_editor": [], "transit": [], "social": [], "replay_browser": [], "live_game_econ": [], "live_game_hover": []};
 			objInstalledMods.sort(sort_by('priority', true, parseInt));
 			
 			for (var i = 0; i < objInstalledMods.length; i++) {
@@ -202,6 +204,7 @@
 			}
 			
 			document.getElementById("setting_installLocation").value = objOptions["pa_path"];
+			document.getElementById("setting_modLocation").value = strModsDirectoryPath;
 			
 			if (objOptions["debug"] != null) {
 				document.getElementById("setting_debug").checked = objOptions["debug"];
@@ -216,6 +219,13 @@
 				document.getElementById("setting_verbose").checked = false;
 			}
 			jsToggleVerboseMode();
+			
+			if (objOptions["modlikes"] != null) {
+				document.getElementById("setting_likes").checked = objOptions["modlikes"];
+			} else {
+				document.getElementById("setting_likes").checked = false;
+			}
+			jsToggleModLikes();
 			
 			if (objOptions["filter"]  != null) {
 				strOnlineModsFilter = objOptions["filter"];
@@ -373,12 +383,14 @@
 				var strInstallCount = "<img src='manager/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_count'>" + mod.downloads + "</div>";
 				var strLikeCount = ""
 				
-				if (mod.likes != null) {
-					if (mod.likes == -2) {
-						strLikeCount = "<span id='" + id + "_like_count' class='mod_count'>Loading...</span>"
-					}
-					if (mod.likes >= 0) {
-						strLikeCount = "<img src='manager/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_likes'>" + mod.likes + "</div>";
+				if (objOptions["loadlikes"] == true) {
+					if (mod.likes != null) {
+						if (mod.likes == -2) {
+							strLikeCount = "<span id='" + id + "_like_count' class='mod_count'>Loading...</span>"
+						}
+						if (mod.likes >= 0) {
+							strLikeCount = "<img src='manager/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_likes'>" + mod.likes + "</div>";
+						}
 					}
 				}
 
@@ -762,11 +774,11 @@
 							eval(successFunction);
 						}
 					}
-				} else if (oXMLHTTP.status == HTTP_NOT_FOUND) {
 				} else {
+					var strText = null;
+					eval(successFunction);
 				}
 				oStream = null;
-			} else {
 			}
 			oXMLHTTP = null;
 		}
@@ -805,9 +817,15 @@
 			FindInstalledMods();
 			objInstalledMods.sort(sort_by('display_name', true, null));
 			jsGenerateInstalledModsListHTML();
+			jsGenerateOnlineModsListHTML();
 		}
 		
 		/* Settings Functions */
+		function jsToggleModLikes() {
+			objOptions["loadlikes"] = document.getElementById("setting_likes").checked;
+			WriteOptionsJSON();
+		}
+		
 		function jsToggleDebugMode() {
 			jsSetLogLevel(document.getElementById("setting_debug").checked ? 4 : objOptions["verbose"] ? 3 : 2);
 			objOptions["debug"] = document.getElementById("setting_debug").checked;
@@ -917,7 +935,9 @@
 				
 				jsGenerateOnlineModsListHTML();
 				jsGenerateInstalledModsListHTML();
-				jsDownloadOnlineModLikeCount();
+				if (objOptions["loadlikes"] == true) {
+					jsDownloadOnlineModLikeCount();
+				}
 				jsUpdateFiles();
 			} catch (e) {
 				jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
@@ -1009,9 +1029,6 @@
 		Dim objShell
 		Dim objFSO
 		Dim objApp
-		
-		Dim strModsDirectoryPath
-		Dim strPAMMCacheDirectoryPath
 	
 		Call Initialise()
 			
@@ -1379,6 +1396,10 @@
 			objApp.ShellExecute jsGetOption("pa_path"), "", "", "", ""
 			Call ClosePAMM()
 		End Sub
+		
+		Sub OpenModsFolder()
+			objApp.ShellExecute strModsDirectoryPath, "", "", "", ""
+		End Sub
 
 	</script>
 
@@ -1447,12 +1468,26 @@
 								<td><input id="setting_debug" type="checkbox" onClick="jsToggleDebugMode()"/></td>
 							</tr>
 							<tr>
+								<td><span class="setting_heading"><span class="LOC_Mod_Likes">Load Mod Likes</span>:</span></td>
+								<td><input id="setting_likes" type="checkbox" onClick="jsToggleModLikes()"/></td>
+							</tr>
+							<tr>
 								<td colspan="2">&nbsp;</td>
 							</tr>
 							<tr>
 								<td colspan="2">
 									<span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
 									<input id="setting_installLocation" type="text" disabled="true" class="textInput"/>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<span class="setting_heading"><span class="LOC_PA_Mod_Location">PA Mods Location</span>:</span><br/>
+									<input id="setting_modLocation" type="text" disabled="true" class="textInput"/>
+									<input type="button" value="Open" class="LOC_Open openModsFolderButton" onClick="OpenModsFolder()"/>
 								</td>
 							</tr>
 						</table>
@@ -1471,7 +1506,7 @@
 				<input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
 				<input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.1.2</a>, <span class="LOC_by">by</span> Raevn</div>
+				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.2.0</a>, <span class="LOC_by">by</span> Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">

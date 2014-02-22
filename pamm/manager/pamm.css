@@ -338,6 +338,12 @@ div {
 	margin-top: 3px;
 }
 
+.openModsFolderButton {
+	float: right;
+	width: 90px;
+	margin-top: 3px;
+}
+
 #download p {
 	color: #888888;
 	font-size: 0.8em;
