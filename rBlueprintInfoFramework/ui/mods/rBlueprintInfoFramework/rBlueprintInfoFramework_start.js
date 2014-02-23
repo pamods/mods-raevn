@@ -3,7 +3,7 @@
 //---------------------------------------------------
 // rBlueprintInfoFramework_start.js
 // Created by Raevn
-// Version 1.2.0 (2014/02/20)
+// Version 1.3.0 (2014/02/23)
 //---------------------------------------------------
 
 model.BIFReady = ko.observable(bif.getBIFReady());
@@ -20,6 +20,10 @@ $('body').append(
 	    '<div class="div_popup">' +
 			'<div class="div_popup_panel" style="border: 1px solid #888888;">' +
 				'<img src="coui://ui/alpha/shared/img/loading.gif"><div class="div_popup_primary_msg">Loading Blueprint Information ...</div>' +
+				'<div data-bind="text: \'Units - \' + bif.loaded_units() + (bif.unit_count > 0 ? \' (\' + (bif.loaded_units() / bif.unit_count) * 100 + \'%)\' : \'\')"></div>' +
+				'<div data-bind="text: \'Tools - \' + bif.loaded_tools() + (bif.tool_count > 0 ? \' (\' + (bif.loaded_tools() / bif.tool_count) * 100 + \'%)\' : \'\')"></div>' +
+				'<div data-bind="text: \'Ammo - \' + bif.loaded_ammo() + (bif.ammo_count > 0 ? \'\ (\' + (bif.loaded_ammo() / bif.ammo_count) * 100 + \'%)\' : \'\')"></div>' +
+				'<div data-bind="text: \'Checking images - \' + bif.loaded_images()"></div>' +
 			'</div>' +
 		'</div>' + 
 	'</div>'

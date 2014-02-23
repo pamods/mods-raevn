@@ -3,15 +3,20 @@
 //---------------------------------------------------
 // rBlueprintInfoFramework.js
 // Created by Raevn
-// Version 1.2.0 (2014/02/20)
+// Version 1.3.0 (2014/02/23)
 //---------------------------------------------------
 
 var bif = {};
 bif.bifReadyCallbacks = [];
+bif.MAX_FILECHECK_QUEUE = 50;
 
 if (decode(sessionStorage.bif) != null) {
 	console.log("[Blueprint Info Framework] Blueprint info found in session storage");
 	bif = decode(sessionStorage.bif);
+	bif.loaded_units = ko.observable(bif.unit_count);
+	bif.loaded_tools = ko.observable(bif.tool_count);
+	bif.loaded_ammo = ko.observable(bif.ammo_count);
+	bif.loaded_images = ko.observable(bif.image_count);
 } else {
 	console.log("[Blueprint Info Framework] Blueprint info not found in session storage");
 	bif.initialised = false;
@@ -20,21 +25,26 @@ if (decode(sessionStorage.bif) != null) {
 	bif.units = {};
 	bif.units_id = [];
 	bif.unit_count = 0;
-	bif.loaded_units = 0;
+	bif.loaded_units = ko.observable(0);
 	
 	bif.tools = {};
 	bif.tools_id = [];
 	bif.tool_count = 0;
-	bif.loaded_tools = 0;
+	bif.loaded_tools = ko.observable(0);
 	
 	bif.ammo = {};
 	bif.ammo_id = [];
 	bif.ammo_count = 0;
-	bif.loaded_ammo = 0;
+	bif.loaded_ammo = ko.observable(0);
 	
 	bif._unit_buildable_types = {};
 	bif._unit_built_by = {};
 	bif._buildable_units = {};
+	
+	bif.fileExistsQueue = [];
+	bif.fileExistsProcessCount = 0;
+	bif.image_count = 0;
+	bif.loaded_images = ko.observable(0);
 }
 
 bif.loadJSONdata = function(src) {
@@ -53,16 +63,54 @@ bif.loadJSONdata = function(src) {
     return JSON.parse(jsonXMLHttpRequestObject.responseText);
 }
 
-bif.fileExists = function(src, callback){
+bif.queueFileExists = function(src, callback) {
+	//console.log("[Blueprint Info Framework] File added to FileExists queue");
+	bif.fileExistsQueue.push({"src": src, "callback": callback});
+	bif.image_count++;
+	
+	if (bif.fileExistsQueue.length == 1) {
+		console.log("[Blueprint Info Framework] FileExists queue not empty, processing");
+		bif.processFileExistsQueue();
+	}
+}
 
+bif.processFileExistsQueue = function() {
+	//console.log("[Blueprint Info Framework] FileExists queue size: " + bif.fileExistsQueue.length + " (" + bif.fileExistsProcessCount + " processing)");
+	if (bif.fileExistsQueue.length > 0 && bif.fileExistsProcessCount < bif.MAX_FILECHECK_QUEUE) {
+		//console.log("[Blueprint Info Framework] Processing: " + bif.fileExistsQueue[0].src);
+		bif.fileExists(bif.fileExistsQueue[0].src, bif.fileExistsQueue[0].callback);
+		bif.fileExistsQueue.splice(0, 1);
+	} else {
+		//console.log("[Blueprint Info Framework] Queue full, waiting");
+	}
+	
+	if (bif.fileExistsQueue.length > 0) {
+		setTimeout(bif.processFileExistsQueue, 1);
+	}
+}
+
+bif.fileExists = function(src, callback){
+	bif.fileExistsProcessCount++;
+	
     var jsonXMLHttpRequestObject = new XMLHttpRequest();
 	
 	jsonXMLHttpRequestObject.onreadystatechange = function() {
 		if (jsonXMLHttpRequestObject.readyState == 4) {
+			bif.fileExistsProcessCount--;
+			bif.loaded_images(bif.loaded_images() + 1);
 			callback(src, jsonXMLHttpRequestObject.status != 404 && jsonXMLHttpRequestObject.status != 0);
+			
+			if (bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
+				console.log("[Blueprint Info Framework] FileExists queue cleared");
+		
+				if (bif.loaded_units() == bif.unit_count && bif.loaded_tools() == bif.tool_count && bif.loaded_ammo() == bif.ammo_count) {
+					bif.initialised = true;
+					bif.bifReady();
+					sessionStorage.bif = encode(bif);
+				}
+			}
 		}
 	}
-
     try
     {
 		jsonXMLHttpRequestObject.timeout = 5000;
@@ -71,7 +119,19 @@ bif.fileExists = function(src, callback){
     }
     catch( err ) 
 	{
+		bif.fileExistsProcessCount--;
+		bif.loaded_images(bif.loaded_images() + 1);
 		callback(src, false);
+		
+		if (bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
+			console.log("[Blueprint Info Framework] FileExists queue cleared");
+	
+			if (bif.loaded_units() == bif.unit_count && bif.loaded_tools() == bif.tool_count && bif.loaded_ammo() == bif.ammo_count) {
+				bif.initialised = true;
+				bif.bifReady();
+				sessionStorage.bif = encode(bif);
+			}
+		}
 	}
 }
 
@@ -85,21 +145,26 @@ bif.initialiseBIF = function(force, cacheBuildData) {
 		bif.units = {};
 		bif.units_id = [];
 		bif.unit_count = 0;
-		bif.loaded_units = 0;
+		bif.loaded_units = ko.observable(0);
 		
 		bif.tools = {};
 		bif.tools_id = [];
 		bif.tool_count = 0;
-		bif.loaded_tools = 0;
+		bif.loaded_tools = ko.observable(0);
 		
 		bif.ammo = {};
 		bif.ammo_id = [];
 		bif.ammo_count = 0;
-		bif.loaded_ammo = 0;
+		bif.loaded_ammo = ko.observable(0);
 	
 		bif._unit_buildable_types = {};
 		bif._unit_built_by = {};
 		bif._buildable_units = {};
+		
+		bif.fileExistsQueue = [];
+		bif.fileExistsProcessCount = 0;
+		bif.image_count = 0;
+		bif.loaded_images = ko.observable(0);
 	}
 	
 	if (cacheBuildData == true) {
@@ -142,17 +207,17 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 		bif.units[currentUnitID].buildIndex = "" + (999 - bif.units[currentUnitID].display_group) + "" + (999 - bif.units[currentUnitID].display_index);
 		
 		var iconName = bif.units[currentUnitID].si_name ? bif.units[currentUnitID].si_name : currentUnitID;
-		bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
+		bif.queueFileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
 			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
 		});
 		
-		bif.fileExists("coui://ui/alpha/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
+		bif.queueFileExists("coui://ui/alpha/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
 			bif.units[currentUnitID].buildPicture = exists == true ? src : null;
 		});
 		
 		bif.units[currentUnitID].inherited = [];
 		
-		bif.loaded_units++;
+		bif.loaded_units(bif.loaded_units() + 1);
 		
 		//Load Tool Data
 		
@@ -171,10 +236,10 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 		}
 		
 		
-		if (bif.loaded_units == bif.unit_count) {
+		if (bif.loaded_units() == bif.unit_count) {
 			console.log("[Blueprint Info Framework] Completed loading unit blueprints (" + bif.unit_count + ")");
 			
-			if (bif.loaded_tools == bif.tool_count && bif.loaded_ammo == bif.ammo_count) {
+			if (bif.loaded_tools() == bif.tool_count && bif.loaded_ammo() == bif.ammo_count && bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
 				bif.initialised = true;
 				bif.bifReady();
 				sessionStorage.bif = encode(bif);
@@ -190,7 +255,7 @@ bif.doToolBlueprint = function(currentToolPath, currentToolID) {
 		bif.tools[currentToolID].id = currentToolID;
 		bif.tools[currentToolID].path = currentToolPath;
 		bif.tools[currentToolID].inherited = [];
-		bif.loaded_tools++;
+		bif.loaded_tools(bif.loaded_tools() + 1);
 		
 		//Load Ammo Data
 		
@@ -205,9 +270,9 @@ bif.doToolBlueprint = function(currentToolPath, currentToolID) {
 			}
 		}
 		
-		if (bif.loaded_tools == bif.tool_count) {
+		if (bif.loaded_tools() == bif.tool_count) {
 			console.log("[Blueprint Info Framework] Completed loading tool blueprints (" + bif.tool_count + ")");
-			if (bif.loaded_units == bif.unit_count && bif.loaded_ammo == bif.ammo_count) {
+			if (bif.loaded_units() == bif.unit_count && bif.loaded_ammo() == bif.ammo_count && bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
 				bif.initialised = true;
 				bif.bifReady();
 				sessionStorage.bif = encode(bif);
@@ -223,11 +288,11 @@ bif.doAmmoBlueprint = function(currentAmmoPath, currentAmmoID) {
 		bif.ammo[currentAmmoID].id = currentAmmoID;
 		bif.ammo[currentAmmoID].path = currentAmmoPath;
 		bif.ammo[currentAmmoID].inherited = [];
-		bif.loaded_ammo++;
-		
+		bif.loaded_ammo(bif.loaded_ammo() + 1);
+
 		if (bif.loaded_ammo == bif.ammo_count) {
 			console.log("[Blueprint Info Framework] Completed loading ammo blueprints (" + bif.ammo_count + ")");
-			if (bif.loaded_units == bif.unit_count && bif.loaded_tools == bif.tool_count) {
+			if (bif.loaded_units == bif.unit_count && bif.loaded_tools == bif.tool_count && bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
 				bif.initialised = true;
 				bif.bifReady();
 				sessionStorage.bif = encode(bif);
@@ -263,11 +328,11 @@ bif.loadBlueprintInfoRecursive = function(blueprintData, blueprintID, type) {
 				bif[type][baseBlueprintID].buildIndex = "" + (999 - bif[type][baseBlueprintID].display_group) + "" + (999 - bif[type][baseBlueprintID].display_index);
 				
 				var iconName = bif.units[baseBlueprintID].si_name ? bif.units[baseBlueprintID].si_name : baseBlueprintID;
-				bif.fileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
+				bif.queueFileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
 					bif[type][baseBlueprintID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
 				});
 				
-				bif.fileExists("coui://ui/alpha/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
+				bif.queueFileExists("coui://ui/alpha/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
 					bif[type][baseBlueprintID].buildPicture = exists == true ? src : null;
 				});
 			}

@@ -4,7 +4,7 @@
     "display_name": "Blueprint Info Framework",
     "description": "A Framework for obtaining unit, tool and ammo data",
     "author": "Raevn",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "signature": "not yet implemented",
     "priority": 10,
     "enabled": true,
@@ -64,6 +64,12 @@
     "replay_browser": [
         "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
     ],
-    "date": "2014/02/20",
-    "build": "61250"
+    "live_game_econ": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "live_game_hover": [
+        "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
+    ],
+    "date": "2014/02/23",
+    "build": "61450"
 }
