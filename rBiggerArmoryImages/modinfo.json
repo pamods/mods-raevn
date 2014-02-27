@@ -1,0 +1,18 @@
+{
+    "context": "client",
+    "identifier": "com.pa.raevn.rbiggerarmoryimages",
+    "display_name": "Bigger Armory Images",
+    "description": "Makes the commander images in the Armory larger",
+    "author": "Raevn",
+    "version": "1.0.0",
+    "signature": "not yet implemented",
+    "priority": 100,
+    "enabled": true,
+    "id": "rBiggerArmoryImages",
+    "forum": "",
+    "category": [
+        "ui"
+    ],
+    "date": "2014/02/28",
+    "build": "62037"
+}
