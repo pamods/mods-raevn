@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>PA UI Mod Manager</title>
@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="manager\locale.js"></script>
 	
 	<script type="text/javascript">	
-		self.resizeTo(520, 600);
+		self.resizeTo(600, 600);
 		
 		var objInstalledMods = [];
 		var objOnlineMods = [];
@@ -44,8 +44,9 @@
 		var strModsDirectoryPath
 		var strPAMMCacheDirectoryPath
 		
-		var datePAMM = "2014/02/22";
-		var strPAMMversion = "3.2.0";
+		var datePAMM = "2014/03/01";
+		var strPAMMversion = "3.3.0";
+		var strPABuild = "62110";
 		
 		/* Localisation Functions */
 		function jsGetLocaleText(strKey, strLocale) {
@@ -139,7 +140,7 @@
 		}
 		
 		function jsGetUIModListSceneDataString() {
-			var scene_mod_list  = {"connect_to_game": [], "game_over": [], "icon_atlas": [], "live_game": [], "load_planet": [], "lobby": [], "matchmaking": [], "new_game": [], "server_browser": [], "settings": [], "special_icon_atlas": [], "start": [], "system_editor": [], "transit": [], "social": [], "replay_browser": [], "live_game_econ": [], "live_game_hover": []};
+			var scene_mod_list  = {"armory": [], "building_planets": [], "connect_to_game": [], "game_over": [], "icon_atlas": [], "live_game": [], "live_game_econ": [], "live_game_hover": [], "load_planet": [], "lobby": [], "matchmaking": [], "new_game": [], "replay_browser": [], "server_browser": [], "settings": [], "social": [], "special_icon_atlas": [], "start": [], "system_editor": [], "transit": []};
 			objInstalledMods.sort(sort_by('priority', true, parseInt));
 			
 			for (var i = 0; i < objInstalledMods.length; i++) {
@@ -264,6 +265,14 @@
 		}
 				
 		/* Installed Mod Functions */
+		function jsUpdateAll() {
+			for (var i = 0; i < objInstalledMods.length; i++) {
+				if (jsGetOnlineMod(objInstalledMods[i].id) != null && objInstalledMods[i].date < jsGetOnlineMod(objInstalledMods[i].id).date) {
+					jsPreInstallMod(jsGetOnlineMod(objInstalledMods[i].id).url,objInstalledMods[i].id, {});
+				}
+			}
+		}
+		
 		function jsLoadInstalledModData(strModID, strModDataString) {
 			var objCurrentMod = {};
 			try {
@@ -297,9 +306,8 @@
 			}
 		}
 		
-		function jsToggleInstalledMod(strModID) {	
-			var boolEnabled = document.getElementById("mod" + strModID).checked;
-			document.getElementById("mod" + strModID).checked = !boolEnabled;
+		function jsToggleInstalledMod(strModID) {
+			$("#mod" + strModID).next(".check_image").click();
 			jsModEnabledToggle(strModID);
 		}
 		
@@ -362,9 +370,9 @@
 				var mod = objOnlineMods[i];
 				var id = mod.id;
 				
-				var strFiltered = "";
+				var strClasses = "";
 				var strDate = mod.date ? " (" + mod.date + ")" : "";
-				var strBuild = mod.build ? ", build " + mod.build : "";
+				var strBuild = mod.build ? ", <span class='LOC_build'>build</span> <span class='" + (mod.build < strPABuild ? "mod_build_old" : "mod_build_current") + "'>" + mod.build + "</span>": "";
 				var strIcon = "<div class='mod_icon'><img width='100' height='100' src='" + (mod.icon ? mod.icon : "http://pa.raevn.com/icons/generic.png") + "'></div>";
 				var strDisplayName = mod["display_name_" + strCurrentLocale] ? mod["display_name_" + strCurrentLocale] : mod.display_name;
 				var strDescription = mod["description_" + strCurrentLocale] ? mod["description_" + strCurrentLocale] : mod.description;
@@ -402,10 +410,7 @@
 				var dateUpdate = new Date(mod.date);
 				if ((dateNow - dateUpdate)/(1000*60*60*24) < MOD_IS_NEW_PERIOD_DAYS) {
 					strNew = "<span class='mod_new'>! <span class='LOC_NEW'>NEW</span></span>"
-				} else {
-					if (strOnlineModsFilter == "NEWLY_UPDATED") {
-						strFiltered = "mod_filtered";
-					}
+					strClasses += " mod_newly_updated";
 				}
 				
 				var objInstalledMod = jsGetInstalledMod(id);
@@ -413,21 +418,14 @@
 					if (mod.date > objInstalledMod.date) {
 						strDownloadText = "<span class='LOC_update'>update</span>";
 						strDownloadType = "update";
+						strClasses += " mod_requires_update";
 					} else {
 						strDownloadText = "<span class='LOC_reinstall'>reinstall</span>";
 						strDownloadType = "reinstall";
-						if (strOnlineModsFilter == "REQUIRES_UPDATE") {
-							strFiltered = "mod_filtered";
-						}
 					}
-					if (strOnlineModsFilter == "NOT_INSTALLED") {
-						strFiltered = "mod_filtered";
-					}
+					strClasses += " mod_installed";
 				} else {
-					strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='Call jsInstallMod(\"" + mod.url + "\", \"" + id + "\")'><span class='LOC_install'>install</span></a> ]</div>";
-					if (strOnlineModsFilter == "INSTALLED" || strOnlineModsFilter == "REQUIRES_UPDATE") {
-						strFiltered = "mod_filtered";
-					}
+					strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='Call jsPreInstallMod(\"" + mod.url + "\", \"" + id + "\")'><span class='LOC_install'>install</span></a> ]</div>";
 				}
 				
 				var strRequires = "";
@@ -448,14 +446,15 @@
 				
 				var strDownloadLink = "<div class='mod_link mod_link_" + strDownloadType + "'>[ <a href='#' onClick='jsPreInstallMod(\"" + mod.url + "\", \"" + id + "\", {})'>" + strDownloadText + "</a> ]</div>";
 
-				strHTML += "<div class='download_mod " + strFiltered + "'><div class='mod_background'></div>" + strIcon + "<div class='mod_container_online'><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strNew + strRequires + "<div class='mod_description'>" + strDescription + "</div><div class='mod_category'>" + strModCategory + "</div>" + strForumLink + strDownloadLink + strInstallCount + strLikeCount + "</div></div>"
+				strHTML += "<div class='download_mod" + strClasses + "'><div class='mod_background'></div>" + strIcon + "<div class='mod_container_online'><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strNew + strRequires + "<div class='mod_description'>" + strDescription + "</div><div class='mod_category'>" + strModCategory + "</div>" + strForumLink + strDownloadLink + strInstallCount + strLikeCount + "</div></div>"
 			}
 			
 			document.getElementById("mod_download_inner").innerHTML = strHTML;
 			
 			jsApplyLocaleText();
+			jsApplyOnlineModFilter();
 		}
-
+		
 		function jsGenerateInstalledModsListHTML() {
 			jsAddLogMessage("Generating Installed Mods List", 3);
 			document.getElementById("mod_list").innerHTML = "";
@@ -476,10 +475,9 @@
 					var strUninstallLink = "<div class='mod_link mod_link_uninstall' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'><span class='LOC_uninstall'>uninstall</span></a> ]</div>";
 					
 					var strDate = mod.date ? " (" + mod.date + ")" : "";
-					var strBuild = mod.build ? ", <span class='LOC_build'>build</span> " + mod.build : "";
+					var strBuild = mod.build ? ", <span class='LOC_build'>build</span> <span class='" + (mod.build < strPABuild ? "mod_build_old" : "mod_build_current") + "'>" + mod.build + "</span>": "";
 									
 					if (jsGetOnlineMod(id) != null && mod.date < jsGetOnlineMod(id).date) {
-						jsAddLogMessage("Update available for installed mod '" + mod.display_name + "': " + jsGetOnlineMod(id).version + " (" + jsGetOnlineMod(id).date + ")", 3);
 						strInstalled = "<div class='mod_update_available'><span class='LOC_UPDATE_AVAILABLE'>UPDATE AVAILABLE</span></div>";
 						strDownloadLink = "<div class='mod_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + jsGetOnlineMod(id).url + "\",\"" + id + "\", {})'><span class='LOC_update'>update</span></a> ]</div>";
 					}
@@ -500,14 +498,42 @@
 						strRequires += "</div>";
 					}
 					
-					var strHTML = "<div class='mod'><div class='mod_background'></div><div class='mod_enable'><input type='checkbox' id='mod" + id + "' onClick=\"jsModEnabledToggle('" + id + "')\"/></div><div class='mod_container_install' onClick=\"jsToggleInstalledMod('" + id + "')\"><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strInstalled + "<br/>" + strRequires + strForumLink + strDownloadLink + strUninstallLink + "</div></div>";
+					
+					var strHTML = "<div class='mod'><div class='mod_background'></div><div class='mod_enable'><input type='checkbox' class='check_mod' id='mod" + id + "' onClick=\"jsModEnabledToggle('" + id + "')\"/></div><div class='mod_container_install' onClick=\"jsToggleInstalledMod('" + id + "')\"><div class='mod_name'>" + strDisplayName + "</div><div class='mod_author'><span class='LOC_by'>by</span> " + mod.author + "</div><br/><div class='mod_version'><span class='LOC_Version'>Version</span>: " + mod.version + strBuild + strDate + "</div>" + strInstalled + "<br/>" + strRequires + strForumLink + strDownloadLink + strUninstallLink + "</div></div>";
 					document.getElementById("mod_list").innerHTML += strHTML;
 					document.getElementById("mod" + id).checked = mod.enabled;
 				}
 			}
+			
+			if (jsGetModsRequiringUpdates() > 0) {
+				document.getElementById("mod_list").innerHTML = "<div class='installed_updates_alert'><div class='installed_updates_alert_background'></div><div class='installed_updates_alert_content'><img src='manager/img/alert.png'><div class='installed_updates_alert_message'>" + jsGetModsRequiringUpdates() + " mod(s) require updates <div class='installed_updates_link'>[ <a href='#' onClick='jsUpdateAll()'><span class='LOC_update_all'>update all</span></a> ]</div></div></div></div>" + document.getElementById("mod_list").innerHTML;
+			}
+			
 			jsApplyLocaleText();
+			
+			$('.check_mod').each(function() {
+				$(this).hide();
+
+				var strCheckHTML = "<img class='check_image' src='manager/img/checkbox_unchecked.png' />";
+				
+				if ($(this).prop('checked')) {
+					strCheckHTML = "<img class='check_image' src='manager/img/checkbox_checked.png' />";
+				}
+				
+				var $image = $(strCheckHTML).insertAfter(this);    
+
+				$image.click(function() {
+					var $checkbox = $(this).prev('.check_mod');
+					$checkbox.prop('checked', !$checkbox.prop('checked'));
+					
+					if($checkbox.prop("checked")) {
+						$image.attr('src', "manager/img/checkbox_checked.png");
+					} else {
+						$image.attr('src', "manager/img/checkbox_unchecked.png");
+					}
+				});
+			});
 		}
-		
 		
 		/* Mod Getter Functions */
 		function jsGetOnlineMod(strModID) {
@@ -596,7 +622,31 @@
 			jsAddLogMessage("Available Mod filter " + strOnlineModsFilter + " applied", 4);
 			objOptions["filter"] = strOnlineModsFilter;
 			WriteOptionsJSON();
-			jsGenerateOnlineModsListHTML();
+			jsApplyOnlineModFilter();
+		}
+		
+		function jsApplyOnlineModFilter() {
+			switch (strOnlineModsFilter) {
+				case "ALL":
+					$('.download_mod').show();
+					break;
+				case "INSTALLED":
+					$('.mod_installed').show();
+					$('.download_mod').not('.mod_installed').hide();
+					break;
+				case "REQUIRES_UPDATE":
+					$('.mod_requires_update').show();
+					$('.download_mod').not('.mod_requires_update').hide();
+					break;
+				case "NEWLY_UPDATED":
+					$('.mod_newly_updated').show();
+					$('.download_mod').not('.mod_newly_updated').hide();
+					break;
+				case "NOT_INSTALLED":
+					$('.mod_installed').hide();
+					$('.download_mod').not('.mod_installed').show();
+					break;
+			}
 		}
 		
 		function jsDisplayPanel(strPanelName) {
@@ -610,6 +660,8 @@
 			document.getElementById('log_icon').src = strPanelName == 'log' ? 'manager\\img\\log_select.png' : 'manager\\img\\log.png';
 			document.getElementById('settings').style.display = strPanelName == 'settings' ? 'block' : 'none';
 			document.getElementById('settings_icon').src = strPanelName == 'settings' ? 'manager\\img\\settings_select.png' : 'manager\\img\\settings.png';
+			document.getElementById('about').style.display = strPanelName == 'about' ? 'block' : 'none';
+			document.getElementById('about_icon').src = strPanelName == 'about' ? 'manager\\img\\about_select.png' : 'manager\\img\\about.png';
 			strCurrentPanel = strPanelName;
 		}
 			
@@ -797,6 +849,8 @@
 				document.getElementById("news_data").innerHTML = "<div class=\"loading\">Loading...</div>";
 				document.getElementById("mod_list").innerHTML = "<div class=\"loading\">Loading...</div>";
 				document.getElementById("mod_download_inner").innerHTML = "<div class=\"loading\">Loading...</div>";
+				document.getElementById('total_available_mods').innerHTML = "Loading...";
+				document.getElementById('total_available_mod_downloads').innerHTML = "Loading...";
 			}
 			
 			if (boolDownloadData == true) {
@@ -806,6 +860,8 @@
 			if (boolOnline == false) {
 				document.getElementById("news_data").innerHTML = "<div class=\"loading\">Mod Manager is offline</div>";	
 				document.getElementById("mod_download_inner").innerHTML = "<div class=\"loading\">Mod Manager is offline</div>";
+				document.getElementById('total_available_mods').innerHTML = "Mod Manager is offline";
+				document.getElementById('total_available_mod_downloads').innerHTML = "Mod Manager is offline";
 			}
 			
 			jsAddLogMessage("Refreshing Data", 2);
@@ -815,9 +871,21 @@
 				jsDownloadOnlineMods();
 			}
 			FindInstalledMods();
+			document.getElementById('total_installed_mods').innerHTML = objInstalledMods.length;
 			objInstalledMods.sort(sort_by('display_name', true, null));
 			jsGenerateInstalledModsListHTML();
 			jsGenerateOnlineModsListHTML();
+		}
+		
+		function jsGetModsRequiringUpdates() {
+			var intModsRequiringUpdate = 0;
+		
+			for(var i = 0; i < objInstalledMods.length; i++) {
+				if (jsGetOnlineMod(objInstalledMods[i]["id"]) != null && objInstalledMods[i]["date"] < jsGetOnlineMod(objInstalledMods[i]["id"])["date"]) {
+					intModsRequiringUpdate++;
+				}
+			}
+			return intModsRequiringUpdate;
 		}
 		
 		/* Settings Functions */
@@ -902,7 +970,7 @@
 				jsDownload(ONLINE_MODS_LIST_URL + "?r=" + Math.random(), "string", null, "jsDownloadOnlineMods_asynch(strText)");
 			}
 		}
-		
+				
 		function jsDownloadOnlineMods_asynch(strResult) {
 			try {
 				objOnlineMods = [];
@@ -911,8 +979,11 @@
 					objModData[id]["id"] = id;
 					objModData[id]["likes"] = -2;
 					objOnlineMods.push(objModData[id]);
+					if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
+						jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
+					}
 				}
-				
+				document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
 				jsDownloadOnlineModDownloadCount();
 			} catch (e) {
 				jsAddLogMessage("Error loading online mod data: " + e.message, 1);
@@ -927,10 +998,13 @@
 		}
 		
 		function jsDownloadOnlineModDownloadCount_asynch(strResult) {
+			var intTotalDownloadCount = 0;
+			
 			try {
 				var objOnlineModsDownloadCount = JSON.parse(strResult);
 				for (var i = 0; i < objOnlineMods.length; i++) {
 					objOnlineMods[i]["downloads"] = objOnlineModsDownloadCount[objOnlineMods[i].id] ? objOnlineModsDownloadCount[objOnlineMods[i].id] : 0;
+					intTotalDownloadCount += objOnlineMods[i]["downloads"];
 				}
 				
 				jsGenerateOnlineModsListHTML();
@@ -942,6 +1016,7 @@
 			} catch (e) {
 				jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
 			}
+			document.getElementById('total_available_mod_downloads').innerHTML = intTotalDownloadCount;
 		}
 		
 		function jsDownloadOnlineModLikeCount() {
@@ -1000,6 +1075,10 @@
 			try {
 				objPAMMVersionData = JSON.parse(strResult);
 				var dateLatestPAMM = new Date(objPAMMVersionData.date);
+				strPABuild = objPAMMVersionData.build;
+				
+				document.getElementById('current_pa_build').innerHTML = strPABuild;
+				
 				jsAddLogMessage("Latest version of PAMM: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
 				if (new Date(datePAMM) < dateLatestPAMM) {
 					jsAddLogMessage("New version of PAMM available: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
@@ -1009,6 +1088,7 @@
 				}
 			} catch (e) {
 				jsAddLogMessage("Error loading PAMM version data: " + e.message, 1);
+				document.getElementById('current_pa_build').innerHTML = strPABuild;
 			}
 		}
 		
@@ -1107,6 +1187,7 @@
 				Next
 			Next
 			Call jsAddLogMessage("Found " & intMods & " installed mods", 2)
+			
 			
 			Call jsUpdateFiles()
 		End Sub
@@ -1405,6 +1486,17 @@
 
 	<body onLoad="jsOnLoad()">
 		<div id="container">
+			<div class="banner_heading"><span class="LOC_MOD_MANAGER">MOD MANAGER</span></div>
+			<div class="banner_image"><img src="manager\img\img_pa_logo_start_rest.png"></div>
+			<div class="ui_tabs">
+				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')"><span class="LOC_NEWS">NEWS</span></a></div> <span class="ui_tab_edges">]</span></div>
+				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')"><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
+				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')"><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
+				<div class="ui_tab_link ui_tab_link_image"><a href="#" id="logButton" onclick="jsDisplayPanel('log')"><img id="log_icon" src="manager\img\log.png"></a></div>
+				<div class="ui_tab_link ui_tab_link_image"><a href="#" id="settingsButton" onclick="jsDisplayPanel('settings')"><img id="settings_icon" src="manager\img\settings.png"></a></div>
+				<div class="ui_tab_link ui_tab_link_image"><a href="#" id="aboutButton" onclick="jsDisplayPanel('about')"><img id="about_icon" src="manager\img\about.png"></a></div>
+			</div>
+			
 			<div id="installed" class="tab">
 				<div id="mod_list_background" class="tab_background"></div>
 				<div id="mod_list" class="tab_content">
@@ -1413,7 +1505,17 @@
 			<div id="download" class="tab">
 				<div id="mod_download_background" class="tab_background"></div>
 				<div class="mod_download_options">
-					<div class="filter_options"><span class="LOC_SHOW">SHOW</span>: <br/><a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()"><span class="LOC_ALL">ALL</span></a></div><div class="sort_options"><span class="LOC_SORT">SORT</span>: <br/><span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_LAST_UPDATED">LAST UPDATED</span></a></span></div>
+					<div class="filter_options">
+						<span class="LOC_SHOW">SHOW</span>: <a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()"><span class="LOC_ALL">ALL</span></a>
+					</div>
+					<div class="sort_options">
+						<span class="LOC_SORT">SORT</span>: <span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_LAST_UPDATED">LAST UPDATED</span></a></span>
+					</div>
+					<!--
+					<div class="filter_options">
+						<span class="LOC_FILTER">FILTER</span>: <input type="text" id="show_filter" />
+					</div>
+					-->
 				</div>
 				<div id="mod_download" class="tab_content">
 					<div id="mod_download_inner">
@@ -1429,13 +1531,13 @@
 			<div id="log" class="tab">
 				<div id="log_background" class="tab_background"></div>
 				<div id="log_data" class="tab_content">
-					<div class="log_heading"><span class="LOC_LOG">LOG</span></div>
+					<div class="tab_heading"><span class="LOC_LOG">LOG</span></div>
 				</div>
 			</div>
 			<div id="settings" class="tab">
 				<div id="settings_background" class="tab_background"></div>
 				<div id="settings_data" class="tab_content">
-					<div class = "settings_heading"><span class="LOC_SETTINGS">SETTINGS</span></div>
+					<div class="tab_heading"><span class="LOC_SETTINGS">SETTINGS</span></div>
 					<div class="settings_items">
 						<table class="settings_table">
 							<tr>
@@ -1494,19 +1596,32 @@
 					</div>
 				</div>
 			</div>
-			<img src="manager\img\img_pa_logo_alpha.png">
-			<h1><span class="LOC_MOD_MANAGER">MOD MANAGER</span></h1>
+			<div id="about" class="tab">
+				<div id="about_background" class="tab_background"></div>
+				<div id="about_data" class="tab_content">
+					<div class="tab_heading"><span class="ABOUT">ABOUT</span></div>
+					<div class="tab_subheading">Planetary Annihilation Mod Manager</div>
+					<div class="tab_about_text">Version <span class="tab_about_value">3.3.0</span> (2014/03/01)</div>
+					<div class="tab_about_text">Current PA Build: <span id="current_pa_build" class="tab_about_value">Loading...</span></div>
+					<div class='mod_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
+					<br/><br/>
+					<div class="tab_subheading">Statistics</div>
+					<div class="tab_about_text">Total Available Mods: <span id="total_available_mods" class="tab_about_value">Loading...</span></div>
+					<div class="tab_about_text">Total Mod Downloads: <span id="total_available_mod_downloads" class="tab_about_value">Loading...</span></div>
+					<div class="tab_about_text">Current Mods Installed: <span id="total_installed_mods" class="tab_about_value">Loading...</span></div>
+					<br/>
+					<div class="tab_subheading">Credits</div>
+					<div class="tab_about_text">Created by <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=Raevn")'>Raevn</a></span></div>
+					<div class="tab_about_text">Mac/Linux port created by <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=DeathByDenim")'>DeathByDenim</a></span></div>
+					<div class="tab_about_text">Mod list generator created by <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=elitedanzel")'>elitedanzel</a></span> and <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=proeleert")'>proeleert</a></span></div>
+					<div class="tab_about_text">Thanks also to those on the Uber Entertainment forums who tested and provided feedback on this program, especially <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=Cola_Colin")'>Cola_Colin</a></span>, <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=dfanz0r")'>dfanz0r</a></span> and <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=LavaSnake")'>LavaSnake</a></span></div>
+				</div>
+			</div>
 			
-			<div class="button"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')"><span class="LOC_NEWS">NEWS</span></a></div>
-			<div class="button"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')"><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a></div>
-			<div class="button"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')"><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div>
-			<div class="button"><a href="#" id="logButton" onclick="jsDisplayPanel('log')"><img id="log_icon" src="manager\img\log.png"></a></div>
-			<div class="button"><a href="#" id="settingsButton" onclick="jsDisplayPanel('settings')"><img id="settings_icon" src="manager\img\settings.png"></a></div>
 			<div class="buttons">
 				<input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
 				<input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
 				<input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
-				<div class="credits"><a href="https://forums.uberent.com/threads/rel-ui-mod-manager.50726/"><span class="LOC_Version">Version</span> 3.2.0</a>, <span class="LOC_by">by</span> Raevn</div>
 			</div>
 			<div id="downloading">
 				<img src="manager/img/loading.gif">

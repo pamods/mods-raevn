@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "PA Mod Manager"
-!define PRODUCT_VERSION "3.2.0"
+!define PRODUCT_VERSION "3.3.0"
 !define PRODUCT_PUBLISHER "Raevn"
 !define PRODUCT_WEB_SITE "https://forums.uberent.com/threads/rel-pa-mod-manager-v2-0-2.50726/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PAMM.hta"
@@ -59,7 +59,7 @@ Section "MainSection" SEC01
   File "Backup\manager\pamm.css"
   SetOutPath "$INSTDIR\manager\img"
   File "Backup\manager\img\download.png"
-  File "Backup\manager\img\img_pa_logo_alpha.png"
+  File "Backup\manager\img\img_pa_logo_start_rest.png"
   File "Backup\manager\img\img_start_bground_sample.jpg"
   File "Backup\manager\img\loading.gif"
   File "Backup\manager\img\refresh.png"
@@ -69,6 +69,12 @@ Section "MainSection" SEC01
   File "Backup\manager\img\log_select.png"
   File "Backup\manager\img\settings.png"
   File "Backup\manager\img\settings_select.png"
+  File "Backup\manager\img\about.png"
+  File "Backup\manager\img\about_select.png"
+  File "Backup\manager\img\alert.png"
+  File "Backup\manager\img\checkbox_checked.png"
+  File "Backup\manager\img\checkbox_unchecked.png"
+  File "Backup\manager\img\log_select.png"
   
   ;TODO: Remove old rPAMM modinfo.json
   

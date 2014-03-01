@@ -1,18 +1,10 @@
 html {
 	height: 100%;
-	padding-bottom: 220px;
+	padding-bottom: 180px;
 }
 
 img {
 	border: 0px;
-}
-
-.log_level3 {
-	display: none;
-}
-
-.log_level4 {
-	display: none;
 }
 
 body {
@@ -23,16 +15,11 @@ body {
 	padding-right: 5px;
 	height: 100%;
 	position:relative;
-	min-width: 470px;
+	min-width: 550px;
 	min-height: 300px;
-}
-
-h1 {
-	color: #008888;
-	font-family: "Verdana";
-	margin: 5px;
-	padding: 0;
-	text-shadow: 0 2px 2px #000000;
+	margin-top: 5px;
+	margin-left: 5px;
+	font-size: 16px;
 }
 
 div {
@@ -46,75 +33,135 @@ div {
 	height: 100%;
 	margin: auto;
 }
-.tab_content {
+
+.banner_heading {
+	position: absolute;
+	top: 65px;
+	left: 92px;
+	color: #008888;
+	font-family: "Verdana";
+	margin: 5px;
+	padding: 0;
+	font-size: 19px;
+	font-weight: bold;
+}
+
+.banner_image {
+	top: 5px;
+	position: absolute;
+}
+
+/******************
+ * Interface Tabs *
+ ******************/
+ 
+.ui_tabs {
+    position: absolute;
+	top: 88px;
+}
+
+.ui_tab_link {
+	margin-top: 7px;
+	margin-bottom: 7px;
+	margin-left: 6px;
+	margin-right: 6px;
+	float: left;
+}
+
+.ui_tab_link a {
+	color: #888888;
+}
+
+.ui_tab_link_image {
+	padding-top: 4px;
+}
+
+.ui_tab_label {
+	padding-top: 3px;
+	padding-left: 4px;
+	padding-right: 4px;
+	float: left;
+}
+
+.ui_tab_edges {
+	color: #444444;
+	float: left;
+	font-size: 18px;
+}
+
+/*******************************************
+ * Installed Mods - Updates required alert *
+ *******************************************/
+
+.installed_updates_alert {
+	width: 100%;
+	height: 38px;
+	color: #f9f9f9;
+}
+
+.installed_updates_alert_content {
 	position: absolute;
 	width: 100%;
-	height: 100%;
-	border: 1px solid #515151;
-	overflow: auto;
-	left: 0px;
-	margin-top: 160px;
+	padding-left: 9px;
+	top: 3px;
 	z-index: 1;
 }
+
+.installed_updates_alert_message {
+	font-size: 14px;
+	top: 6px;
+	left: 47px;
+	position: absolute;
+}
+
+.installed_updates_alert_background {
+	position: absolute;
+	width: 100%;
+	height: 38px;
+	background-color: #cc8800;
+	opacity: 0.5;
+	filter:alpha(opacity=50); /* For IE8 and earlier */
+}
+
+.installed_updates_link {
+	display: inline;
+	font-size: 16px;
+	padding-left: 4px;
+	color: #888888;
+
+}
+
+.installed_updates_link a {
+	color: #cc8800;
+	font-size: 14px;
+}
+
+.installed_updates_link a:hover {
+	color: #cc8800;
+}
+
+
+
+
+
+
+
 
 .tab {
 	display: none;
 }
 
-#news {
-	display: block;
+.tab_content {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid #515151;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	left: 0px;
+	margin-top: 120px;
+	z-index: 1;
 }
-
-#mod_download {
-    position: absolute;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:160px;
-    margin-bottom:0px;
-    margin-right:0px;
-    margin-left:0px;
-    overflow: auto;
-}
-	
-#mod_download_inner {
-    position: absolute;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:39px;
-    margin-bottom:0px;
-    margin-right:0px;
-    margin-left:0px;
-	overflow: auto;
-}
-
-.button {
-	margin-top: 7px;
-	margin-bottom: 7px;
-	margin-left: 6px;
-	margin-right: 6px;
-	display: inline;
-	font-size: 0.9em;
-}
-
-.button a {
-	color: #888888;
-}
-
-#newsButton {
-	color: #F9F9F9;
-}
-
-
-.filter_options, .sort_options {	
-	float: left;
-	padding-left: 7px;
-	min-width: 220px;
-}
-
 
 .tab_background {
 	opacity: 0.5;
@@ -127,16 +174,83 @@ div {
 	border: 1px solid #515151;
 	overflow: auto;
 	left: 0px;
-	margin-top: 160px;
+	margin-top: 120px;
 }
+
+/* NEWS TAB */
+
+#news {
+	display: block;
+}
+
+/* AVAILABLE MODS TAB */
+
+.mod_download_options {
+	position: absolute;
+	width: 100%;
+	height: 50px;
+	border: 1px solid #515151;
+	overflow: hidden;
+	left: 0px;
+	margin-top: 120px;
+	
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-bottom: -1px;
+	z-index: 1;
+	font-size: 0.8em;
+}
+
+.filter_options, .sort_options {	
+	float: left;
+	padding-left: 7px;
+	min-width: 240px;
+}
+
+#mod_download {
+    position: absolute;
+    bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    margin-top:120px;
+    margin-bottom:0px;
+    margin-right:0px;
+    margin-left:0px;
+    overflow: auto;
+}
+	
+#mod_download_inner {
+    position: absolute;
+    bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    margin-top:59px;
+    margin-bottom:0px;
+    margin-right:0px;
+    margin-left:0px;
+	overflow: auto;
+}
+
+
+.log_level3 {
+	display: none;
+}
+
+.log_level4 {
+	display: none;
+}
+
+
 
 .mod, .download_mod {
 	position: relative;
 	float: left;
 	margin-top: 5px;
-	margin-left: 5px;
+	margin-left: 10px;
 	margin-right: 10px;
-	width: 422px;
+	width: 502px;
 	padding-left: 6px;
 	padding-right: 6px;
 	padding-top: 6px;
@@ -150,22 +264,6 @@ div {
 	margin-bottom: 14px;
 }
 
-.mod_download_options {
-	position: absolute;
-	width: 100%;
-	height: 30px;
-	border: 1px solid #515151;
-	overflow: hidden;
-	left: 0px;
-	margin-top: 160px;
-	
-	padding-top: 4px;
-	padding-bottom: 4px;
-	margin-bottom: -1px;
-	z-index: 1;
-	font-size: 0.8em;
-}
-
 .mod {
 	padding-bottom: 7px;
 	margin-bottom: 7px;
@@ -176,7 +274,7 @@ div {
 	position: absolute;
 	left: 1px;
 	top: 5px;
-	width: 415px;
+	width: 495px;
 	height: 100%;
 	opacity: 0.25;
 	filter:alpha(opacity=25); /* For IE8 and earlier */
@@ -187,7 +285,7 @@ div {
 }
 
 .download_mod:hover .mod_background {
-	width: 442px;
+	width: 502px;
 	padding-left: 5px;
 	padding-top: 3px;
 }
@@ -212,6 +310,14 @@ div {
 
 .mod:hover .mod_name, .download_mod:hover .mod_name {
 	color: #cc8800;
+}
+
+.mod_build_old {
+	color: #cc8800;
+}
+
+.mod_build_current{
+	color: #008888;
 }
 
 .mod_author {
@@ -327,7 +433,7 @@ div {
 
 .buttons {
 	position: absolute;
-	bottom: -190px;
+	bottom: -160px;
 	left: 0px;
 }
 
@@ -408,7 +514,7 @@ a:hover {
 
 #downloading {
 	position: absolute;
-	bottom: -202px;
+	bottom: -172px;
 	right: -8px;
 	display: none;
 }
@@ -486,17 +592,48 @@ a:hover {
 .settings_items {
 	padding: 7px;
 }
-.settings_heading , .log_heading {
+.tab_heading {
 	color: #008888;
 	font-family: "Verdana";
-	font-size: 1.0em;
+	font-size: 18px;
+	padding: 7px;
+}
+
+.tab_subheading {
+	color: #008888;
+	font-family: "Verdana";
+	font-size: 14px;
 	padding: 7px;
 }
 
 .textInput {
-	width: 440px;
+	width: 500px;
 }
 
 .setting_heading {
 	font-size: 0.8em;
+}
+
+#about_data {
+	padding-left: 7px;
+}
+#about_data .tab_heading {
+	padding-left: 0px;
+}
+#about_data .tab_subheading {
+	padding-left: 0px;
+}
+
+.tab_about_text {
+	font-size: 14px;
+	color: #888888;
+}
+
+.tab_about_value {
+	color: #f9f9f9;
+}
+
+
+.tab_about_user a {
+	color: #cc8800;
 }
