@@ -1,0 +1,48 @@
+﻿#tab_commanders .img_usertile  {
+    height:64px;
+    width:64px;
+	margin-right: 5px;
+}
+
+#tab_commanders .tr_selected  {
+    height: 64px;
+}
+
+#tab_commanders .tr_not_selected_owned  {
+    height: 64px;
+}
+
+#tab_commanders .tr_not_selected_not_owned  {
+    height: 64px;
+}
+
+input.btn_select {
+	margin-top: 24px;
+	margin-left: 4px;
+}
+
+.commander_preview_cont {
+	position: absolute;
+	right: 32px; 
+	top: 36px;
+}
+
+.commander_preview_image {
+	width: 380px
+}
+
+.commander_preview_name {
+	width: 380px;
+	padding-top: 16px;
+	text-align: center;
+}
+
+.commander_scroll {
+	width: 560px; 
+	height: 400px; 
+	overflow: scroll;
+}
+
+.div_settings {
+	overflow: hidden !important;
+}
