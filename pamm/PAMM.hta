@@ -44,8 +44,8 @@
 		var strModsDirectoryPath
 		var strPAMMCacheDirectoryPath
 		
-		var datePAMM = "2014/03/01";
-		var strPAMMversion = "3.3.0";
+		var datePAMM = "2014/03/02";
+		var strPAMMversion = "3.4.0";
 		var strPABuild = "62110";
 		
 		/* Localisation Functions */
@@ -134,6 +134,11 @@
 							global_mod_list.push(objInstalledMods[i]["global_mod_list"][j]);
 						}
 					}
+					if (objInstalledMods[i]["scenes"] != null && objInstalledMods[i]["scenes"]["global_mod_list"] != null) {
+						for (var j = 0; j < objInstalledMods[i]["scenes"]["global_mod_list"].length; j++) {
+							global_mod_list.push(objInstalledMods[i]["scenes"]["global_mod_list"][j]);
+						}
+					}
 				}
 			}
 			return JSON.stringify(global_mod_list, null, 4).replace(/\r?\n/g, NEW_LINE);
@@ -149,6 +154,18 @@
 						if (scene_mod_list[scene] != null) {
 							for(var j = 0; j < objInstalledMods[i][scene].length; j++) {
 								scene_mod_list[scene].push(objInstalledMods[i][scene][j]);
+							}
+						}
+						if (scene == "scenes") {
+							for(var subscene in objInstalledMods[i][scene]) {
+								if (subscene != "global_mod_list") {
+									if (scene_mod_list[subscene] == null) {
+										scene_mod_list[subscene] = [];
+									}
+									for(var j = 0; j < objInstalledMods[i][scene][subscene].length; j++) {
+										scene_mod_list[subscene].push(objInstalledMods[i][scene][subscene][j]);
+									}
+								}
 							}
 						}
 					}
@@ -268,7 +285,7 @@
 		function jsUpdateAll() {
 			for (var i = 0; i < objInstalledMods.length; i++) {
 				if (jsGetOnlineMod(objInstalledMods[i].id) != null && objInstalledMods[i].date < jsGetOnlineMod(objInstalledMods[i].id).date) {
-					jsPreInstallMod(jsGetOnlineMod(objInstalledMods[i].id).url,objInstalledMods[i].id, {});
+					jsPreInstallMod(jsGetOnlineMod(objInstalledMods[i].id).url, objInstalledMods[i].id, {});
 				}
 			}
 		}
@@ -340,6 +357,12 @@
 				}
 				if (document.getElementById("mod" + strModID)) {
 					document.getElementById("mod" + strModID).checked = boolReadyToEnable;
+					
+					if (boolReadyToEnable) {
+						document.getElementById("modimg" + strModID).src = "manager/img/checkbox_checked.png";
+					} else {
+						document.getElementById("modimg" + strModID).src = "manager/img/checkbox_unchecked.png";
+					}
 				}
 			} else {
 				for(var i = 0; i < objInstalledMods.length; i++) {
@@ -353,6 +376,7 @@
 				}
 				if (document.getElementById("mod" + strModID)) {
 					document.getElementById("mod" + strModID).checked = false;
+					document.getElementById("modimg" + strModID).src = "manager/img/checkbox_unchecked.png";
 				}
 			}
 			WriteModinfoJSON(strModID);
@@ -507,6 +531,9 @@
 			
 			if (jsGetModsRequiringUpdates() > 0) {
 				document.getElementById("mod_list").innerHTML = "<div class='installed_updates_alert'><div class='installed_updates_alert_background'></div><div class='installed_updates_alert_content'><img src='manager/img/alert.png'><div class='installed_updates_alert_message'>" + jsGetModsRequiringUpdates() + " mod(s) require updates <div class='installed_updates_link'>[ <a href='#' onClick='jsUpdateAll()'><span class='LOC_update_all'>update all</span></a> ]</div></div></div></div>" + document.getElementById("mod_list").innerHTML;
+				document.getElementById("ui_tab_installed_needing_update").innerHTML = "&nbsp;(<span class='ui_tab_installed_needing_update_count'>" + jsGetModsRequiringUpdates() + "</span>)";
+			} else {
+				document.getElementById("ui_tab_installed_needing_update").innerHTML = "";
 			}
 			
 			jsApplyLocaleText();
@@ -514,10 +541,13 @@
 			$('.check_mod').each(function() {
 				$(this).hide();
 
-				var strCheckHTML = "<img class='check_image' src='manager/img/checkbox_unchecked.png' />";
+				var strID = $(this).prop('id');
+				strID = strID.substring(3, strID.length);
+					
+				var strCheckHTML = "<img id='modimg" + strID + "' class='check_image' src='manager/img/checkbox_unchecked.png' />";
 				
 				if ($(this).prop('checked')) {
-					strCheckHTML = "<img class='check_image' src='manager/img/checkbox_checked.png' />";
+					strCheckHTML = "<img id='modimg" + strID + "' class='check_image' src='manager/img/checkbox_checked.png' />";
 				}
 				
 				var $image = $(strCheckHTML).insertAfter(this);    
@@ -525,6 +555,9 @@
 				$image.click(function() {
 					var $checkbox = $(this).prev('.check_mod');
 					$checkbox.prop('checked', !$checkbox.prop('checked'));
+					var strID = $checkbox.prop('id');
+					strID = strID.substring(3, strID.length);
+					jsModEnabledToggle(strID);
 					
 					if($checkbox.prop("checked")) {
 						$image.attr('src', "manager/img/checkbox_checked.png");
@@ -1490,7 +1523,7 @@
 			<div class="banner_image"><img src="manager\img\img_pa_logo_start_rest.png"></div>
 			<div class="ui_tabs">
 				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="newsButton" onclick="jsDisplayPanel('news')"><span class="LOC_NEWS">NEWS</span></a></div> <span class="ui_tab_edges">]</span></div>
-				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')"><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
+				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="modListButton" onclick="jsDisplayPanel('installed')"><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a><span id="ui_tab_installed_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
 				<div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" id="modDownloadButton" onclick="jsDisplayPanel('download')"><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
 				<div class="ui_tab_link ui_tab_link_image"><a href="#" id="logButton" onclick="jsDisplayPanel('log')"><img id="log_icon" src="manager\img\log.png"></a></div>
 				<div class="ui_tab_link ui_tab_link_image"><a href="#" id="settingsButton" onclick="jsDisplayPanel('settings')"><img id="settings_icon" src="manager\img\settings.png"></a></div>
@@ -1601,7 +1634,7 @@
 				<div id="about_data" class="tab_content">
 					<div class="tab_heading"><span class="ABOUT">ABOUT</span></div>
 					<div class="tab_subheading">Planetary Annihilation Mod Manager</div>
-					<div class="tab_about_text">Version <span class="tab_about_value">3.3.0</span> (2014/03/01)</div>
+					<div class="tab_about_text">Version <span class="tab_about_value">3.4.0</span> (2014/03/02)</div>
 					<div class="tab_about_text">Current PA Build: <span id="current_pa_build" class="tab_about_value">Loading...</span></div>
 					<div class='mod_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
 					<br/><br/>

@@ -58,6 +58,7 @@ div {
 .ui_tabs {
     position: absolute;
 	top: 88px;
+	color: #888888;
 }
 
 .ui_tab_link {
@@ -635,5 +636,9 @@ a:hover {
 
 
 .tab_about_user a {
+	color: #cc8800;
+}
+
+.ui_tab_installed_needing_update_count {
 	color: #cc8800;
 }
