@@ -4,12 +4,12 @@
     "display_name": "Bigger Armory Images",
     "description": "Makes the commander images in the Armory larger",
     "author": "Raevn",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "signature": "not yet implemented",
     "priority": 100,
     "enabled": true,
     "id": "rBiggerArmoryImages",
-    "forum": "",
+    "forum": "https://forums.uberent.com/threads/rel-bigger-armory-images-62037.56963/",
     "category": [
         "ui"
     ],
