@@ -1,8 +1,8 @@
 {
     "context": "client",
     "identifier": "com.pa.raevn.rbiggerarmoryimages",
-    "display_name": "Bigger Armory Images",
-    "description": "Makes the commander images in the Armory larger",
+    "display_name": "Armory Commander Preview",
+    "description": "Adds a large preview image of the selected Commander in the Armoury",
     "author": "Raevn",
     "version": "1.1.0",
     "signature": "not yet implemented",
