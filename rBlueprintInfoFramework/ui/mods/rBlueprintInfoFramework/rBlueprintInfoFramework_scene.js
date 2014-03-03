@@ -3,7 +3,7 @@
 //---------------------------------------------------
 // rBlueprintInfoFramework_scene.js
 // Created by Raevn
-// Version 1.3.0 (2014/02/23)
+// Version 1.4.0 (2014/03/03)
 //---------------------------------------------------
 
 model.BIFReady = ko.observable(bif.getBIFReady());

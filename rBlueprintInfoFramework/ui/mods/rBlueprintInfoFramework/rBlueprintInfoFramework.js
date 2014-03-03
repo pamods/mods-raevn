@@ -3,7 +3,7 @@
 //---------------------------------------------------
 // rBlueprintInfoFramework.js
 // Created by Raevn
-// Version 1.3.0 (2014/02/23)
+// Version 1.4.0 (2014/03/03)
 //---------------------------------------------------
 
 var bif = {};
@@ -69,7 +69,7 @@ bif.queueFileExists = function(src, callback) {
 	bif.image_count++;
 	
 	if (bif.fileExistsQueue.length == 1) {
-		console.log("[Blueprint Info Framework] FileExists queue not empty, processing");
+		//console.log("[Blueprint Info Framework] FileExists queue not empty, processing");
 		bif.processFileExistsQueue();
 	}
 }
@@ -245,6 +245,9 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 				sessionStorage.bif = encode(bif);
 			}
 		}
+	}).error(function() { 
+		console.log("[Blueprint Info Framework] Error loading unit blueprint: " + currentUnitID);
+		bif.loaded_units(bif.loaded_units() + 1);
 	});
 }
 
@@ -349,8 +352,10 @@ bif.generateBIFcache = function() {
 	console.log("[Blueprint Info Framework] Caching build data for unit blueprints");
 	for (var i = 0; i < bif.unit_count; i++) {
 		var currentUnitID = bif.units_id[i];
-		if (bif.units[currentUnitID].buildable_types != null) {
-			bif.getUnitBuildableTypeUnitIDs(currentUnitID);
+		if (bif.unitBlueprintExists(currentUnitID) == true) {
+			if (bif.units[currentUnitID].buildable_types != null) {
+				bif.getUnitBuildableTypeUnitIDs(currentUnitID);
+			}
 		}
 	}
 	for (var i = 0; i < bif.unit_count; i++) {
@@ -361,25 +366,31 @@ bif.generateBIFcache = function() {
 	
 	for (var i = 0; i < bif.unit_count; i++) {
 		var currentUnitID = bif.units_id[i];
-		if (bif.units[currentUnitID].base_spec != null) {
-			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.units[currentUnitID].base_spec);
-			bif.units[baseBlueprintID].inherited.push(currentUnitID);
+		if (bif.unitBlueprintExists(currentUnitID) == true) {
+			if (bif.units[currentUnitID].base_spec != null) {
+				var baseBlueprintID = bif.getBlueprintIDFromPath(bif.units[currentUnitID].base_spec);
+				bif.units[baseBlueprintID].inherited.push(currentUnitID);
+			}
 		}
 	}
 	
 	for (var i = 0; i < bif.tool_count; i++) {
 		var currentToolID = bif.tools_id[i];
-		if (bif.tools[currentToolID].base_spec != null) {
-			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.tools[currentToolID].base_spec);
-			bif.tools[baseBlueprintID].inherited.push(currentToolID);
+		if (bif.toolBlueprintExists(currentToolID) == true) {
+			if (bif.tools[currentToolID].base_spec != null) {
+				var baseBlueprintID = bif.getBlueprintIDFromPath(bif.tools[currentToolID].base_spec);
+				bif.tools[baseBlueprintID].inherited.push(currentToolID);
+			}
 		}
 	}
 	
 	for (var i = 0; i < bif.ammo_count; i++) {
 		var currentAmmoID = bif.ammo_id[i];
-		if (bif.ammo[currentAmmoID].base_spec != null) {
-			var baseBlueprintID = bif.getBlueprintIDFromPath(bif.ammo[currentAmmoID].base_spec);
-			bif.ammo[baseBlueprintID].inherited.push(currentAmmoID);
+		if (bif.ammoBlueprintExists(currentAmmoID) == true) {
+			if (bif.ammo[currentAmmoID].base_spec != null) {
+				var baseBlueprintID = bif.getBlueprintIDFromPath(bif.ammo[currentAmmoID].base_spec);
+				bif.ammo[baseBlueprintID].inherited.push(currentAmmoID);
+			}
 		}
 	}
 	
@@ -1050,12 +1061,13 @@ bif.getFilteredUnitIDsFromArray = function(unitIDArray, filter) {
 	}
 	filterString = filterTokens.join("");
 	var filteredBlueprintIDs = unitIDArray.filter(function(el) { 
-		var currentUnitTypes = bif.units[el].unit_types;
-		if (currentUnitTypes != null) { 
-			return eval(filterString);
-		} else {
-			return false;
+		if (bif.unitBlueprintExists(el) == true) {
+			var currentUnitTypes = bif.units[el].unit_types;
+			if (currentUnitTypes != null) { 
+				return eval(filterString);
+			}
 		}
+		return false;
 	});
 	
 	return filteredBlueprintIDs;
@@ -1191,10 +1203,12 @@ bif.getUnitBuiltByUnitIDs = function(unitID) {
 		for(var i = 0; i < bif.unit_count; i++) {
 			var currentUnitID = bif.units_id[i];
 			
-			if (bif.units[currentUnitID].buildable_types != null) {
-				var currentUnitBuildableTypes = bif.getUnitBuildableTypeUnitIDs(currentUnitID);
-				if ($.inArray(unitID, currentUnitBuildableTypes) > -1) {
-					builtByIDs.push(currentUnitID);
+			if (bif.unitBlueprintExists(currentUnitID) == true) {
+				if (bif.units[currentUnitID].buildable_types != null) {
+					var currentUnitBuildableTypes = bif.getUnitBuildableTypeUnitIDs(currentUnitID);
+					if ($.inArray(unitID, currentUnitBuildableTypes) > -1) {
+						builtByIDs.push(currentUnitID);
+					}
 				}
 			}
 		}
