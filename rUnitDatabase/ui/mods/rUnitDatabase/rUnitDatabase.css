@@ -2,24 +2,24 @@
     position:absolute;
     top:50%;
     left:50%;
-	margin-left: -400px;
-	margin-top: -300px;
+	margin-left: -475px;
+	margin-top: -345px;
 	width: 800px;
 	height: 600px;
+	border-bottom-right-radius: 10px;
 	
-    /*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.9)), color-stop(40%,rgba(0,0,0,0.9)), color-stop(100%,rgba(0, 62, 65, 0.8))); */
-	background: #000000;
-    border: 1px solid rgba(255,255,255,.2);
-    border-radius: 4px;
+	-webkit-box-sizing: content-box !important;
+	-moz-box-sizing: content-box !important;
+	box-sizing: content-box !important;
+}
+
+#unitDatabase * {
+	-webkit-box-sizing: content-box !important;
+	box-sizing: content-box !important;
 }
 
 .unitDatabase_close {
-	position: absolute;
-	right: 8px;
-	top: 8px;
-	font-size: 18px;
-    text-shadow:0px 0px 8px #00ffff;
-	color: #00ffff;
+	float: right;
 }
 
 .unitDatabase_cont {
@@ -28,26 +28,14 @@
 }
 
 .unitDatabase_header {
-	position: absolute;
-	width: 784px;
-	height: 24px;
-	padding: 8px;
-	
+	width: 100%;	
     border-bottom: 1px solid rgba(255,255,255,.2);
 }
 
-.unitDatabase_title {
-	font-size: 18px;
-    text-shadow:0px 0px 8px #00ffff;
-	color: #00ffff;
-}
-
 .unitDatabase_units {
-	position: absolute;
-	top: 40px;
+	float: left;
 	width: 234px;
 	height: 560px;
-	padding-left: 6px;
 	overflow: auto;
 	
     border-right: 1px solid rgba(255,255,255,.2);
@@ -83,8 +71,8 @@
 }
 
 .selectedUnit {
-    background: rgba(0,255,255,.5);
-    border:1px solid #00ffff;
+    background: rgba(0,255,0,.5);
+    border:1px solid #00ff00;
     border-radius: 2px;
 	padding: 2px;
 }
@@ -96,10 +84,10 @@
 }
 
 .unitDatabase_unitInfo, .unitDatabase_typeInfo {
-	position: absolute;
-	top: 40px;
+	float: left;
+	/* top: 40px;*/
 	left: 240px;
-	width: 530px;
+	width: 534px;
 	height: 540px;
 	padding-left: 20px;
 	padding-right: 10px;
@@ -125,7 +113,7 @@
 .unitDatabase_unitStrategicIcon {
 	position: absolute;
 	top: 38px;
-	left: 48px;
+	left: 32px;
 	width: 32px;
 	height: 32px;
 }
@@ -147,7 +135,7 @@
 .unitDatabase_unitBuildName {
 	text-transform: uppercase;
 	font-size: 14px;
-	color: #888888;
+	color: #008cff;
 }
 
 .unitDatabase_unitBuildName:hover {
@@ -176,7 +164,7 @@
 
 .unitDatabase_unitTypes {
 	font-size: 14px;
-	color: #00ffff;
+	color: #008cff;
 	clear: left;
 }
 .unitDatabase_unitType:hover {
@@ -188,7 +176,7 @@
 }
 
 .unitDatabase_unitInherited {
-	color: #00ffff;
+	color: rgba(0,255,0,.75);
 }
 
 .unitDatabase_unitInherited:hover {

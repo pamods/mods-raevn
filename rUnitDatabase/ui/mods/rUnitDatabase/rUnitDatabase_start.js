@@ -3,7 +3,7 @@
 //------------------------------
 // rUnitDatabase_start.js
 // Created by Raevn
-// Version 1.1.0 (2014/02/20)
+// Version 1.2.0 (2014/03/03)
 //------------------------------
 
 loadScript("coui://ui/mods/rUnitDatabase/underscore-min.js");
@@ -39,6 +39,15 @@ model.ud.selectedTypeBlueprints = ko.computed(function() {
 	}
 	if ($.inArray("imperial_base", blueprintIDs) > -1) {
 		blueprintIDs.splice($.inArray("imperial_base", blueprintIDs), 1);
+	}
+	if ($.inArray("quad_base", blueprintIDs) > -1) {
+		blueprintIDs.splice($.inArray("quad_base", blueprintIDs), 1);
+	}
+	if ($.inArray("tank_base", blueprintIDs) > -1) {
+		blueprintIDs.splice($.inArray("tank_base", blueprintIDs), 1);
+	}
+	if ($.inArray("raptor_base", blueprintIDs) > -1) {
+		blueprintIDs.splice($.inArray("raptor_base", blueprintIDs), 1);
 	}
 	return bif.getBlueprintIDsFromBlueprints(bif.sortBlueprintsByAttribute(bif.getUnitBlueprintsFromArray(blueprintIDs), "display_name", "text", true));
 });
@@ -132,6 +141,10 @@ model.ud.selectedUnitBuiltBy = ko.computed(function() {
 	if (bif.getUnitIDIsBuiltBy(model.ud.selectedUnitBlueprintID(), "imperial_delta") == true) {
 		blueprints = blueprints.concat(bif.getFilteredUnitIDs("Commander"));
 		blueprints.splice(blueprints.indexOf("base_commander"), 1);
+		blueprints.splice(blueprints.indexOf("imperial_base"), 1);
+		blueprints.splice(blueprints.indexOf("quad_base"), 1);
+		blueprints.splice(blueprints.indexOf("raptor_base"), 1);
+		blueprints.splice(blueprints.indexOf("tank_base"), 1);
 	}
 	return blueprints;
 });
@@ -238,10 +251,15 @@ bif.registerBIFReadyCallback(function() {
 	var commanders = bif.getUnitBlueprintsFromArray(bif.getFilteredUnitIDs("Commander"));
 	delete commanders["base_commander"];
 	delete commanders["imperial_base"];
+	delete commanders["tank_base"];
+	delete commanders["raptor_base"];
+	delete commanders["quad_base"];
 	commanders = bif.getBlueprintsArray(bif.sortBlueprintsByBuildOrder(commanders));
 	model.ud.commanders(commanders);
 
 	model.ud.other(getSortedUnitListUnbuildable(bif.getUnitIDs()));
+
+
 });
 
 //Toggles
@@ -251,6 +269,6 @@ model.ud.showUnitInfo = ko.computed(function() {return model.ud.selectedUnitBlue
 model.ud.showUnitInfoRaw = ko.observable(false);
 model.ud.showTypeInfo = ko.computed(function() {return model.ud.selectedType() != null });
 
-$('#A11').parent().parent().parent().before('<tr><td class="td_start_menu_item" data-bind="click: function () { model.ud.showUnitDatabase(!model.ud.showUnitDatabase())}"><span class="link_start_menu_item"><a href="#" id="A8" data-bind="click_sound: \'default\', rollover_sound: \'default\'"><span class="start_menu_item_lbl" >UNIT DATABASE</span></a></span></td></tr>');
+$('#navigation_items a:nth-child(5)').after('<a href="#" class="nav_item" data-bind="css: {nav_item_disabled: !model.BIFReady()}, click: function () { if (model.BIFReady()) {model.ud.showUnitDatabase(!model.ud.showUnitDatabase())}}, click_sound: \'default\', rollover_sound: \'default\'"><span class="nav_item_text" data-bind="css: {nav_item_text_disabled: !model.BIFReady()}">UNIT DATABASE<img style="float:right; margin-top: -12px;" data-bind="visible: !model.BIFReady() && !model.showingEULA()" src="coui://ui/mods/rBlueprintInfoFramework/img/loading.gif"></span></a>');
 
-$.get("coui://ui/mods/rUnitDatabase/rUnitDatabase.html", function (data) {$(".fadeContainer").append(data); ko.applyBindings(model, document.getElementById("unitDatabase"));});
+$.get("coui://ui/mods/rUnitDatabase/rUnitDatabase.html", function (data) {$("body").append(data); ko.applyBindings(model, document.getElementById("unitDatabase"));});
