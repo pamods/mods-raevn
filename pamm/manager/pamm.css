@@ -8,7 +8,7 @@ img {
 }
 
 body {
-	background-image: url("img/img_start_bground_sample.jpg");
+	background-color: #141414;
 	color: #F9F9F9;
 	font-family: "Arial";
 	padding-left: 5px;
@@ -22,9 +22,17 @@ body {
 	font-size: 16px;
 }
 
-div {
-	opacity: 1;
-	filter:alpha(opacity=100); /* For IE8 and earlier */
+a {
+	color: #008cff;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #008cff;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 #container {
@@ -38,7 +46,7 @@ div {
 	position: absolute;
 	top: 65px;
 	left: 92px;
-	color: #008888;
+	color: #008cff;
 	font-family: "Verdana";
 	margin: 5px;
 	padding: 0;
@@ -69,9 +77,14 @@ div {
 	float: left;
 }
 
+.ui_tab_link_selected {
+	color: #f9f9f9 !important;
+}
+
 .ui_tab_link a {
 	color: #888888;
 }
+
 
 .ui_tab_link_image {
 	padding-top: 4px;
@@ -94,69 +107,327 @@ div {
  * Installed Mods - Updates required alert *
  *******************************************/
 
-.installed_updates_alert {
-	width: 100%;
-	height: 38px;
-	color: #f9f9f9;
-}
-
-.installed_updates_alert_content {
-	position: absolute;
+.alert_area {
 	width: 100%;
 	padding-left: 9px;
-	top: 3px;
-	z-index: 1;
-}
-
-.installed_updates_alert_message {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background-color: #6B4900;
+	border-bottom: 1px solid #515151;
 	font-size: 14px;
-	top: 6px;
-	left: 47px;
-	position: absolute;
 }
 
-.installed_updates_alert_background {
-	position: absolute;
-	width: 100%;
-	height: 38px;
-	background-color: #cc8800;
-	opacity: 0.5;
-	filter:alpha(opacity=50); /* For IE8 and earlier */
+.alert_img {
+	float: left;
 }
 
-.installed_updates_link {
-	display: inline;
-	font-size: 16px;
+.alert_message {
+	margin-top: 7px;
+	float: left;
+}
+
+.alert_link {
 	padding-left: 4px;
 	color: #888888;
-
 }
 
-.installed_updates_link a {
-	color: #cc8800;
-	font-size: 14px;
-}
-
-.installed_updates_link a:hover {
+.alert_link a {
 	color: #cc8800;
 }
 
+.alert_link a:hover {
+	color: #cc8800;
+}
+
+/**************
+ * Filter bar *
+ **************/
+
+.filter_area {
+	width: 100%;
+	padding-left: 9px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background-color: #202020;
+	border-bottom: 1px solid #515151;
+	font-size: 12px;
+}
+
+.filter_area_container {
+	width: 100%;
+}
+
+.filter_area_additional_options_toggle {
+	position:absolute; 
+	right: 12px; 
+	top: 8px;
+}
+
+.filter_area_filter_heading {
+	width: 75px;
+	font-weight: bold;
+}
+
+.filter_area_filter_list {
+	padding-right: 38px !important;
+	color: #888888;
+}
+
+.filter_area_filter_list a{
+	color: #888888;
+}
+
+.filter_area_text_filter {
+	padding-right: 180px !important;
+}
+
+.filter_area_filter_item_selected {
+	color: #f9f9f9 !important;
+}
+
+.filter_area_link {
+	padding-left: 4px;
+	color: #888888;
+}
+
+.filter_area_message {
+	margin-top: 2px;
+	float: left;
+}
+
+.filter_area_img {
+	float: left;
+	padding-right: 7px;
+	padding-left: 8px;
+}
+
+.filter_area_textbox {
+	color: #f9f9f9;
+    background-color: #202020; 
+    border: solid 1px #888888; 
+    outline: none; 
+	width: 100%;
+}
+
+.filter_area_category {
+	float: left;
+	width: 110px;
+	font-size: 11px;
+}
+
+.filter_area_option_img {
+	float: left;
+}
+
+.filter_area_option_text {
+	float: left;
+	padding-right: 8px;
+}
+
+.filter_area table {
+	width: 100%;
+}
+
+.filter_area td {
+	padding: 0px;
+	padding-bottom: 4px;
+}
 
 
+/*************
+ * Mod Entry *
+ *************/
 
+.mod_entry {
+	position: relative;
+	float: left;
+	width: 502px;
+	height: 110px;
+	margin: 10px;
+	padding: 6px;
+	cursor: default;
+	font-size: 11px;
+}
 
+.mod_entry:hover  {
+	background-color: #202020;
+	border: 1px solid #515151;
+	padding: 5px;
+}
 
-
-
-.tab {
+.mod_entry_filtered {
 	display: none;
 }
+
+.mod_entry_container {
+	height: 100%;
+}
+
+.mod_entry_icon {
+	float: left;
+	padding-right: 10px;
+	width: 100px;
+	height: 100px;
+	display: block;
+}
+
+.mod_entry_icon_disabled {
+	display: none;
+}
+
+.mod_entry_enabled {
+	display: none;
+}
+
+.mod_entry_enabled_image {
+	float: left;
+	padding-right: 8px;
+}
+
+.mod_entry_name {
+	float: left;
+	font-family: "Verdana";
+	font-size: 16px;
+	padding-right: 5px;
+	font-weight: bold;
+}
+
+.mod_entry_filter_update_available .mod_entry_name{
+	color: #cc8800;
+}
+
+.mod_entry_author {
+	float: left;
+	font-style: italic;
+	padding-top: 4px;
+}
+
+.mod_entry_details {
+	float: left;
+	width: 100%;
+	font-style: italic;
+	color: #888888;
+	padding-right: 3px;
+}
+
+.mod_entry_new {
+	font-style: italic;
+	color: #cc8800;
+}
+
+.mod_entry_requires {
+	color: #888888;
+}
+
+.mod_entry_description {
+	font-size: 12px;
+	display: block;
+	max-height: 30px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.mod_entry_categories {
+	color: #888888;
+	text-transform:uppercase;
+	display: block;
+}
+
+.mod_entry_link {
+	margin-right: 10px;
+	display: inline;
+	font-size: 12px;
+	padding-top: 3px;
+	color: #888888;
+}
+
+.mod_entry_link a {
+	color: #008cff;
+}
+
+.mod_entry_update_link a {
+	color: #cc8800;
+}
+
+.mod_entry_uninstall_link a {
+	color: #888888;
+}
+
+.mod_entry_reinstall_link a {
+	color: #888888;
+}
+
+.mod_entry_count {
+	display: inline;
+	font-style: italic;
+	color: #888888;
+	padding-left: 16px;
+}
+
+.mod_entry_likes {
+	display: inline;
+	font-style: italic;
+	color: #888888;
+	padding-left: 22px;
+}
+
+/* Mod List Overview Style */
+
+.mod_entry_summary {
+	height: 62px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.mod_entry_summary .mod_entry_icon {
+	width: 60px;
+	height: 60px;
+}
+
+.mod_entry_summary .mod_entry_description {
+	display: none;
+}
+
+.mod_entry_summary .mod_entry_categories {
+	display: none;
+}
+
+
+
+
+
+
+
+
+/**********
+ * Shared *
+ **********/
+
+.brackets {
+	color: #888888;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .tab_content {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	border: 1px solid #515151;
+	background-color: #0B0B0B;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	left: 0px;
@@ -164,76 +435,11 @@ div {
 	z-index: 1;
 }
 
-.tab_background {
-	opacity: 0.5;
-	filter:alpha(opacity=50); /* For IE8 and earlier */
-	background-color: #000000;
-	
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	border: 1px solid #515151;
-	overflow: auto;
-	left: 0px;
-	margin-top: 120px;
-}
-
-/* NEWS TAB */
-
-#news {
-	display: block;
-}
-
 /* AVAILABLE MODS TAB */
 
 .mod_download_options {
-	position: absolute;
-	width: 100%;
-	height: 50px;
-	border: 1px solid #515151;
-	overflow: hidden;
-	left: 0px;
-	margin-top: 120px;
-	
-	padding-top: 4px;
-	padding-bottom: 4px;
-	margin-bottom: -1px;
-	z-index: 1;
-	font-size: 0.8em;
+	display: none;
 }
-
-.filter_options, .sort_options {	
-	float: left;
-	padding-left: 7px;
-	min-width: 240px;
-}
-
-#mod_download {
-    position: absolute;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:120px;
-    margin-bottom:0px;
-    margin-right:0px;
-    margin-left:0px;
-    overflow: auto;
-}
-	
-#mod_download_inner {
-    position: absolute;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:59px;
-    margin-bottom:0px;
-    margin-right:0px;
-    margin-left:0px;
-	overflow: auto;
-}
-
 
 .log_level3 {
 	display: none;
@@ -243,193 +449,31 @@ div {
 	display: none;
 }
 
-
-
-.mod, .download_mod {
-	position: relative;
-	float: left;
-	margin-top: 5px;
-	margin-left: 10px;
-	margin-right: 10px;
-	width: 502px;
-	padding-left: 6px;
-	padding-right: 6px;
-	padding-top: 6px;
-	padding-bottom: 7px;
-	cursor: default;
-}
-
-.download_mod {
-	border-bottom: 0px solid #515151;
-	padding-bottom: 14px;
-	margin-bottom: 14px;
-}
-
-.mod {
-	padding-bottom: 7px;
-	margin-bottom: 7px;
-	z-index: 1;
-}
-
-.mod:hover .mod_background , .download_mod:hover .mod_background  {
-	position: absolute;
-	left: 1px;
-	top: 5px;
-	width: 495px;
-	height: 100%;
-	opacity: 0.25;
-	filter:alpha(opacity=25); /* For IE8 and earlier */
-	background-color: #00ffff;
-	border: 1px solid #515151;
-	margin: -5px;
-	z-index: -1;
-}
-
-.download_mod:hover .mod_background {
-	width: 502px;
-	padding-left: 5px;
-	padding-top: 3px;
-}
-
-.mod:hover .mod_background {
-	margin-left: 25px;
-}
-
-.mod_container_online {
-	padding-left: 110px;
-}
-.mod_container_install {
-	padding-left: 30px;
-}
-
-.mod_name {
-	display: inline;
-	color: #008888;
-	font-family: "Verdana";
-	font-size: 1.0em;
-}
-
-.mod:hover .mod_name, .download_mod:hover .mod_name {
-	color: #cc8800;
-}
-
 .mod_build_old {
 	color: #cc8800;
 }
 
 .mod_build_current{
-	color: #008888;
+	color: #007800;
 }
 
-.mod_author {
-	margin-left: 5px;
-	display: inline;
-	font-style: italic;
-	font-size: 0.7em;
-}
-
-.mod_category  {
-	font-size: 0.7em;
-	color: #888888;
-	text-transform:uppercase;
-}
-
-.mod_requires {
-	font-size: 0.7em;
-	color: #888888;
-}
 
 .mod_requirement {
-	color: #008888;
+	color: #007800;
 }
 
 .mod_requirement_missing {
 	color: #cc8800;
 }
 
-.mod_version {
-	display: inline;
-	font-size: 0.7em;
-	font-style: italic;
-	color: #888888;
-	padding-right: 3px;
-}
 
-.mod_new {
-	font-size: 0.7em;
-	font-style: italic;
-	color: #cc8800;
-}
 
-.mod_count {
-	display: inline;
-	font-size: 0.7em;
-	font-style: italic;
-	color: #888888;
-	padding-left: 16px;
-}
 
-.mod_likes {
-	display: inline;
-	font-size: 0.7em;
-	font-style: italic;
-	color: #888888;
-	padding-left: 22px;
-}
-
-.mod_link,  {
-	margin-right: 10px;
-	display: inline;
-	font-size: 0.8em;
-	color: #888888;
-}
-
-.mod_link a:hover {
-	color: #cc8800;
-}
-
-.mod_filtered {
-	display: none;
-}
-
-.mod_enable {
-	float: left;
-	margin-right: 5px;
-	margin-top: 3px;
-	width: 20px;
-	height: 30px;
-}
-
-.mod_description, .log_entry, .log_entry_debug {
+.log_entry, .log_entry_debug {
 	margin-top: 4px;
 	margin-bottom: 2px;
 	font-size: 0.8em;
 	color: #F9F9F9;
-}
-
-.mod_updated {
-	display: inline;
-	font-size: 0.8em;
-	color: #cc8800;
-}
-
-.mod_update_available {
-	display: inline;
-	font-size: 0.8em;
-	color: #cc8800;
-	margin-left: 10px;
-}
-
-.mod_icon {
-	float: left;
-	padding-right: 10px;
-}
-
-.credits {
-	float: left;
-	font-style: italic;
-	font-size: 0.8em;
-	padding-top: 10px;
 }
 
 .buttons {
@@ -449,60 +493,6 @@ div {
 	float: right;
 	width: 90px;
 	margin-top: 3px;
-}
-
-#download p {
-	color: #888888;
-	font-size: 0.8em;
-	padding-top: 0px;
-	margin-top: 0px;
-	padding-left: 5px;
-}
-
-.mod_download_heading {
-	padding-top: 0px;
-	padding-bottom: 2px;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	padding-left: 5px;
-}
-
-a {
-	color: #008888;
-	text-decoration: none;
-}
-
-a:visited {
-	color: #008888;
-}
-
-
-.mod_description a {
-	color: #F9F9F9;
-}
-
-.mod_description a:visited {
-	color: #F9F9F9;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-.mod:hover a:hover {
-	color: #cc8800;
-}
-
-.mod_link_reinstall a, .mod_link_uninstall a {
-	color: #888888 !important;
-}
-
-.mod_link_reinstall a:visited, .mod_link_uninstall a:visited {
-	color: #888888 !important;
-}
-
-.mod_link_reinstall a:hover, .mod_link_uninstall a:hover {
-	color: #cc8800 !important;
 }
 
 .loading {
@@ -534,9 +524,9 @@ a:hover {
 }
 
 .news_title {
-	color: #008888;
 	font-family: "Verdana";
-	font-size: 1.0em;
+	font-size: 16px;
+	font-weight: bold;
 }
 
 .news_date {
@@ -551,12 +541,9 @@ a:hover {
 	color: #F9F9F9;
 }
 
-.brackets {
-	color: #888888;
-}
 			
 .log_url {
-	color: #008888;
+	color: #008cff;
 }
 
 .log_time {
@@ -567,7 +554,7 @@ a:hover {
 
 .log_type {
 	float: left;
-	color: #008888;
+	color: #008cff;
 	width: 60px;
 }
 
@@ -593,18 +580,25 @@ a:hover {
 .settings_items {
 	padding: 7px;
 }
+.about_items {
+	padding: 9px;
+}
+
 .tab_heading {
-	color: #008888;
+	color: #008cff;
 	font-family: "Verdana";
 	font-size: 18px;
 	padding: 7px;
 }
 
 .tab_subheading {
-	color: #008888;
+	color: #008cff;
 	font-family: "Verdana";
 	font-size: 14px;
-	padding: 7px;
+}
+
+#settings td {
+	vertical-align: top;
 }
 
 .textInput {
@@ -613,16 +607,6 @@ a:hover {
 
 .setting_heading {
 	font-size: 0.8em;
-}
-
-#about_data {
-	padding-left: 7px;
-}
-#about_data .tab_heading {
-	padding-left: 0px;
-}
-#about_data .tab_subheading {
-	padding-left: 0px;
 }
 
 .tab_about_text {
