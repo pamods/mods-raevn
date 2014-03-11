@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "PA Mod Manager"
-!define PRODUCT_VERSION "3.5.0"
+!define PRODUCT_VERSION "3.5.1"
 !define PRODUCT_PUBLISHER "Raevn"
 !define PRODUCT_WEB_SITE "https://forums.uberent.com/threads/rel-pa-mod-manager-v2-0-2.50726/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PAMM.hta"
@@ -30,6 +30,11 @@
 !insertmacro MUI_PAGE_INSTFILES
 
 ; Finish page
+    !define MUI_FINISHPAGE_NOAUTOCLOSE
+    !define MUI_FINISHPAGE_RUN
+    !define MUI_FINISHPAGE_RUN_CHECKED
+    !define MUI_FINISHPAGE_RUN_TEXT "Launch PAMM"
+    !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchPAMM"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -46,6 +51,10 @@ InstallDir "$PROGRAMFILES\Planetary Annihilation\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
+
+Function LaunchPAMM
+  ExecShell "" "$INSTDIR\PAMM.hta"
+FunctionEnd
 
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"

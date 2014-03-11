@@ -10,14 +10,7 @@
 	<script type="text/javascript" src="manager\json3.min.js"></script>
 	<script type="text/javascript" src="manager\jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="manager\locale.js"></script>
-	
-	<script language="VBScript">
-		'Sub Window_onBeforeUnLoad			
-			'Call jsOnUnload()
-			'Call WriteOptionsJSON()
-		'End Sub
-	</script>
-	
+		
 	<script type="text/javascript">	
 		self.resizeTo(600, 600);
 		/*
@@ -71,8 +64,8 @@
 		
 		//TODO: Read PA build number from uberent servers
 		
-		var datePAMM = "2014/03/10";
-		var strPAMMversion = "3.5.0";
+		var datePAMM = "2014/03/12";
+		var strPAMMversion = "3.5.1";
 		var strPABuild = "62519";
 		
 		/* Localisation Functions */
@@ -992,7 +985,7 @@
 		
 		function jsApplyInstalledModFilter() {
 			var boolFiltersEnabled = false;
-		
+			
 			$('#mod_list_installed').find('.mod_entry').removeClass('mod_entry_filtered');
 					
 			if (objOptions["installed_category"] != "ALL") {
@@ -1003,7 +996,7 @@
 			$('#filter_area_installed_category_' + objOptions["installed_category"]).addClass('filter_area_filter_item_selected');
 			
 			if ($('#filter_area_installed_text_filter').val() != '') {
-				var strSearch = $('#filter_area_available_text_filter').val().toLowerCase();
+				var strSearch = $('#filter_area_installed_text_filter').val().toLowerCase();
 				$('#mod_list_installed').find('.mod_entry').each(function() {
 					if ($(this).find('.mod_entry_name').text().toLowerCase().indexOf(strSearch) < 0) {
 						$(this).addClass('mod_entry_filtered');
@@ -1481,7 +1474,7 @@
 				
 				jsGenerateOnlineModsListHTML();
 				jsGenerateInstalledModsListHTML();
-				if (objOptions["loadlikes"] == true) {
+				if (objOptions["modlikes"] == true) {
 					jsDownloadOnlineModLikeCount();
 				}
 				WriterModListJS();
@@ -2081,7 +2074,7 @@
 					<div class="tab_heading"><span class="LOC_ABOUT">ABOUT</span></div>
 					<div class="about_items">
 						<div class="tab_subheading"><span class="LOC_Planetary_Annihilation_Mod_Manager">Planetary Annihilation Mod Manager</span></div>
-						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">3.5.0</span> (2014/03/10)</div>
+						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">3.5.1</span> (2014/03/12)</div>
 						<div class="tab_about_text"><span class="LOC_Current_PA_Build">Current PA Build</span>: <span id="current_pa_build" class="tab_about_value"><span class="LOC_Loading">Loading</span>...</span></div>
 						<div class='mod_entry_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
 						<br/><br/>
