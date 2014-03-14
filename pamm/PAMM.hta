@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<META http-equiv="Content-Script-Type" content="text/vbscript">
 		<title>PA UI Mod Manager</title>
 		<HTA:APPLICATION ID="PAMM" APPLICATIONNAME="PA UI Mod Manager" SCROLL="no" SINGLEINSTANCE="no" ICON="manager\img\favicon.ico">
 		<link href="manager\pamm.css" rel="stylesheet" type="text/css">
@@ -12,23 +11,9 @@
 	<script type="text/javascript" src="manager\locale.js"></script>
 		
 	<script type="text/javascript">	
-		self.resizeTo(600, 600);
-		/*
-		function jsOnUnload() {
-			objOptions['width'] = $(window).width();
-			objOptions['height'] = $(window).height();
-			objOptions['left'] = top.screenLeft;
-			objOptions['top'] = top.screenTop;
-			
-			if (screen.availWidth == $(window).width() && screen.availHeight == $(window).height()) {
-				objOptions['maximised'] = true;
-			} else {
-				objOptions['maximised'] = false;
-			}
-			alert("$(window).width() - " + $(window).width());
-			alert("screen.availWidth - " + screen.availWidth);
+		if ($(window).width() < 1130) {
+			self.resizeTo(1130, $(window).height());
 		}
-		*/
 		
 		var objInstalledMods = [];
 		var objOnlineMods = [];
@@ -64,8 +49,8 @@
 		
 		//TODO: Read PA build number from uberent servers
 		
-		var datePAMM = "2014/03/12";
-		var strPAMMversion = "3.5.1";
+		var datePAMM = "2014/03/15";
+		var strPAMMversion = "4.0.0";
 		var strPABuild = "62519";
 		
 		/* Localisation Functions */
@@ -334,16 +319,6 @@
 				objOptions["show_installed_filters"] = false;
 			}
 			jsUpdateOptionsToggle(true)
-			/*
-			if (objOptions['width'] != null && objOptions['height'] != null) {
-				if (objOptions['maximised'] != null && objOptions['maximised'] == false) {
-					self.resizeTo(objOptions['width'], objOptions['height']);
-					if (objOptions['left'] != null && objOptions['top'] != null) {
-						self.moveTo(objOptions['left'], objOptions['top']);
-					}
-				}
-			}
-			*/
 			
 			document.getElementById("btnLaunch").disabled = strPrompt == null;
 			WriteOptionsJSON();
@@ -790,10 +765,6 @@
 							"<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(true)'>" + jsGetLocaleText('Enable_All', objOptions["locale"]) + "</a></div>" +
 							"<div class='filter_area_option_img'><img src='manager/img/checkbox_unchecked.png' /></div>" +
 							"<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(false)'>" + jsGetLocaleText('Disable_All', objOptions["locale"]) + "</a></div>" +
-							/*
-							"<a href='#' onClick=''>Save Mod Loadout</a> - " +
-							"<a href='#' onClick=''>Recall Mod Loadout</a>" +
-							*/
 						"</td>" +
 					"</tr>" +
 				"</table>" +
@@ -1512,7 +1483,7 @@
 		}
 		
 		function jsDownloadOnlineModLikeCount_asynch(intModID, strResult) {
-			var objOnlineMod = jsGetOnlineMod(intModID)
+			var objOnlineMod = jsGetOnlineMod(intModID);
 			try {
 				var objNodes = $(strResult).find(".message").first().find(".LikeText");
 				var intLikes = objNodes.children(".username").length;
@@ -2028,7 +1999,7 @@
 							</tr>
 							<tr>
 								<td><span class="setting_heading"><span class="LOC_Mod_Likes">Load Mod Likes</span>:</span></td>
-								<td><input id="setting_likes" type="checkbox" onClick="jsToggleModLikes()"/></td>
+								<td><input id="setting_likes" type="checkbox" onClick="jsToggleModLikes()"/> (<span class="LOC_Requires_Refresh">Requires Refresh</span>)</td>
 							</tr>
 							<tr>
 								<td><span class="setting_heading"><span class="LOC_Installed_Mods_List_View">Installed Mods List View</span>:</span></td>
@@ -2074,7 +2045,7 @@
 					<div class="tab_heading"><span class="LOC_ABOUT">ABOUT</span></div>
 					<div class="about_items">
 						<div class="tab_subheading"><span class="LOC_Planetary_Annihilation_Mod_Manager">Planetary Annihilation Mod Manager</span></div>
-						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">3.5.1</span> (2014/03/12)</div>
+						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">4.0.0</span> (2014/03/15)</div>
 						<div class="tab_about_text"><span class="LOC_Current_PA_Build">Current PA Build</span>: <span id="current_pa_build" class="tab_about_value"><span class="LOC_Loading">Loading</span>...</span></div>
 						<div class='mod_entry_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
 						<br/><br/>

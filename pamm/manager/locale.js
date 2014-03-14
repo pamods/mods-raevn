@@ -436,6 +436,12 @@ var strlocaleText = {
 		"fr": "",
 		"nl": "",
 		"de": ""
+	},
+	"Requires_Refresh": {
+		"en": "Requires Refresh",
+		"fr": "",
+		"nl": "",
+		"de": ""
 	}
 };
 
@@ -511,4 +517,5 @@ var strLocaleTextItems = [
 	"Mac_Linux_port_created_by",
 	"Mod_list_generator_created_by",
 	"Thanks_also",
-	"and"];
+	"and",
+	"Requires_Refresh"];
