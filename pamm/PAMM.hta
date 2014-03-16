@@ -11,9 +11,6 @@
 	<script type="text/javascript" src="manager\locale.js"></script>
 		
 	<script type="text/javascript">	
-		if ($(window).width() < 1130) {
-			self.resizeTo(1130, window.outerHeight);
-		}
 		
 		var objInstalledMods = [];
 		var objOnlineMods = [];
@@ -49,8 +46,8 @@
 		
 		//TODO: Read PA build number from uberent servers
 		
-		var datePAMM = "2014/03/15";
-		var strPAMMversion = "4.0.1";
+		var datePAMM = "2014/03/17";
+		var strPAMMversion = "4.0.3";
 		var strPABuild = "62857";
 		
 		/* Localisation Functions */
@@ -913,19 +910,19 @@
 					boolFiltersEnabled = false;
 					break;
 				case "INSTALLED":
-					$('#mod_list_available').find('.mod_entry_filter_installed').addClass('mod_entry_filtered');
+					$('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_installed').addClass('mod_entry_filtered');
 					$('#filter_area_show_installed').addClass('filter_area_filter_item_selected');
 					break;
 				case "REQUIRES_UPDATE":
-					$('#mod_list_available').find('.mod_entry_filter_update_available').addClass('mod_entry_filtered');
+					$('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_update_available').addClass('mod_entry_filtered');
 					$('#filter_area_show_requires_update').addClass('filter_area_filter_item_selected');
 					break;
 				case "NEWLY_UPDATED":
-					$('#mod_list_available').find('.mod_entry_filter_new').addClass('mod_entry_filtered');
+					$('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_new').addClass('mod_entry_filtered');
 					$('#filter_area_show_newly_updated').addClass('filter_area_filter_item_selected');
 					break;
 				case "NOT_INSTALLED":
-					$('#mod_list_available').find('.mod_entry_filter_not_installed').addClass('mod_entry_filtered');
+					$('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_not_installed').addClass('mod_entry_filtered');
 					$('#filter_area_show_not_installed').addClass('filter_area_filter_item_selected');
 					break;
 			}
@@ -2045,7 +2042,7 @@
 					<div class="tab_heading"><span class="LOC_ABOUT">ABOUT</span></div>
 					<div class="about_items">
 						<div class="tab_subheading"><span class="LOC_Planetary_Annihilation_Mod_Manager">Planetary Annihilation Mod Manager</span></div>
-						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">4.0.1</span> (2014/03/15)</div>
+						<div class="tab_about_text"><span class="LOC_Version">Version</span> <span class="tab_about_value">4.0.3</span> (2014/03/16)</div>
 						<div class="tab_about_text"><span class="LOC_Current_PA_Build">Current PA Build</span>: <span id="current_pa_build" class="tab_about_value"><span class="LOC_Loading">Loading</span>...</span></div>
 						<div class='mod_entry_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
 						<br/><br/>
@@ -2075,6 +2072,7 @@
 	</body>
 	
 	<script type="text/javascript">
+		
 		function jsOnLoad() {
 			jsApplyLocaleText();
 			document.getElementById("btnLaunch").disabled = true;
