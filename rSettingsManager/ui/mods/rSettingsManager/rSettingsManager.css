@@ -39,7 +39,6 @@ input[type="number"]:disabled {
 
 .settings_button {
   min-width: 120px;
-  height: 20px;
   font-size:1em;
   padding-top: 1px;
   padding-bottom: 1px;
