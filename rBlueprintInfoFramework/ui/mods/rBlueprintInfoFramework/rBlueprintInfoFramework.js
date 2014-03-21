@@ -207,11 +207,11 @@ bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) {
 		bif.units[currentUnitID].buildIndex = "" + (999 - bif.units[currentUnitID].display_group) + "" + (999 - bif.units[currentUnitID].display_index);
 		
 		var iconName = bif.units[currentUnitID].si_name ? bif.units[currentUnitID].si_name : currentUnitID;
-		bif.queueFileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
-			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
+		bif.queueFileExists("coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
+			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_blip.png";
 		});
 		
-		bif.queueFileExists("coui://ui/alpha/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
+		bif.queueFileExists("coui://ui/main/game/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
 			bif.units[currentUnitID].buildPicture = exists == true ? src : null;
 		});
 		
@@ -331,11 +331,11 @@ bif.loadBlueprintInfoRecursive = function(blueprintData, blueprintID, type) {
 				bif[type][baseBlueprintID].buildIndex = "" + (999 - bif[type][baseBlueprintID].display_group) + "" + (999 - bif[type][baseBlueprintID].display_index);
 				
 				var iconName = bif.units[baseBlueprintID].si_name ? bif.units[baseBlueprintID].si_name : baseBlueprintID;
-				bif.queueFileExists("coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
-					bif[type][baseBlueprintID].strategicIcon = exists == true ? src : "coui://ui/alpha/icon_atlas/img/strategic_icons/icon_si_blip.png";
+				bif.queueFileExists("coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
+					bif[type][baseBlueprintID].strategicIcon = exists == true ? src : "coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_blip.png";
 				});
 				
-				bif.queueFileExists("coui://ui/alpha/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
+				bif.queueFileExists("coui://ui/main/game/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
 					bif[type][baseBlueprintID].buildPicture = exists == true ? src : null;
 				});
 			}
