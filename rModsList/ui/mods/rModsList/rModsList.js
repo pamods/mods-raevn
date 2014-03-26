@@ -1,8 +1,9 @@
-$('#A11').parent().parent().parent().before('<tr><td class="td_start_menu_item" data-bind="click: function () { model.showModsList(!model.showModsList());}"><span class="link_start_menu_item"><a href="#" id="A8" data-bind="click_sound: \'default\', rollover_sound: \'default\'"><span class="start_menu_item_lbl" >MODS</span></a></span></td></tr>');
+model.rModList = {};
 
-function loadJSON(src) {
+model.rModList.loadModJSON = function(src) {
     console.log(src, "loading json");
     var o = new XMLHttpRequest();
+	
     try
     {
         o.open('GET', src, false);
@@ -23,24 +24,38 @@ function loadJSON(src) {
 			arrayData[arrayData.length - 1].build = arrayData[arrayData.length - 1].build ? arrayData[arrayData.length - 1].build : "";
 			arrayData[arrayData.length - 1].display_name = arrayData[arrayData.length - 1].display_name ? arrayData[arrayData.length - 1].display_name : "";
 			arrayData[arrayData.length - 1].version = arrayData[arrayData.length - 1].version ? arrayData[arrayData.length - 1].version : "";
+			arrayData[arrayData.length - 1].icon = arrayData[arrayData.length - 1].icon ? arrayData[arrayData.length - 1].icon : "coui://ui/mods/rModsList/img/generic.png";
+			arrayData[arrayData.length - 1].forum = arrayData[arrayData.length - 1].forum ? arrayData[arrayData.length - 1].forum : "";
 		}
 	}
     return arrayData;
 }
+model.rModList["showModsList"] = ko.observable(false);
+model.rModList["modItems"] = ko.observableArray(model.rModList.loadModJSON("coui://ui/mods/mods_list.json"));
 
-model.showModsList = ko.observable(false);
-model.modItems = ko.observableArray(loadJSON("coui://ui/mods/mods_list.json"));
+$('#sidebar-tabs').append('<li><a href="#mods" data-toggle="pill" data-bind="click_sound: \'default\', rollover_sound: \'default\'">Mods</a></li>');
 
-$('canvas').each( function(i,c) {
-	c.width = window.innerWidth;
-	c.height = window.innerHeight;
-});
-		
-createFloatingFrame('mods_list_frame', 270, 320, {'containment': '#nebulacanvas2', 'offset':'rightCenter', 'left': -560, 'top':-160, 'delayResize': true});
-$('#mods_list_frame_content').append(
-	'<div class="div_mods">' +
-		'<div class="div_news_header">INSTALLED MODS<a data-bind="click_sound: \'default\'"><img style="float:right;" src="../shared/img/close_btn.png" data-bind="click: function () { model.showModsList(!model.showModsList()) }" /></a></div>' +
-			'<div class="div_news_cont" data-bind="foreach: modItems">' +
-				'<div class="mod_list_item">' +
-					'<span class="text_mod_name" data-bind="text: display_name"></span> - <span class="text_mod_author" data-bind="text: author"></span><br/>Version <span data-bind="text: version"></span> (<span data-bind="text: build ? build : \'\'"></span>)</div></div></div>');
-$('#mods_list_frame').attr("data-bind", "visible: model.showModsList");
+$('.tab-content').append('<div class="tab-pane" id="mods">' +
+	'<div class="ytv-wrapper id="mod-wrapper">' +
+		'<div class="ytv-relative">' +
+			'<div class="ytv-list" style="height: 934px">' + 
+				'<div class="ytv-list-header">' + 
+					'<a href="#">' +
+						'<img src="coui://ui/mods/rModsList/img/PAMM.png">' + 
+						'<span style="display: inline" data-bind="text: model.rModList.modItems().length + \' Mods Enabled\'"></span>' +
+					'</a>' +
+				'</div>' +
+				'<div class="ytv-list-inner">' + 
+					'<!-- ko foreach: model.rModList.modItems -->' +
+						'<div class="rModsList-mod">' +
+							'<img class="rModsList-mod-icon" src="" width="50px" height="50px" data-bind="attr: {src: $data.icon}" style="float:left; margin-right: 10px;">' +
+							'<div class="rModsList-mod-name" data-bind="text: $data.display_name, click: function() {inGameBrowser.open($data.forum)}" style="font-weight: bold"></div>' +
+							'<div class="rModsList-mod-author" data-bind="text: $data.author" style=""></div>' +
+							'<div class="rModsList-mod-version" data-bind="text: \'v\' + $data.version"></div>' +
+						'</div>' +
+					'<!-- /ko -->' +
+				'</div>' +
+			'</div>' +
+		'</div>' +
+	'</div>' +
+'</div>');

@@ -1,29 +1,30 @@
-.mod_list_item {
-	margin-bottom: 5px;
-	color: #999;
+#sidebar {
+	width: 365px;
 }
 
-.text_mod_name {
+.rModsList-mod {
+	color: #999;
+	position: relative; 
+	width: 100%; 
+	height: 60px; 
+	line-height:1.4; 
+	margin-bottom: 5px; 
+	margin-top: 5px;
+	padding: 5px;
+}
+
+.rModsList-mod:hover {
+	background: rgba(255,255,255,0.05);
+}
+
+.rModsList-mod-name {
     font-size: 1.2em;
-	color:#00ffff; 
-	text-decoration:none; 
+	color: #fff;
+	text-decoration: none; 
 	font-family: 'DINPRO-LIGHT';
 }
 
-.text_mod_author {
+.rModsList-mod-author {
 	font-style: italic;
-	color: #fff;
-}
-.div_mods 
-{
-    height: 300px;
-    width: 250px;
-    margin: 0px auto;
-    font-family: 'DINPRO-LIGHT';
-    font-size: .8em;
-    position: absolute;
-    background: rgba(0,0,0,.5);
-    padding: 10px;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 4px;
+	color:#008cff;
 }

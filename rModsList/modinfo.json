@@ -4,10 +4,10 @@
     "display_name": "Installed Mods List",
     "description": "Adds a 'Mods' button to the main menu which shows a list of currently enabled mods",
     "author": "Raevn",
-    "version": "2.0.0",
-    "build": "58772",
+    "version": "3.0.0",
+    "build": "63234",
     "signature": "not yet implemented",
-    "date": "2014/01/06",
+    "date": "2014/03/27",
     "priority": 100,
     "enabled": true,
     "id": "rModsList",
@@ -21,7 +21,6 @@
         "ui"
     ],
     "requires": [
-        "rFloatFrame",
         "rPAMM"
     ]
 }
