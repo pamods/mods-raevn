@@ -1,0 +1,35 @@
+<div class="tab-pane" id="mods">
+	<div class="ytv-wrapper id="mod-wrapper">
+		<div class="ytv-relative">
+			<div class="ytv-list" style="height: 934px">
+				<div class="ytv-list-header">
+					<a href="https://forums.uberent.com/forums/pa-mod-developers.72/" target="_blank">
+						<img src="coui://ui/mods/rModsList/img/PAMM.png">
+						<span style="display: inline" data-bind="text: model.rModList.modItems().length + ' Mod' + (model.rModList.modItems().length != 1 ? 's' : '') + ' Enabled'"></span>
+						<!-- ko if: model.rModList.updatesRequired() > 0-->
+							<div data-bind="text: model.rModList.updatesRequired() + ' mod' + (model.rModList.updatesRequired() > 1 ? 's' : '') + ' require' + (model.rModList.updatesRequired() == 1 ? 's' : '') + ' an update (run PA Mod Manager to update mods)'"></div>
+						<!-- /ko -->
+					</a>
+				</div>
+				<div class="ytv-list-inner">
+					<ul data-bind="foreach: model.rModList.modItems">
+						<li>
+							<a href="#" class="ytv-clear" data-bind="click_sound: 'default', rollover_sound: 'default'">
+								<div class="ytv-thumb">
+									<div class="ytv-thumb-stroke"></div>
+									<img src="" data-bind="attr: { src: $data.icon }" />
+								</div>
+								<div class="ytv-content">
+									<div class="rModsList-mod-name" data-bind="text: $data.display_name" style="font-weight: bold"></div>
+									<div class="rModsList-mod-author" data-bind="text: $data.author" style=""></div>
+									<div class="rModsList-mod-version" data-bind="text: 'v' + $data.version"></div>
+									<div class="rModsList-mod-alert" data-bind="visible: $data.update_required"><img src="coui://ui/mods/rModsList/img/alert.png"> Update Available</div>
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
