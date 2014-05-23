@@ -3,15 +3,16 @@
 //------------------------------------
 // rSettingsManager.js
 // Created by Raevn
-// Version 1.5.2 (2014/01/28)
+// Version 1.5.3 (2014/05/23)
 //------------------------------------
 
 //Add Empty Groups so they appear first
-$("#tab_graphic").children(":first").append('<table id="settings_group_GRAPHICS_" class="settings_group"></table>');
-$("#tab_audio").children(":first").append('<table id="settings_group_AUDIO_" class="settings_group"></table>');
-$("#tab_camera").children(":first").append('<table id="settings_group_CAMERA_" class="settings_group"></table>');
-$("#tab_ui").children(":first").append('<table id="settings_group_UI_" class="settings_group"></table>');
-$("#tab_servers").children(":first").append('<table id="settings_group_SERVERS_" class="settings_group"></table>');
+
+$("#graphics").children(":nth-child(2)").append('<table id="settings_group_GRAPHICS_" class="settings_group"></table>');
+$("#audio").children(":nth-child(2)").append('<table id="settings_group_AUDIO_" class="settings_group"></table>');
+$("#camera").children(":nth-child(2)").append('<table id="settings_group_CAMERA_" class="settings_group"></table>');
+$("#ui").children(":nth-child(2)").append('<table id="settings_group_UI_" class="settings_group"></table>');
+$("#servers").children(":nth-child(2)").append('<table id="settings_group_SERVERS_" class="settings_group"></table>');
 
 model.additionalSettings = ko.observableArray();
 model.additionalSettingDefaults = ko.observableArray();
@@ -49,7 +50,7 @@ model.addSetting_Slider = function(displayName, id, tab, min, max, defaultValue,
 			model[id](ui.value);
 		}
 	});
-	
+
 	model.additionalSettings.push(id);
 	model.additionalSettingDefaults.push(defaultValue);
 	model.additionalSettingData.push({'type': 'Slider', 'min': min, 'max': max});
@@ -84,25 +85,25 @@ model.addSettingGroup = function(tab, group) {
 
 	switch (tab) {
 		case 'GRAPHICS':
-  			settingSelector = $("#tab_graphic").children(":first")
+  			settingSelector = $("#graphic").children(":nth-child(2)")
   			break;
 		case 'AUDIO':
-  			settingSelector = $("#tab_audio").children(":first")
+  			settingSelector = $("#audio").children(":nth-child(2)")
   			break;
 		case 'CAMERA':
-  			settingSelector = $("#tab_camera").children(":first")
+  			settingSelector = $("#camera").children(":nth-child(2)")
   			break;
 		case 'UI':
-  			settingSelector = $("#tab_ui").children(":first")
+  			settingSelector = $("#ui").children(":nth-child(2)")
   			break;
 		case 'SERVERS':
-			settingSelector = $("#tab_servers").children(":first")
+			settingSelector = $("#servers").children(":nth-child(2)")
   			break;
 	}
-	
+
 	group = group ? group : "";
 	var groupReplaced = group.replace(/ |\/|\&|\(|\)|\[|\]|\\|\^|\$|\.|\||\?|\*|\+/g, '');
-	
+
 	if ($('#settings_group_' + tab + '_' + groupReplaced).length == 0) {
 		settingSelector.append(
 			'<table id="settings_group_' + tab + '_' + groupReplaced + '" class="settings_group">' + 
@@ -118,15 +119,15 @@ model.addSettingGroup = function(tab, group) {
 
 model.addSetting = function(tab, type, displayName, id, property, group) {
 	model.addSettingGroup(tab, group);
-	
+
 	group = group ? group : "";
 	var groupReplaced = group.replace(/ |\/|\&|\(|\)|\[|\]|\\|\^|\$|\.|\||\?|\*|\+/g, '');
-	
+
 	groupSelector = $('#settings_group_' + tab + '_' + groupReplaced);
-	
+
 	var startSettingHTML = '<tr><td><div class="div_settings_control_lbl">' + displayName + '</div></td><td>';
 	var endSettingHTML = '</td></tr>';
-			
+
 	switch (type) {
 		case 'DropDown':
 			groupSelector.append(
@@ -183,20 +184,19 @@ model.addSetting = function(tab, type, displayName, id, property, group) {
 	}
 }
 
-//hook existing 'settings' method
-model.oldSettings = model.settings;
-model.settings = ko.computed(function () {
-	var newSettings = model.oldSettings();
-
+model.oldsave = model.save;
+model.save = function(){
+	
 	for (var i = 0; i < model.additionalSettings().length; i++) {
-		newSettings[model.additionalSettings()[i]] = model[model.additionalSettings()[i]]();
+		model.settings()[model.additionalSettings()[i]] = model[model.additionalSettings()[i]]();
 	}
-	return newSettings;
-});
+	
+	model.oldsave();
+};
 
 //hook existing 'defaults' method
-model.oldDefaults = model.defaults;
-model.defaults = function () {
+model.oldDefaults = model.restoreDefaults;
+model.restoreDefaults = function () {
 	for (var i = 0; i < model.additionalSettings().length; i++) {
 		var id = model.additionalSettings()[i]; 
 		
