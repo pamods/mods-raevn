@@ -3,9 +3,13 @@
 //------------------------------------
 // rSettingsManager_global.js
 // Created by Raevn
-// Version 1.6.0 (2014/06/16)
+// Version 1.5.2 (2014/01/28)
 //------------------------------------
 
 function initialSettingValue(id, value) {
-	console.log("rSettingsManager: initialSettingValue is Deprecated");
+	var settings = decode(localStorage.settings);
+	
+	settings[id] = settings[id] != null ? settings[id] : value;
+
+	localStorage.settings = encode(settings);
 }
