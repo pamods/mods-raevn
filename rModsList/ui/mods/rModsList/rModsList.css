@@ -3,12 +3,14 @@
 }
 
 #mods .ytv-list .ytv-thumb img {
-	width: 100px;
+	width: 50px;
 	display: block;
 }
 #mods .ytv-list .ytv-content {
-	padding-left: 110px;
+	padding-left: 60px;
 }
+
+#mods li { margin: 0; }
 
 .rModsList-mod-author {
 	font-style: italic;

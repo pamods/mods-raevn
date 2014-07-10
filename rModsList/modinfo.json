@@ -4,23 +4,20 @@
     "display_name": "Installed Mods List",
     "description": "Adds a 'Mods' tab on the main menu which shows a list of currently enabled mods, and if any require updates",
     "author": "Raevn",
-    "version": "3.1.0",
-    "build": "63475",
+    "version": "4.0.0",
+    "build": "68568",
     "signature": "not yet implemented",
-    "date": "2014/03/30",
+    "date": "2014/07/10",
     "priority": 100,
-    "enabled": true,
-    "id": "rModsList",
-    "start": [
-        "coui://ui/mods/rModsList/rModsList.js",
-        "coui://ui/mods/rModsList/rModsList.css"
-    ],
-    "forum": "https://forums.uberent.com/threads/rel-installed-mods-list-v1-2-1-58197.54645/",
+    "scenes": {
+        "start": [
+            "coui://ui/mods/rModsList/rModsList.js",
+            "coui://ui/mods/rModsList/rModsList.css"
+        ]
+    },
+    "forum": "https://forums.uberent.com/threads/54645/",
     "category": [
         "modding",
         "ui"
-    ],
-    "requires": [
-        "rPAMM"
     ]
 }

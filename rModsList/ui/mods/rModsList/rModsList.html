@@ -1,5 +1,5 @@
 <div class="tab-pane" id="mods">
-	<div class="ytv-wrapper id="mod-wrapper">
+	<div class="ytv-wrapper" id="mods-wrapper">
 		<div class="ytv-relative">
 			<div class="ytv-list" style="height: 934px">
 				<div class="ytv-list-header">
@@ -7,7 +7,7 @@
 						<img src="coui://ui/mods/rModsList/img/PAMM.png">
 						<span style="display: inline" data-bind="text: model.rModList.modItems().length + ' Mod' + (model.rModList.modItems().length != 1 ? 's' : '') + ' Enabled'"></span>
 						<!-- ko if: model.rModList.updatesRequired() > 0-->
-							<div data-bind="text: model.rModList.updatesRequired() + ' mod' + (model.rModList.updatesRequired() > 1 ? 's' : '') + ' require' + (model.rModList.updatesRequired() == 1 ? 's' : '') + ' an update (run PA Mod Manager to update mods)'"></div>
+							<div data-bind="text: model.rModList.updatesRequired() + ' update(s) available(s) (run PAMM)'"></div>
 						<!-- /ko -->
 					</a>
 				</div>
