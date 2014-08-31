@@ -265,11 +265,24 @@ bif.doToolBlueprint = function(currentToolPath, currentToolID) {
 		if (data.ammo_id != null) {
 			bif.ammo_count ++;
 			var currentAmmoPath = data.ammo_id;
-			var currentAmmoID = currentAmmoPath.substring(currentAmmoPath.lastIndexOf("/") + 1, currentAmmoPath.indexOf(".json"));
-			bif.ammo_id.push(currentAmmoID);
-			
-			if (bif.ammo[currentAmmoID] == null) {
-				bif.doAmmoBlueprint(currentAmmoPath, currentAmmoID);
+			if(_.isArray(currentAmmoPath)){
+          currentAmmoPath = currentAmmoPath[0].id;
+          var currentAmmoID = currentAmmoPath.substring(currentAmmoPath.lastIndexOf("/") + 1, currentAmmoPath.indexOf(".json"));
+          
+          bif.ammo_id.push(currentAmmoID);
+          
+          if (bif.ammo[currentAmmoID] == null) {
+            bif.doAmmoBlueprint(currentAmmoPath, currentAmmoID);
+          }
+			}
+			else{
+          var currentAmmoID = currentAmmoPath.substring(currentAmmoPath.lastIndexOf("/") + 1, currentAmmoPath.indexOf(".json"));
+          
+          bif.ammo_id.push(currentAmmoID);
+          
+          if (bif.ammo[currentAmmoID] == null) {
+            bif.doAmmoBlueprint(currentAmmoPath, currentAmmoID);
+          }
 			}
 		}
 		
