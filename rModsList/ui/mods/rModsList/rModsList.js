@@ -4,7 +4,7 @@
     model.rModList.updatesRequired = ko.observable(0);
 
     $.getJSON(
-        "http://pamods.github.io/modlist2.json",
+        "https://pamm-mereth.rhcloud.com/api/mod",
         function(availableMods) {
             var modsmap = {};
             for(var i = 0; i <availableMods.length; ++i) {
