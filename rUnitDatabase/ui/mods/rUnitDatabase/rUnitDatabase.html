@@ -10,7 +10,7 @@
 		<div class="unitDatabase_unitsHeading">Bots</div>
 		<!-- ko foreach: model.ud.basicBots -->
 			<div class="unitDatabase_unit" data-bind="css: {selectedUnit: $data.id == $parent.ud.selectedUnitBlueprintID()}">
-				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw()}">
+				<a data-bind="click: function () {$parent.ud.selectedUnitBlueprintID($data.id); $parent.ud.selectedType(null); $parent.ud.selectedUnitBlueprintRaw();}">
 					<img class="img_build_unit" src="" data-bind="attr: { src: $data.buildPicture == null ? ($data.base_spec == null ? 'coui://ui/mods/rUnitDatabase/img/unknown_base.png' : 'coui://ui/mods/rUnitDatabase/img/unknown.png') : $data.buildPicture }" /> 
 				</a>
 			</div>
