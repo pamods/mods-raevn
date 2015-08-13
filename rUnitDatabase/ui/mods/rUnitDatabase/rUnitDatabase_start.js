@@ -101,7 +101,7 @@ model.ud.selectedUnitBlueprint = ko.computed(function() {
 		model.ud.selectedUnitWreckageFrac(unitBlueprint.wreckage_health_frac);
 	}
 	
-	model.ud.selectedUnitBlueprintRaw();
+	//model.ud.selectedUnitBlueprintRaw();
 	
 	return unitBlueprint;
 });
