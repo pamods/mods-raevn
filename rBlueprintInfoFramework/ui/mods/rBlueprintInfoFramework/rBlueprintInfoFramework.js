@@ -198,20 +198,26 @@ bif.initialiseBIF = function(force, cacheBuildData) {
 
 bif.doUnitBlueprint = function(currentUnitPath, currentUnitID) { 
 	$.getJSON("coui:/" + currentUnitPath, function (data) {
+		
 		bif.units[currentUnitID] = bif.loadBlueprintInfoRecursive(data, currentUnitID, "units");
 		if (bif.units[currentUnitID].unit_types != null) {
 			bif.units[currentUnitID].unit_types.push("UNITTYPE__" + currentUnitID);
 		}
+		
 		bif.units[currentUnitID].id = currentUnitID;
 		bif.units[currentUnitID].path = currentUnitPath;
+		//console.log(bif.units[currentUnitID].description);
+		bif.units[currentUnitID].description = loc(bif.units[currentUnitID].description);
+		bif.units[currentUnitID].display_name = loc(bif.units[currentUnitID].display_name);
 		bif.units[currentUnitID].buildIndex = "" + (999 - bif.units[currentUnitID].display_group) + "" + (999 - bif.units[currentUnitID].display_index);
 		
 		var iconName = bif.units[currentUnitID].si_name ? bif.units[currentUnitID].si_name : currentUnitID;
 		bif.queueFileExists("coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
 			bif.units[currentUnitID].strategicIcon = exists == true ? src : "coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_blip.png";
 		});
-		
-		bif.queueFileExists("coui://ui/main/game/live_game/img/build_bar/units/" + currentUnitID + ".png", function (src, exists) {
+		//console.log("Fetching " + currentUnitPath.replace(".json","_icon_buildbar.png"));
+		bif.queueFileExists("coui://" + currentUnitPath.replace(".json","_icon_buildbar.png"), function (src, exists) {
+			
 			bif.units[currentUnitID].buildPicture = exists == true ? src : null;
 		});
 		
@@ -300,9 +306,12 @@ bif.doToolBlueprint = function(currentToolPath, currentToolID) {
 bif.doAmmoBlueprint = function(currentAmmoPath, currentAmmoID) { 
 	$.getJSON("coui:/" + currentAmmoPath, function (data) {
 		
+		//locAddNamespace('units');
 		bif.ammo[currentAmmoID] = bif.loadBlueprintInfoRecursive(data, currentAmmoID, "ammo");
 		bif.ammo[currentAmmoID].id = currentAmmoID;
 		bif.ammo[currentAmmoID].path = currentAmmoPath;
+		bif.ammo[currentAmmoID].description = loc(bif.ammo[currentAmmoID].description);
+		bif.ammo[currentAmmoID].display_name = loc(bif.ammo[currentAmmoID].display_name);
 		bif.ammo[currentAmmoID].inherited = [];
 		bif.loaded_ammo(bif.loaded_ammo() + 1);
 
@@ -347,7 +356,7 @@ bif.loadBlueprintInfoRecursive = function(blueprintData, blueprintID, type) {
 				bif.queueFileExists("coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_" + iconName + ".png", function (src, exists) {
 					bif[type][baseBlueprintID].strategicIcon = exists == true ? src : "coui://ui/main/atlas/icon_atlas/img/strategic_icons/icon_si_blip.png";
 				});
-				
+        //FIX needed here
 				bif.queueFileExists("coui://ui/main/game/live_game/img/build_bar/units/" + baseBlueprintID + ".png", function (src, exists) {
 					bif[type][baseBlueprintID].buildPicture = exists == true ? src : null;
 				});
@@ -1514,7 +1523,11 @@ bif.getToolBlueprintInline = function(toolID) {
 	var inlinedBlueprint = $.extend(true, {}, bif.tools[toolID]);
 	
 	if (inlinedBlueprint.ammo_id != null) {
-		inlinedBlueprint.ammo_blueprint = bif.getAmmoBlueprint(bif.getBlueprintIDFromPath(inlinedBlueprint.ammo_id));
+		if(_.isArray(inlinedBlueprint.ammo_id)) {
+			inlinedBlueprint.ammo_blueprint = bif.getAmmoBlueprint(bif.getBlueprintIDFromPath(inlinedBlueprint.ammo_id[0].id));
+		} else {
+			inlinedBlueprint.ammo_blueprint = bif.getAmmoBlueprint(bif.getBlueprintIDFromPath(inlinedBlueprint.ammo_id));
+		}
 	}
 	
 	return inlinedBlueprint;
