@@ -1073,7 +1073,7 @@ bif.getFilteredUnitIDsFromArray = function(unitIDArray, filter) {
 	var filterTokens = filter.split(" ");
 	for (var i = 0; i < filterTokens.length; i++) {
 		if (filterTokens[i] != "(" && filterTokens[i] != ")" && filterTokens[i] != "|" && filterTokens[i] != "&" && filterTokens[i] != "-" && filterTokens[i] != "") {
-			filterTokens[i] = "$.inArray('UNITTYPE_" + filterTokens[i] + "', currentUnitTypes) > -1";
+			filterTokens[i] = "($.inArray('UNITTYPE_" + filterTokens[i] + "', currentUnitTypes) > -1)";
 		}
 		
 		if (filterTokens[i] == "-") {
