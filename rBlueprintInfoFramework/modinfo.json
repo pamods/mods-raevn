@@ -4,7 +4,7 @@
     "display_name": "Blueprint Info Framework",
     "description": "A Framework for obtaining unit, tool and ammo data",
     "author": "Raevn",
-    "version": "1.4.5",
+    "version": "1.4.6",
     "signature": "not yet implemented",
     "priority": 10,
     "enabled": true,
@@ -78,6 +78,6 @@
             "coui://ui/mods/rBlueprintInfoFramework/rBlueprintInfoFramework_scene.js"
         ]
     },
-    "date": "2015/08/18",
-    "build": "86370"
+    "date": "2015/12/03",
+    "build": "89755"
 }

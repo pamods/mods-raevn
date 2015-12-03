@@ -315,9 +315,9 @@ bif.doAmmoBlueprint = function(currentAmmoPath, currentAmmoID) {
 		bif.ammo[currentAmmoID].inherited = [];
 		bif.loaded_ammo(bif.loaded_ammo() + 1);
 
-		if (bif.loaded_ammo == bif.ammo_count) {
+		if (bif.loaded_ammo() == bif.ammo_count) {
 			console.log("[Blueprint Info Framework] Completed loading ammo blueprints (" + bif.ammo_count + ")");
-			if (bif.loaded_units == bif.unit_count && bif.loaded_tools == bif.tool_count && bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
+			if (bif.loaded_units() == bif.unit_count && bif.loaded_tools() == bif.tool_count && bif.fileExistsQueue.length == 0 && bif.fileExistsProcessCount == 0) {
 				bif.initialised = true;
 				bif.bifReady();
 				sessionStorage.bif = encode(bif);
