@@ -1073,7 +1073,7 @@ bif.getFilteredUnitIDsFromArray = function(unitIDArray, filter) {
 	var filterTokens = filter.split(" ");
 	for (var i = 0; i < filterTokens.length; i++) {
 		if (filterTokens[i] != "(" && filterTokens[i] != ")" && filterTokens[i] != "|" && filterTokens[i] != "&" && filterTokens[i] != "-" && filterTokens[i] != "") {
-			filterTokens[i] = "($.inArray('UNITTYPE_" + filterTokens[i] + "', currentUnitTypes) > -1)";
+			filterTokens[i] = "($.inArray('UNITTYPE_" + filterTokens[i] + "', unitTypes) > -1)";
 		}
 		
 		if (filterTokens[i] == "-") {
@@ -1081,12 +1081,13 @@ bif.getFilteredUnitIDsFromArray = function(unitIDArray, filter) {
 		}
 		
 	}
-	filterString = filterTokens.join("");
+	var filterString = filterTokens.join("");
+	var filterFunc = new Function('unitTypes', 'return ' + filterString);
 	var filteredBlueprintIDs = unitIDArray.filter(function(el) { 
 		if (bif.unitBlueprintExists(el) == true) {
 			var currentUnitTypes = bif.units[el].unit_types;
 			if (currentUnitTypes != null) { 
-				return eval(filterString);
+				return filterFunc(currentUnitTypes);
 			}
 		}
 		return false;
