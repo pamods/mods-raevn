@@ -1161,12 +1161,16 @@ bif.getUnitBuildableTypeUnitIDs = function(unitID) {
 		}
 		
 		
-		if (bif.units[unitID].buildable_types == null) {
+		var buildableTypesString = bif.units[unitID].buildable_types;
+		if (buildableTypesString == null) {
 			return [];
+		} else if (bif._unit_buildable_types[buildableTypesString] != null) {
+			bif._unit_buildable_types[unitID] = bif._unit_buildable_types[buildableTypesString];
+			return bif._unit_buildable_types[unitID];
 		} else {
-			var buildableTypesString = bif.units[unitID].buildable_types;
 			var result = bif.getFilteredUnitIDs(buildableTypesString);
 			
+			bif._unit_buildable_types[buildableTypesString] = result;
 			bif._unit_buildable_types[unitID] = result;
 			return result;
 		}
