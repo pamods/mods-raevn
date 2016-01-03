@@ -1082,16 +1082,24 @@ bif.getFilteredUnitIDsFromArray = function(unitIDArray, filter) {
 		
 	}
 	var filterString = filterTokens.join("");
-	var filterFunc = new Function('unitTypes', 'return ' + filterString);
-	var filteredBlueprintIDs = unitIDArray.filter(function(el) { 
-		if (bif.unitBlueprintExists(el) == true) {
-			var currentUnitTypes = bif.units[el].unit_types;
-			if (currentUnitTypes != null) { 
-				return filterFunc(currentUnitTypes);
+	var filteredBlueprintIDs = []
+	try {
+		var filterFunc = new Function('unitTypes', 'return ' + filterString);
+		filteredBlueprintIDs = unitIDArray.filter(function(el) { 
+			if (bif.unitBlueprintExists(el) == true) {
+				var currentUnitTypes = bif.units[el].unit_types;
+				if (currentUnitTypes != null) { 
+					return filterFunc(currentUnitTypes);
+				}
 			}
-		}
-		return false;
-	});
+			return false;
+		});
+	} catch(e) {
+		console.log('error with unit filter')
+		console.log(filter)
+		console.log(filterString)
+		console.log(e.message)
+	}
 	
 	return filteredBlueprintIDs;
 }

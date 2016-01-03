@@ -1,5 +1,9 @@
 # Blueprint Info Framework
 
+## 1.4.7
+
+- Catch exceptions in unit type filters and continue other processing
+
 ## 1.4.6
 
 - Fix missing observable parens in ammo loading that blocked ready events
