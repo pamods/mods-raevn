@@ -67,9 +67,11 @@ function createFloatingFrame(id, width, height, options) {
 	}
 		
     $('body').append(
-		'<div id="' + id + '" class="drag_main" style="width:' + width + 'px; height:' + height + 'px; ' + styleLeft + styleTop + '" data-bind="visible: decode(localStorage.settings)[\'' + id + '\'] != \'HIDE\'">' +
+		'<!-- ko if: decode(localStorage.settings)[\'' + id + '\'] != \'HIDE\' -->\n' +
+		'<div id="' + id + '" class="drag_main" style="width:' + width + 'px; height:' + height + 'px; ' + styleLeft + styleTop + '">' +
 			'<div id="' + id + '_content" class="div_drag_cont" style="' + styleResize + '"></div>' +
-		'</div>');
+		'</div>\n' +
+		'<!-- /ko -->\n');
 		
     $('#' + id).draggable({
         start: function(event, ui) {
