@@ -4,7 +4,7 @@
     "display_name": "Unit Database",
     "description": "View details on all PA units",
     "author": "Raevn",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "signature": "not yet implemented",
     "priority": 100,
     "enabled": true,
@@ -19,11 +19,20 @@
             "coui://ui/mods/rUnitDatabase/rUnitDatabase_start.js",
             "coui://ui/mods/rUnitDatabase/rUnitDatabase.css",
             "coui://ui/mods/rUnitDatabase/pretty-json.css"
+        ],
+        "LiveGame_FloatZone":[
+            "coui://ui/mods/rUnitDatabase/rUnitDatabase_live_game.js",
+            "coui://ui/mods/rUnitDatabase/rUnitDatabase.css",
+            "coui://ui/mods/rUnitDatabase/pretty-json.css"
+        ],
+        "live_game_options_bar":[
+            "coui://ui/mods/rUnitDatabase/rUnitDatabase_options_bar.js"
         ]
     },
-    "date": "2015/08/13",
-    "build": "85423",
+    "date": "2016/02/21",
+    "build": "89755",
     "dependencies": [
-        "com.pa.raevn.rblueprintinfoframework"
+        "com.pa.raevn.rblueprintinfoframework",
+        "com.pa.raevn.rfloatframe"
     ]
 }

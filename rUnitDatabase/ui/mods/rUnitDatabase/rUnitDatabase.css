@@ -8,10 +8,11 @@
 	height: 600px;
 	border-bottom-right-radius: 10px;
 	z-index: 3;
-	
 	-webkit-box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	box-sizing: content-box !important;
+    background: #000 !important;
+    border: 1px #888888 !important;
 }
 
 #unitDatabase * {
